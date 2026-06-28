@@ -1,0 +1,67 @@
+{
+  "common": {
+    "back": "Back",
+    "loading": "Loading..."
+  },
+  "tabs": {
+    "home": "Home",
+    "bible": "Bible",
+    "studies": "Studies",
+    "notes": "Notes",
+    "more": "More"
+  },
+  "home": {
+    "title": "Gentium",
+    "subtitle": "A calm foundation for reading and studying Scripture.",
+    "continueReading": "Continue reading",
+    "continueDescription": "Offline Bible reading will be enabled in the next stage.",
+    "continueDescriptionV02": "Open the offline Bible and resume your latest reading.",
+    "foundation": "Foundation v0.1.0",
+    "foundationDescription": "Theme, navigation, SQLite, internationalization, and the initial UI Kit are ready."
+  },
+  "bible": {
+    "title": "Bible",
+    "subtitle": "Initial offline reading with book and chapter navigation.",
+    "emptyTitle": "Bible library in preparation",
+    "emptyDescription": "Books, chapters, and verses arrive in v0.2.0.",
+    "chapter": "Chapter {{chapter}}",
+    "continueReading": "Continue latest reading",
+    "favorite": "Favorite verse",
+    "favoritesTitle": "Favorites",
+    "newTestament": "New Testament",
+    "oldTestament": "Old Testament",
+    "share": "Share verse",
+    "versionNotice": "PorBLivre - complete offline Bíblia Livre package.",
+    "errors": {
+      "load": "Could not load the offline Bible.",
+      "referenceNotFound": "Reference not found in the offline sample."
+    },
+    "search": {
+      "action": "Search reference",
+      "placeholder": "E.g. João 3:16",
+      "referenceLabel": "Search Bible reference"
+    }
+  },
+  "studies": {
+    "title": "Studies",
+    "subtitle": "Reserved space for the future studies library.",
+    "emptyTitle": "Studies are not available yet",
+    "emptyDescription": "Courses, modules, and lessons are planned for later versions."
+  },
+  "notes": {
+    "title": "Notes",
+    "subtitle": "Reserved space for study notes.",
+    "emptyTitle": "Notes are coming soon",
+    "emptyDescription": "The editor and personal organization will be implemented in the planned version."
+  },
+  "settings": {
+    "title": "More",
+    "subtitle": "Initial settings and app information.",
+    "appearance": "Appearance",
+    "appearanceDescription": "The theme follows the device preference.",
+    "language": "Language",
+    "languageDescription": "Brazilian Portuguese is active in this foundation.",
+    "about": "About Gentium",
+    "aboutDescription": "Version 0.1.0, technical foundation of the project."
+  }
+}

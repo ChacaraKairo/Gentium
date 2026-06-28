@@ -1,0 +1,67 @@
+{
+  "common": {
+    "back": "Voltar",
+    "loading": "Carregando..."
+  },
+  "tabs": {
+    "home": "Início",
+    "bible": "Bíblia",
+    "studies": "Estudos",
+    "notes": "Anotações",
+    "more": "Mais"
+  },
+  "home": {
+    "title": "Gentium",
+    "subtitle": "Uma base serena para leitura e estudo das Escrituras.",
+    "continueReading": "Continuar leitura",
+    "continueDescription": "A leitura bíblica offline será ativada na próxima etapa.",
+    "continueDescriptionV02": "Abra a Bíblia offline e retome sua última leitura.",
+    "foundation": "Fundação v0.1.0",
+    "foundationDescription": "Tema, navegação, SQLite, internacionalização e UI Kit inicial estão preparados."
+  },
+  "bible": {
+    "title": "Bíblia",
+    "subtitle": "Leitura offline inicial com navegação por livro e capítulo.",
+    "emptyTitle": "Biblioteca bíblica em preparação",
+    "emptyDescription": "A lista de livros, capítulos e versículos entra na v0.2.0.",
+    "chapter": "Capítulo {{chapter}}",
+    "continueReading": "Continuar última leitura",
+    "favorite": "Favoritar versículo",
+    "favoritesTitle": "Favoritos",
+    "newTestament": "Novo Testamento",
+    "oldTestament": "Antigo Testamento",
+    "share": "Compartilhar versículo",
+    "versionNotice": "PorBLivre - Bíblia Livre offline completa.",
+    "errors": {
+      "load": "Não foi possível carregar a Bíblia offline.",
+      "referenceNotFound": "Referência não encontrada na amostra offline."
+    },
+    "search": {
+      "action": "Buscar referência",
+      "placeholder": "Ex.: João 3:16",
+      "referenceLabel": "Pesquisar referência bíblica"
+    }
+  },
+  "studies": {
+    "title": "Estudos",
+    "subtitle": "Espaço reservado para a futura biblioteca de estudos.",
+    "emptyTitle": "Estudos ainda não disponíveis",
+    "emptyDescription": "Cursos, módulos e lições estão previstos para versões posteriores."
+  },
+  "notes": {
+    "title": "Anotações",
+    "subtitle": "Espaço reservado para suas anotações de estudo.",
+    "emptyTitle": "Anotações chegam em breve",
+    "emptyDescription": "O editor e a organização pessoal serão implementados na versão planejada."
+  },
+  "settings": {
+    "title": "Mais",
+    "subtitle": "Configurações iniciais e informações do aplicativo.",
+    "appearance": "Aparência",
+    "appearanceDescription": "O tema acompanha a preferência do dispositivo.",
+    "language": "Idioma",
+    "languageDescription": "Português do Brasil está ativo nesta fundação.",
+    "about": "Sobre o Gentium",
+    "aboutDescription": "Versão 0.1.0, fundação técnica do projeto."
+  }
+}
