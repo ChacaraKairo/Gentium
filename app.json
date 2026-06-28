@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Gentium",
+    "slug": "gentium",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#F7F4ED"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gentium.app"
+    },
+    "android": {
+      "package": "com.gentium.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F4ED"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-sqlite"
+    ]
+  }
+}
