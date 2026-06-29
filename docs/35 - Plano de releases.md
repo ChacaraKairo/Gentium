@@ -108,6 +108,25 @@ Sistema de estudos offline inicial.
 
 ---
 
+# v0.7.0
+
+Objetivo:
+
+Planos de leitura offline iniciais.
+
+### Funcionalidades
+
+- Biblioteca de planos
+- Detalhes do plano
+- Iniciar plano
+- Leitura do dia
+- Concluir leitura
+- Progresso
+- Estatísticas básicas
+- Histórico
+
+---
+
 # v1.0.0
 
 Primeira versão estável.

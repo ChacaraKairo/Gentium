@@ -2,6 +2,7 @@ import * as SQLite from 'expo-sqlite';
 
 import { runMigrations } from './migrations';
 import { seedBiblePackage } from './seedBible';
+import { seedReadingPlans } from './seedReadingPlans';
 import { seedStudiesLibrary } from './seedStudies';
 
 const databaseName = 'gentium.db';
@@ -23,4 +24,5 @@ export async function initializeAppDatabase() {
   await runMigrations(database);
   await seedBiblePackage(database);
   await seedStudiesLibrary(database);
+  await seedReadingPlans(database);
 }

@@ -109,3 +109,33 @@ export type StudyAreaSeed = {
 export type StudiesLibrarySeed = {
   areas: StudyAreaSeed[];
 };
+
+export type ReadingPlanDaySeed = {
+  dayNumber: number;
+  objective: string;
+  prayer: string;
+  questions: string[];
+  readings: string[];
+  reflection: string;
+  title: string;
+};
+
+export type ReadingPlanSeed = {
+  author: string;
+  category: string;
+  dailyMinutes: number;
+  days: ReadingPlanDaySeed[];
+  description: string;
+  durationDays: number;
+  id: string;
+  language: string;
+  level: 'advanced' | 'beginner' | 'intermediate';
+  objective: string;
+  position: number;
+  title: string;
+  version: string;
+};
+
+export type ReadingPlansSeed = {
+  plans: ReadingPlanSeed[];
+};

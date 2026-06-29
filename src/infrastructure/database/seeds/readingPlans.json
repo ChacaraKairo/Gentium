@@ -1,0 +1,144 @@
+{
+  "plans": [
+    {
+      "id": "plan-seven-days-john",
+      "title": "7 Dias em João",
+      "description": "Uma jornada curta para contemplar sinais, encontros e declarações centrais do Evangelho de João.",
+      "objective": "Ler trechos selecionados de João e perceber como o evangelho apresenta Jesus como o Cristo.",
+      "author": "Gentium",
+      "category": "Evangelhos",
+      "level": "beginner",
+      "durationDays": 7,
+      "dailyMinutes": 12,
+      "language": "pt-BR",
+      "version": "1.0.0",
+      "position": 1,
+      "days": [
+        {
+          "dayNumber": 1,
+          "title": "O Verbo se fez carne",
+          "objective": "Começar pelo prólogo e observar a identidade de Cristo.",
+          "reflection": "João apresenta Jesus antes de narrar sinais e diálogos. A leitura começa com quem ele é: o Verbo eterno que entrou na história.",
+          "prayer": "Senhor, abre meus olhos para reconhecer a glória de Cristo nas Escrituras.",
+          "questions": ["O que João afirma sobre o Verbo?", "Como essa passagem orienta o restante do evangelho?"],
+          "readings": ["João 1:1-18"]
+        },
+        {
+          "dayNumber": 2,
+          "title": "O primeiro sinal",
+          "objective": "Observar como o sinal em Caná revela a glória de Jesus.",
+          "reflection": "O milagre não é apenas solução para uma necessidade. João o chama de sinal porque aponta para algo maior sobre Cristo.",
+          "prayer": "Cristo, ajuda-me a enxergar teus sinais como convite à fé.",
+          "questions": ["O que o sinal revela?", "Como os discípulos respondem?"],
+          "readings": ["João 2:1-12"]
+        },
+        {
+          "dayNumber": 3,
+          "title": "Novo nascimento",
+          "objective": "Entender a conversa de Jesus com Nicodemos.",
+          "reflection": "Jesus mostra que a vida com Deus não começa por prestígio religioso, mas por nascimento do alto e fé no Filho.",
+          "prayer": "Pai, renova meu coração e firma minha fé no Filho.",
+          "questions": ["O que significa nascer de novo?", "Como João 3:16 resume a boa notícia?"],
+          "readings": ["João 3:1-21"]
+        },
+        {
+          "dayNumber": 4,
+          "title": "Água viva",
+          "objective": "Perceber a graça de Jesus no encontro com a mulher samaritana.",
+          "reflection": "Jesus atravessa barreiras sociais e religiosas para oferecer água viva. O encontro transforma uma pessoa em testemunha.",
+          "prayer": "Senhor, satisfaz minha sede em ti e torna meu testemunho fiel.",
+          "questions": ["Que sede Jesus confronta?", "Como a mulher responde ao encontro?"],
+          "readings": ["João 4:1-30"]
+        },
+        {
+          "dayNumber": 5,
+          "title": "O pão da vida",
+          "objective": "Meditar na suficiência de Cristo.",
+          "reflection": "Depois da multiplicação dos pães, Jesus chama a multidão a buscar alimento que permanece para a vida eterna.",
+          "prayer": "Jesus, ensina-me a buscar em ti o alimento verdadeiro.",
+          "questions": ["O que a multidão procura?", "O que Jesus oferece?"],
+          "readings": ["João 6:22-40"]
+        },
+        {
+          "dayNumber": 6,
+          "title": "O bom pastor",
+          "objective": "Reconhecer o cuidado e a entrega do Pastor.",
+          "reflection": "Jesus conhece suas ovelhas, chama pelo nome e entrega a própria vida. Sua liderança nasce do amor sacrificial.",
+          "prayer": "Bom Pastor, guia-me pela tua voz e guarda-me em teu cuidado.",
+          "questions": ["Como Jesus diferencia o pastor do mercenário?", "Que segurança o texto oferece?"],
+          "readings": ["João 10:1-18"]
+        },
+        {
+          "dayNumber": 7,
+          "title": "Crer para ter vida",
+          "objective": "Concluir com o propósito declarado do Evangelho.",
+          "reflection": "João escreveu para conduzir à fé. A leitura termina lembrando que os sinais apontam para Jesus, o Cristo, o Filho de Deus.",
+          "prayer": "Senhor Jesus, fortalece minha fé e conduz minha vida pela tua Palavra.",
+          "questions": ["Qual é o propósito do livro?", "Como esta semana fortaleceu sua fé?"],
+          "readings": ["João 20:24-31"]
+        }
+      ]
+    },
+    {
+      "id": "plan-five-days-prayer",
+      "title": "5 Dias de Oração",
+      "description": "Leituras curtas para formar uma prática bíblica de oração, confiança e perseverança.",
+      "objective": "Aprender a orar a partir de textos bíblicos essenciais.",
+      "author": "Gentium",
+      "category": "Vida Cristã",
+      "level": "beginner",
+      "durationDays": 5,
+      "dailyMinutes": 10,
+      "language": "pt-BR",
+      "version": "1.0.0",
+      "position": 2,
+      "days": [
+        {
+          "dayNumber": 1,
+          "title": "O Pai nosso",
+          "objective": "Aprender a estrutura da oração ensinada por Jesus.",
+          "reflection": "A oração começa com Deus: seu nome, seu Reino e sua vontade. Depois traz necessidades, perdão e livramento.",
+          "prayer": "Pai, alinha meus desejos ao teu Reino.",
+          "questions": ["Que prioridades aparecem na oração?", "Qual pedido você precisa reaprender hoje?"],
+          "readings": ["Mateus 6:5-13"]
+        },
+        {
+          "dayNumber": 2,
+          "title": "Pedir com confiança",
+          "objective": "Fortalecer a confiança na bondade do Pai.",
+          "reflection": "Jesus encoraja seus discípulos a pedir, buscar e bater. A confiança nasce do caráter do Pai.",
+          "prayer": "Pai bondoso, ajuda-me a orar com confiança humilde.",
+          "questions": ["Que promessa Jesus oferece?", "Como o texto molda sua confiança?"],
+          "readings": ["Mateus 7:7-11"]
+        },
+        {
+          "dayNumber": 3,
+          "title": "Perseverar",
+          "objective": "Entender perseverança sem transformar oração em técnica.",
+          "reflection": "Jesus ensina constância na oração e aponta para a justiça de Deus, que ouve seu povo.",
+          "prayer": "Senhor, dá-me perseverança sem ansiedade.",
+          "questions": ["Por que perseverar?", "O que o texto revela sobre Deus?"],
+          "readings": ["Lucas 18:1-8"]
+        },
+        {
+          "dayNumber": 4,
+          "title": "Orar em fraqueza",
+          "objective": "Receber consolo quando faltam palavras.",
+          "reflection": "A fraqueza não interrompe a comunhão com Deus. O Espírito ajuda o povo de Deus em suas limitações.",
+          "prayer": "Espírito Santo, ajuda-me quando não sei como orar.",
+          "questions": ["Que fraqueza o texto reconhece?", "Que consolo ele oferece?"],
+          "readings": ["Romanos 8:26-27"]
+        },
+        {
+          "dayNumber": 5,
+          "title": "Paz em oração",
+          "objective": "Levar ansiedade a Deus com gratidão.",
+          "reflection": "Paulo chama a igreja a apresentar pedidos a Deus. A paz prometida guarda coração e mente em Cristo.",
+          "prayer": "Deus de paz, guarda meu coração em Cristo.",
+          "questions": ["Que ansiedades você precisa apresentar a Deus?", "Como a gratidão muda sua oração?"],
+          "readings": ["Filipenses 4:4-9"]
+        }
+      ]
+    }
+  ]
+}

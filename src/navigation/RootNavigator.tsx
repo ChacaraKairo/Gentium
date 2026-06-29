@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { BibleScreen } from '@/modules/bible/screens/BibleScreen';
 import { HomeScreen } from '@/modules/home/screens/HomeScreen';
 import { NotesScreen } from '@/modules/notes/screens/NotesScreen';
+import { ReadingPlansScreen } from '@/modules/readingPlans/screens/ReadingPlansScreen';
 import { SettingsScreen } from '@/modules/settings/screens/SettingsScreen';
 import { StudiesScreen } from '@/modules/studies/screens/StudiesScreen';
 import { MainTabParamList } from '@/navigation/types';
@@ -17,6 +18,7 @@ const icons: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   Home: 'home-outline',
   More: 'menu-outline',
   Notes: 'create-outline',
+  ReadingPlans: 'calendar-outline',
   Studies: 'library-outline',
 };
 
@@ -48,6 +50,11 @@ export function RootNavigator() {
       <Tab.Screen component={HomeScreen} name="Home" options={{ title: t('tabs.home') }} />
       <Tab.Screen component={BibleScreen} name="Bible" options={{ title: t('tabs.bible') }} />
       <Tab.Screen component={StudiesScreen} name="Studies" options={{ title: t('tabs.studies') }} />
+      <Tab.Screen
+        component={ReadingPlansScreen}
+        name="ReadingPlans"
+        options={{ title: t('tabs.readingPlans') }}
+      />
       <Tab.Screen component={NotesScreen} name="Notes" options={{ title: t('tabs.notes') }} />
       <Tab.Screen component={SettingsScreen} name="More" options={{ title: t('tabs.more') }} />
     </Tab.Navigator>

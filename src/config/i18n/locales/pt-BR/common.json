@@ -8,6 +8,7 @@
     "home": "Início",
     "bible": "Bíblia",
     "studies": "Estudos",
+    "readingPlans": "Planos",
     "notes": "Anotações",
     "more": "Mais"
   },
@@ -98,6 +99,34 @@
     "progress": "{{completed}} de {{total}} lições concluídas",
     "startCourse": "Iniciar curso"
   },
+  "readingPlans": {
+    "title": "Planos",
+    "subtitle": "Jornadas offline de leitura bíblica com progresso diário.",
+    "completedDay": "Concluído",
+    "completeDay": "Concluir leitura",
+    "continuePlan": "Continuar plano",
+    "dayCompleted": "Leitura concluída",
+    "dayNumber": "Dia {{day}}",
+    "dayTitle": "Dia {{day}} · {{title}}",
+    "errors": {
+      "load": "Não foi possível carregar os planos de leitura."
+    },
+    "historyTitle": "Histórico",
+    "levels": {
+      "advanced": "Avançado",
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário"
+    },
+    "libraryDescription": "Planos oficiais para criar constância e ler com propósito.",
+    "libraryTitle": "Biblioteca de planos",
+    "planMeta": "{{category}} · {{level}} · {{days}} dias · {{minutes}} min/dia · {{author}}",
+    "planSummary": "{{days}} dias · {{minutes}} min/dia · {{progress}}%",
+    "progress": "{{completed}} de {{total}} dias concluídos",
+    "startPlan": "Iniciar plano",
+    "statsSummary": "{{completed}} concluídos · {{remaining}} pendentes · sequência {{streak}}",
+    "statsTitle": "Estatísticas",
+    "todayTitle": "Leitura do dia"
+  },
   "notes": {
     "title": "Anotações",
     "subtitle": "Espaço reservado para suas anotações de estudo.",
@@ -140,7 +169,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.6.0, estudos offline com progresso.",
+    "aboutDescription": "Versão 0.7.0, planos de leitura offline.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

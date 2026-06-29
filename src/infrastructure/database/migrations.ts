@@ -368,6 +368,78 @@ const migrations: Migration[] = [
       `);
     },
   },
+  {
+    id: 8,
+    name: 'create_reading_plans_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS reading_plans (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          objective TEXT NOT NULL,
+          author TEXT NOT NULL,
+          category TEXT NOT NULL,
+          level TEXT NOT NULL,
+          duration_days INTEGER NOT NULL,
+          daily_minutes INTEGER NOT NULL,
+          language TEXT NOT NULL,
+          version TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS reading_plan_days (
+          id TEXT PRIMARY KEY NOT NULL,
+          plan_id TEXT NOT NULL,
+          day_number INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          objective TEXT NOT NULL,
+          reflection TEXT NOT NULL,
+          prayer TEXT NOT NULL,
+          questions_json TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (plan_id) REFERENCES reading_plans(id) ON DELETE CASCADE,
+          UNIQUE (plan_id, day_number)
+        );
+
+        CREATE TABLE IF NOT EXISTS reading_plan_readings (
+          id TEXT PRIMARY KEY NOT NULL,
+          day_id TEXT NOT NULL,
+          reference TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (day_id) REFERENCES reading_plan_days(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS reading_plan_progress (
+          plan_id TEXT PRIMARY KEY NOT NULL,
+          started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          completed_at TEXT,
+          last_activity_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (plan_id) REFERENCES reading_plans(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS reading_plan_day_progress (
+          day_id TEXT PRIMARY KEY NOT NULL,
+          plan_id TEXT NOT NULL,
+          day_number INTEGER NOT NULL,
+          completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (day_id) REFERENCES reading_plan_days(id) ON DELETE CASCADE,
+          FOREIGN KEY (plan_id) REFERENCES reading_plans(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_reading_plan_days_plan
+          ON reading_plan_days(plan_id, day_number);
+        CREATE INDEX IF NOT EXISTS idx_reading_plan_readings_day
+          ON reading_plan_readings(day_id, position);
+        CREATE INDEX IF NOT EXISTS idx_reading_plan_day_progress_plan
+          ON reading_plan_day_progress(plan_id, day_number);
+      `);
+    },
+  },
 ];
 
 async function ensureMigrationTable(database: SQLiteDatabase) {

@@ -8,6 +8,7 @@
     "home": "Home",
     "bible": "Bible",
     "studies": "Studies",
+    "readingPlans": "Plans",
     "notes": "Notes",
     "more": "More"
   },
@@ -98,6 +99,34 @@
     "progress": "{{completed}} of {{total}} lessons completed",
     "startCourse": "Start course"
   },
+  "readingPlans": {
+    "title": "Plans",
+    "subtitle": "Offline Bible reading journeys with daily progress.",
+    "completedDay": "Completed",
+    "completeDay": "Complete reading",
+    "continuePlan": "Continue plan",
+    "dayCompleted": "Reading completed",
+    "dayNumber": "Day {{day}}",
+    "dayTitle": "Day {{day}} · {{title}}",
+    "errors": {
+      "load": "Could not load reading plans."
+    },
+    "historyTitle": "History",
+    "levels": {
+      "advanced": "Advanced",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate"
+    },
+    "libraryDescription": "Official plans for building consistency and reading with purpose.",
+    "libraryTitle": "Plans library",
+    "planMeta": "{{category}} · {{level}} · {{days}} days · {{minutes}} min/day · {{author}}",
+    "planSummary": "{{days}} days · {{minutes}} min/day · {{progress}}%",
+    "progress": "{{completed}} of {{total}} days completed",
+    "startPlan": "Start plan",
+    "statsSummary": "{{completed}} completed · {{remaining}} remaining · streak {{streak}}",
+    "statsTitle": "Stats",
+    "todayTitle": "Today's reading"
+  },
   "notes": {
     "title": "Notes",
     "subtitle": "Reserved space for study notes.",
@@ -140,7 +169,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.6.0, offline studies with progress.",
+    "aboutDescription": "Version 0.7.0, offline reading plans.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }
