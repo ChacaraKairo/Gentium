@@ -2,14 +2,17 @@ import './startup/i18n';
 
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { AppProviders } from './providers/AppProviders';
 import { initializeAppDatabase } from '@/infrastructure/database/database';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { useStartupStore } from '@/app/startup/startupStore';
+import { AppText, BaseCard, Button } from '@/shared/components';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 function AppBootstrap() {
+  const { t } = useTranslation();
   const { isReady, error, initialize } = useStartupStore();
   const theme = useThemeTokens();
 
@@ -34,7 +37,22 @@ function AppBootstrap() {
 
   if (error) {
     return (
-      <View style={{ backgroundColor: theme.colors.background, flex: 1 }} />
+      <View
+        style={{
+          backgroundColor: theme.colors.background,
+          flex: 1,
+          justifyContent: 'center',
+          padding: theme.spacing.lg,
+        }}
+      >
+        <BaseCard style={{ gap: theme.spacing.md }}>
+          <AppText color="danger" variant="heading">
+            Gentium
+          </AppText>
+          <AppText color="textSecondary">{error}</AppText>
+          <Button label={t('common.retry')} onPress={() => initialize(initializeAppDatabase)} />
+        </BaseCard>
+      </View>
     );
   }
 

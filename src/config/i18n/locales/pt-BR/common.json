@@ -1,7 +1,8 @@
 {
   "common": {
     "back": "Voltar",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "retry": "Tentar novamente"
   },
   "tabs": {
     "home": "Início",
@@ -21,25 +22,54 @@
   },
   "bible": {
     "title": "Bíblia",
-    "subtitle": "Leitura offline inicial com navegação por livro e capítulo.",
+    "subtitle": "Leitura offline com idiomas originais, Strong e interlinear inicial.",
     "emptyTitle": "Biblioteca bíblica em preparação",
     "emptyDescription": "A lista de livros, capítulos e versículos entra na v0.2.0.",
     "chapter": "Capítulo {{chapter}}",
     "continueReading": "Continuar última leitura",
     "favorite": "Favoritar versículo",
     "favoritesTitle": "Favoritos",
+    "highlighted": "Versículo marcado",
+    "highlightWithColor": "Marcar versículo com cor",
     "newTestament": "Novo Testamento",
+    "note": "Criar anotação",
+    "notesCount": "{{count}} anotação",
+    "notesCount_plural": "{{count}} anotações",
     "oldTestament": "Antigo Testamento",
     "share": "Compartilhar versículo",
-    "versionNotice": "PorBLivre - Bíblia Livre offline completa.",
+    "versionNotice": "PorBLivre com original, transliteração, comparação WEB e léxico Strong.",
+    "academicTools": {
+      "morphology": "Morfologia: {{morphology}}",
+      "noStrongMatch": "Ainda não há vínculo Strong para esta forma no léxico local.",
+      "pronunciation": "Pronúncia: {{pronunciation}}",
+      "searchAction": "Buscar Strong",
+      "searchLabel": "Pesquisar Strong ou palavra original",
+      "searchPlaceholder": "Ex.: H7225, G25, αγαπη",
+      "title": "Ferramentas acadêmicas",
+      "wordPanelTitle": "Palavra original"
+    },
+    "comparison": {
+      "versionLabel": "Comparação {{version}}"
+    },
     "errors": {
       "load": "Não foi possível carregar a Bíblia offline.",
-      "referenceNotFound": "Referência não encontrada na amostra offline."
+      "referenceNotFound": "Referência não encontrada na Bíblia offline."
     },
     "search": {
       "action": "Buscar referência",
       "placeholder": "Ex.: João 3:16",
       "referenceLabel": "Pesquisar referência bíblica"
+    },
+    "originalLanguages": {
+      "description": "WLC para hebraico/aramaico bíblico, Textus Receptus para grego koiné e transliteração local.",
+      "originalLabel": "{{language}} · {{version}}",
+      "title": "Idiomas originais",
+      "unavailable": "Texto original não disponível para este versículo."
+    },
+    "readingModes": {
+      "comparison": "Comparar",
+      "original": "Original",
+      "translation": "Tradução"
     }
   },
   "studies": {
@@ -51,8 +81,36 @@
   "notes": {
     "title": "Anotações",
     "subtitle": "Espaço reservado para suas anotações de estudo.",
+    "subtitleV03": "Organize anotações, marcações, tags, categorias e coleções.",
+    "category": "Categoria",
+    "categoryPlaceholder": "Ex.: Devocional",
+    "collectionName": "Nome da coleção",
+    "collectionPlaceholder": "Ex.: Promessas",
+    "collections": "Coleções de favoritos",
+    "content": "Conteúdo",
+    "contentPlaceholder": "Escreva sua observação de estudo",
+    "createCollection": "Criar coleção",
+    "defaultCategory": "Geral",
     "emptyTitle": "Anotações chegam em breve",
-    "emptyDescription": "O editor e a organização pessoal serão implementados na versão planejada."
+    "emptyDescription": "O editor e a organização pessoal serão implementados na versão planejada.",
+    "emptyDescriptionV03": "Nenhuma anotação encontrada.",
+    "emptyHighlights": "Nenhuma marcação encontrada.",
+    "errors": {
+      "load": "Não foi possível carregar sua organização pessoal.",
+      "required": "Informe título e conteúdo para salvar a anotação."
+    },
+    "export": "Exportar JSON",
+    "highlightCategory": "Estudo",
+    "highlights": "Marcações",
+    "newNote": "Nova anotação",
+    "save": "Salvar",
+    "savedNotes": "Anotações salvas",
+    "search": "Pesquisar",
+    "searchPlaceholder": "Buscar por título, conteúdo, tag ou categoria",
+    "tags": "Tags",
+    "tagsPlaceholder": "Ex.: fé, graça, sermão",
+    "titleLabel": "Título da anotação",
+    "titlePlaceholder": "Título"
   },
   "settings": {
     "title": "Mais",
@@ -62,6 +120,8 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.1.0, fundação técnica do projeto."
+    "aboutDescription": "Versão 0.5.0, Strong e interlinear inicial offline.",
+    "bibleLicense": "Licença da Bíblia",
+    "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }
 }

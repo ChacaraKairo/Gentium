@@ -23,6 +23,11 @@ export function SettingsScreen() {
         icon="information-circle-outline"
         title={t('settings.about')}
       />
+      <ListItem
+        description={t('settings.bibleLicenseDescription')}
+        icon="document-text-outline"
+        title={t('settings.bibleLicense')}
+      />
     </Screen>
   );
 }

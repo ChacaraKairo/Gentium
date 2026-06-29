@@ -107,6 +107,169 @@ const migrations: Migration[] = [
     name: 'legacy_seed_initial_sample_removed',
     up: async () => {},
   },
+  {
+    id: 4,
+    name: 'create_personal_organization_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS categories (
+          id TEXT PRIMARY KEY NOT NULL,
+          name TEXT NOT NULL,
+          scope TEXT NOT NULL,
+          color TEXT,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS tags (
+          id TEXT PRIMARY KEY NOT NULL,
+          name TEXT NOT NULL UNIQUE,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS collections (
+          id TEXT PRIMARY KEY NOT NULL,
+          name TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS notes (
+          id TEXT PRIMARY KEY NOT NULL,
+          verse_id TEXT,
+          title TEXT NOT NULL,
+          content TEXT NOT NULL,
+          category_id TEXT,
+          color TEXT,
+          is_favorite INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TEXT,
+          sync_status TEXT NOT NULL DEFAULT 'local',
+          FOREIGN KEY (verse_id) REFERENCES bible_verses(id) ON DELETE SET NULL,
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS note_tags (
+          note_id TEXT NOT NULL,
+          tag_id TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (note_id, tag_id),
+          FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
+          FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS highlights (
+          id TEXT PRIMARY KEY NOT NULL,
+          verse_id TEXT NOT NULL,
+          color TEXT NOT NULL,
+          category_id TEXT,
+          note TEXT,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          deleted_at TEXT,
+          sync_status TEXT NOT NULL DEFAULT 'local',
+          FOREIGN KEY (verse_id) REFERENCES bible_verses(id) ON DELETE CASCADE,
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS highlight_tags (
+          highlight_id TEXT NOT NULL,
+          tag_id TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (highlight_id, tag_id),
+          FOREIGN KEY (highlight_id) REFERENCES highlights(id) ON DELETE CASCADE,
+          FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_notes_verse ON notes(verse_id);
+        CREATE INDEX IF NOT EXISTS idx_notes_category ON notes(category_id);
+        CREATE INDEX IF NOT EXISTS idx_highlights_verse ON highlights(verse_id);
+        CREATE INDEX IF NOT EXISTS idx_highlights_category ON highlights(category_id);
+
+        INSERT OR IGNORE INTO collections (id, name) VALUES ('default-favorites', 'Favoritos');
+        INSERT OR IGNORE INTO categories (id, name, scope, color) VALUES
+          ('note-general', 'Geral', 'note', '#B88A44'),
+          ('highlight-study', 'Estudo', 'highlight', '#B88A44');
+      `);
+
+      const favoriteColumns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(favorites);');
+      const hasCollectionColumn = favoriteColumns.some((column) => column.name === 'collection_id');
+
+      if (!hasCollectionColumn) {
+        await database.execAsync('ALTER TABLE favorites ADD COLUMN collection_id TEXT;');
+        await database.runAsync(
+          'UPDATE favorites SET collection_id = ? WHERE collection_id IS NULL;',
+          ['default-favorites'],
+        );
+      }
+    },
+  },
+  {
+    id: 5,
+    name: 'create_original_language_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS original_language_versions (
+          id TEXT PRIMARY KEY NOT NULL,
+          name TEXT NOT NULL,
+          abbreviation TEXT NOT NULL,
+          language TEXT NOT NULL,
+          description TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS original_language_verses (
+          id TEXT PRIMARY KEY NOT NULL,
+          version_id TEXT NOT NULL,
+          language TEXT NOT NULL,
+          book_id TEXT NOT NULL,
+          chapter_number INTEGER NOT NULL,
+          verse_number INTEGER NOT NULL,
+          text TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (version_id) REFERENCES original_language_versions(id) ON DELETE CASCADE,
+          FOREIGN KEY (book_id) REFERENCES bible_books(id) ON DELETE CASCADE,
+          UNIQUE (version_id, book_id, chapter_number, verse_number)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_original_language_verses_reference
+          ON original_language_verses(book_id, chapter_number, verse_number);
+      `);
+    },
+  },
+  {
+    id: 6,
+    name: 'create_academic_tools_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS strong_lexicon (
+          number TEXT PRIMARY KEY NOT NULL,
+          language TEXT NOT NULL,
+          root_word TEXT NOT NULL,
+          normalized_root_word TEXT NOT NULL,
+          transliteration TEXT NOT NULL,
+          pronunciation TEXT,
+          morphology TEXT,
+          definition TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_strong_lexicon_language_root
+          ON strong_lexicon(language, normalized_root_word);
+
+        CREATE INDEX IF NOT EXISTS idx_strong_lexicon_transliteration
+          ON strong_lexicon(transliteration);
+      `);
+    },
+  },
 ];
 
 async function ensureMigrationTable(database: SQLiteDatabase) {

@@ -1,7 +1,15 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 
+import comparisonVersionsSeed from './seeds/comparisonVersions.json';
+import originalLanguagesSeed from './seeds/originalLanguages.json';
 import porBLivreSeed from './seeds/PorBLivre.json';
-import { BibleSeed } from './seeds/types';
+import strongLexiconSeed from './seeds/strongLexicon.json';
+import {
+  BibleSeed,
+  BibleVersionPackageSeed,
+  OriginalLanguagePackageSeed,
+  StrongLexiconPackageSeed,
+} from './seeds/types';
 
 type SeedBookMetadata = {
   abbreviation: string;
@@ -11,8 +19,17 @@ type SeedBookMetadata = {
 };
 
 const porBLivre = porBLivreSeed as BibleSeed;
+const comparisonVersions = comparisonVersionsSeed as BibleVersionPackageSeed;
+const originalLanguages = originalLanguagesSeed as OriginalLanguagePackageSeed;
+const strongLexicon = strongLexiconSeed as StrongLexiconPackageSeed;
 const biblePackageMetadataKey = 'bible_seed_package';
+const comparisonPackageMetadataKey = 'bible_comparison_seed_package';
+const originalLanguagePackageMetadataKey = 'bible_original_language_seed_package';
+const strongLexiconPackageMetadataKey = 'bible_strong_lexicon_seed_package';
 const porBLivrePackageVersion = 'PorBLivre-scrollmapper-master-a228a19a-2026-06-28';
+const comparisonPackageVersion = 'BibleSuperSearch-WEB-6.0-2026-06-28';
+const originalLanguagePackageVersion = 'BibleSuperSearch-WLC-TR-6.0-2026-06-28';
+const strongLexiconPackageVersion = 'BibleSuperSearch-Strong-6.0-2026-06-29';
 
 const books: SeedBookMetadata[] = [
   { abbreviation: 'Gn', id: 'gen', name: 'Gênesis', testament: 'old' },
@@ -84,89 +101,319 @@ const books: SeedBookMetadata[] = [
 ];
 
 export async function seedBiblePackage(database: SQLiteDatabase) {
-  const metadata = await database.getFirstAsync<{ value: string }>(
+  const bibleMetadata = await database.getFirstAsync<{ value: string }>(
     'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
     [biblePackageMetadataKey],
   );
+  const comparisonMetadata = await database.getFirstAsync<{ value: string }>(
+    'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
+    [comparisonPackageMetadataKey],
+  );
+  const originalLanguageMetadata = await database.getFirstAsync<{ value: string }>(
+    'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
+    [originalLanguagePackageMetadataKey],
+  );
+  const strongLexiconMetadata = await database.getFirstAsync<{ value: string }>(
+    'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
+    [strongLexiconPackageMetadataKey],
+  );
 
-  if (metadata?.value === porBLivrePackageVersion) {
+  if (
+    bibleMetadata?.value === porBLivrePackageVersion &&
+    comparisonMetadata?.value === comparisonPackageVersion &&
+    originalLanguageMetadata?.value === originalLanguagePackageVersion &&
+    strongLexiconMetadata?.value === strongLexiconPackageVersion
+  ) {
     return;
   }
 
   await database.withTransactionAsync(async () => {
-    await database.execAsync(`
-      DELETE FROM favorites;
-      DELETE FROM reading_history;
-      DELETE FROM bible_verses;
-      DELETE FROM bible_chapters;
-      DELETE FROM bible_books;
-      DELETE FROM bible_versions;
-    `);
+    if (bibleMetadata?.value !== porBLivrePackageVersion) {
+      await database.runAsync(
+        `
+          INSERT INTO bible_versions
+            (id, name, abbreviation, language, description, copyright, is_offline_available)
+          VALUES (?, ?, ?, ?, ?, ?, 1)
+          ON CONFLICT(id) DO UPDATE SET
+            name = excluded.name,
+            abbreviation = excluded.abbreviation,
+            language = excluded.language,
+            description = excluded.description,
+            copyright = excluded.copyright,
+            is_offline_available = excluded.is_offline_available,
+            updated_at = CURRENT_TIMESTAMP;
+        `,
+        [
+          'por-blivre',
+          'Bíblia Livre',
+          'PorBLivre',
+          'pt-BR',
+          'Bíblia Livre importada do projeto scrollmapper/bible_databases.',
+          'Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases.',
+        ],
+      );
 
+      for (const [index, metadata] of books.entries()) {
+        const sourceBook = porBLivre.books[index];
+
+        if (!sourceBook) {
+          continue;
+        }
+
+        await database.runAsync(
+          `
+            INSERT INTO bible_books (id, name, abbreviation, testament, position)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+              name = excluded.name,
+              abbreviation = excluded.abbreviation,
+              testament = excluded.testament,
+              position = excluded.position,
+              updated_at = CURRENT_TIMESTAMP;
+          `,
+          [metadata.id, metadata.name, metadata.abbreviation, metadata.testament, index + 1],
+        );
+
+        for (const chapter of sourceBook.chapters) {
+          const chapterId = `${metadata.id}-${chapter.chapter}`;
+          await database.runAsync(
+            `
+              INSERT INTO bible_chapters (id, book_id, chapter_number)
+              VALUES (?, ?, ?)
+              ON CONFLICT(id) DO UPDATE SET
+                book_id = excluded.book_id,
+                chapter_number = excluded.chapter_number,
+                updated_at = CURRENT_TIMESTAMP;
+            `,
+            [chapterId, metadata.id, chapter.chapter],
+          );
+
+          for (const verse of chapter.verses) {
+            await database.runAsync(
+              `
+                INSERT INTO bible_verses
+                  (id, version_id, book_id, chapter_id, verse_number, text)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                  version_id = excluded.version_id,
+                  book_id = excluded.book_id,
+                  chapter_id = excluded.chapter_id,
+                  verse_number = excluded.verse_number,
+                  text = excluded.text,
+                  updated_at = CURRENT_TIMESTAMP;
+              `,
+              [
+                `por-blivre-${metadata.id}-${chapter.chapter}-${verse.verse}`,
+                'por-blivre',
+                metadata.id,
+                chapterId,
+                verse.verse,
+                verse.text,
+              ],
+            );
+          }
+        }
+      }
+
+      await database.runAsync(
+        `
+          INSERT INTO app_metadata (key, value)
+          VALUES (?, ?)
+          ON CONFLICT(key) DO UPDATE SET
+            value = excluded.value,
+            updated_at = CURRENT_TIMESTAMP;
+        `,
+        [biblePackageMetadataKey, porBLivrePackageVersion],
+      );
+    }
+
+    if (comparisonMetadata?.value !== comparisonPackageVersion) {
+      await seedComparisonVersions(database);
+      await setMetadata(database, comparisonPackageMetadataKey, comparisonPackageVersion);
+    }
+
+    if (originalLanguageMetadata?.value !== originalLanguagePackageVersion) {
+      await seedOriginalLanguages(database);
+      await setMetadata(database, originalLanguagePackageMetadataKey, originalLanguagePackageVersion);
+    }
+
+    if (strongLexiconMetadata?.value !== strongLexiconPackageVersion) {
+      await seedStrongLexicon(database);
+      await setMetadata(database, strongLexiconPackageMetadataKey, strongLexiconPackageVersion);
+    }
+  });
+}
+
+async function seedComparisonVersions(database: SQLiteDatabase) {
+  for (const version of comparisonVersions.versions) {
     await database.runAsync(
       `
         INSERT INTO bible_versions
           (id, name, abbreviation, language, description, copyright, is_offline_available)
-        VALUES (?, ?, ?, ?, ?, ?, 1);
-      `,
-      [
-        'por-blivre',
-        'Bíblia Livre',
-        'PorBLivre',
-        'pt-BR',
-        'Bíblia Livre importada do projeto scrollmapper/bible_databases.',
-        'Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases.',
-      ],
-    );
-
-    for (const [index, metadata] of books.entries()) {
-      const sourceBook = porBLivre.books[index];
-
-      if (!sourceBook) {
-        continue;
-      }
-
-      await database.runAsync(
-        'INSERT INTO bible_books (id, name, abbreviation, testament, position) VALUES (?, ?, ?, ?, ?);',
-        [metadata.id, metadata.name, metadata.abbreviation, metadata.testament, index + 1],
-      );
-
-      for (const chapter of sourceBook.chapters) {
-        const chapterId = `${metadata.id}-${chapter.chapter}`;
-        await database.runAsync(
-          'INSERT INTO bible_chapters (id, book_id, chapter_number) VALUES (?, ?, ?);',
-          [chapterId, metadata.id, chapter.chapter],
-        );
-
-        for (const verse of chapter.verses) {
-          await database.runAsync(
-            `
-              INSERT INTO bible_verses
-                (id, version_id, book_id, chapter_id, verse_number, text)
-              VALUES (?, ?, ?, ?, ?, ?);
-            `,
-            [
-              `por-blivre-${metadata.id}-${chapter.chapter}-${verse.verse}`,
-              'por-blivre',
-              metadata.id,
-              chapterId,
-              verse.verse,
-              verse.text,
-            ],
-          );
-        }
-      }
-    }
-
-    await database.runAsync(
-      `
-        INSERT INTO app_metadata (key, value)
-        VALUES (?, ?)
-        ON CONFLICT(key) DO UPDATE SET
-          value = excluded.value,
+        VALUES (?, ?, ?, ?, ?, ?, 1)
+        ON CONFLICT(id) DO UPDATE SET
+          name = excluded.name,
+          abbreviation = excluded.abbreviation,
+          language = excluded.language,
+          description = excluded.description,
+          copyright = excluded.copyright,
+          is_offline_available = excluded.is_offline_available,
           updated_at = CURRENT_TIMESTAMP;
       `,
-      [biblePackageMetadataKey, porBLivrePackageVersion],
+      [
+        version.id,
+        version.name,
+        version.abbreviation,
+        version.language,
+        version.description,
+        'Fonte: Bible SuperSearch Bible Downloads.',
+      ],
     );
-  });
+  }
+
+  for (const verse of comparisonVersions.verses) {
+    await seedBibleVerse(database, verse.versionId, verse.bookId, verse.chapter, verse.verse, verse.text);
+  }
+}
+
+async function seedOriginalLanguages(database: SQLiteDatabase) {
+  for (const version of originalLanguages.versions) {
+    await database.runAsync(
+      `
+        INSERT INTO original_language_versions
+          (id, name, abbreviation, language, description)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          name = excluded.name,
+          abbreviation = excluded.abbreviation,
+          language = excluded.language,
+          description = excluded.description,
+          updated_at = CURRENT_TIMESTAMP;
+      `,
+      [version.id, version.name, version.abbreviation, version.language, version.description],
+    );
+  }
+
+  for (const verse of originalLanguages.verses) {
+    await database.runAsync(
+      `
+        INSERT INTO original_language_verses
+          (id, version_id, language, book_id, chapter_number, verse_number, text)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          version_id = excluded.version_id,
+          language = excluded.language,
+          book_id = excluded.book_id,
+          chapter_number = excluded.chapter_number,
+          verse_number = excluded.verse_number,
+          text = excluded.text,
+          updated_at = CURRENT_TIMESTAMP;
+      `,
+      [
+        `${verse.versionId}-${verse.bookId}-${verse.chapter}-${verse.verse}`,
+        verse.versionId,
+        verse.language,
+        verse.bookId,
+        verse.chapter,
+        verse.verse,
+        verse.text,
+      ],
+    );
+  }
+}
+
+async function seedStrongLexicon(database: SQLiteDatabase) {
+  for (const entry of strongLexicon.entries) {
+    await database.runAsync(
+      `
+        INSERT INTO strong_lexicon
+          (
+            number,
+            language,
+            root_word,
+            normalized_root_word,
+            transliteration,
+            pronunciation,
+            morphology,
+            definition
+          )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(number) DO UPDATE SET
+          language = excluded.language,
+          root_word = excluded.root_word,
+          normalized_root_word = excluded.normalized_root_word,
+          transliteration = excluded.transliteration,
+          pronunciation = excluded.pronunciation,
+          morphology = excluded.morphology,
+          definition = excluded.definition,
+          updated_at = CURRENT_TIMESTAMP;
+      `,
+      [
+        entry.number,
+        entry.language,
+        entry.rootWord,
+        normalizeOriginalWord(entry.rootWord, entry.language),
+        entry.transliteration,
+        entry.pronunciation || null,
+        entry.morphology || null,
+        entry.definition,
+      ],
+    );
+  }
+}
+
+async function seedBibleVerse(
+  database: SQLiteDatabase,
+  versionId: string,
+  bookId: string,
+  chapterNumber: number,
+  verseNumber: number,
+  text: string,
+) {
+  const chapterId = `${bookId}-${chapterNumber}`;
+
+  await database.runAsync(
+    `
+      INSERT INTO bible_verses
+        (id, version_id, book_id, chapter_id, verse_number, text)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        version_id = excluded.version_id,
+        book_id = excluded.book_id,
+        chapter_id = excluded.chapter_id,
+        verse_number = excluded.verse_number,
+        text = excluded.text,
+        updated_at = CURRENT_TIMESTAMP;
+    `,
+    [`${versionId}-${bookId}-${chapterNumber}-${verseNumber}`, versionId, bookId, chapterId, verseNumber, text],
+  );
+}
+
+async function setMetadata(database: SQLiteDatabase, key: string, value: string) {
+  await database.runAsync(
+    `
+      INSERT INTO app_metadata (key, value)
+      VALUES (?, ?)
+      ON CONFLICT(key) DO UPDATE SET
+        value = excluded.value,
+        updated_at = CURRENT_TIMESTAMP;
+    `,
+    [key, value],
+  );
+}
+
+function normalizeOriginalWord(value: string, language: 'grc' | 'he') {
+  const normalized = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C7]/g, '')
+    .replace(/[׃׀־.,;:!?()[\]{}"']/g, '')
+    .trim()
+    .toLocaleLowerCase();
+
+  if (language === 'grc') {
+    return normalized.replace(/[᾽ʼ’]/g, '');
+  }
+
+  return normalized;
 }

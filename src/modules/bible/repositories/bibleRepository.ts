@@ -1,5 +1,15 @@
 import { getDatabase } from '@/infrastructure/database/database';
-import { BibleBook, BibleChapter, BibleVerse, ReadingLocation } from '@/modules/bible/types';
+import {
+  BibleBook,
+  BibleChapter,
+  BibleVerse,
+  BibleVerseComparison,
+  InterlinearWord,
+  OriginalLanguageCode,
+  OriginalLanguageVerse,
+  ReadingLocation,
+  StrongLexiconEntry,
+} from '@/modules/bible/types';
 
 type BookRow = {
   abbreviation: string;
@@ -21,8 +31,10 @@ type VerseRow = {
   book_name: string;
   chapter_id: string;
   chapter_number: number;
+  highlight_color: string | null;
   id: string;
   is_favorite: number;
+  notes_count: number;
   text: string;
   verse_number: number;
   version_id: string;
@@ -34,8 +46,35 @@ type ReadingHistoryRow = {
   verse_id: string | null;
 };
 
+type OriginalVerseRow = {
+  language: OriginalLanguageCode;
+  text: string;
+  verse_number: number;
+  version_abbreviation: string;
+  version_id: string;
+};
+
+type ComparisonVerseRow = {
+  text: string;
+  verse_number: number;
+  version_abbreviation: string;
+  version_id: string;
+};
+
+type StrongLexiconRow = {
+  definition: string;
+  language: OriginalLanguageCode;
+  morphology: string | null;
+  number: string;
+  pronunciation: string | null;
+  root_word: string;
+  transliteration: string;
+};
+
 const defaultVersionId = 'por-blivre';
+const comparisonVersionId = 'web';
 const lastReadingId = 'last-reading';
+const defaultCollectionId = 'default-favorites';
 
 export async function getBibleBooks(): Promise<BibleBook[]> {
   const database = await getDatabase();
@@ -80,7 +119,19 @@ export async function getChapterVerses(chapterId: string): Promise<BibleVerse[]>
         chapters.chapter_number,
         verses.verse_number,
         verses.text,
-        CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite
+        CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite,
+        (
+          SELECT highlights.color
+          FROM highlights
+          WHERE highlights.verse_id = verses.id AND highlights.deleted_at IS NULL
+          ORDER BY highlights.updated_at DESC
+          LIMIT 1
+        ) AS highlight_color,
+        (
+          SELECT COUNT(*)
+          FROM notes
+          WHERE notes.verse_id = verses.id AND notes.deleted_at IS NULL
+        ) AS notes_count
       FROM bible_verses verses
       INNER JOIN bible_books books ON books.id = verses.book_id
       INNER JOIN bible_chapters chapters ON chapters.id = verses.chapter_id
@@ -92,6 +143,103 @@ export async function getChapterVerses(chapterId: string): Promise<BibleVerse[]>
   );
 
   return rows.map(mapVerseRow);
+}
+
+export async function getChapterOriginalVerses(
+  bookId: string,
+  chapterNumber: number,
+): Promise<OriginalLanguageVerse[]> {
+  const database = await getDatabase();
+  const rows = await database.getAllAsync<OriginalVerseRow>(
+    `
+      SELECT
+        verses.version_id,
+        versions.abbreviation AS version_abbreviation,
+        verses.language,
+        verses.verse_number,
+        verses.text
+      FROM original_language_verses verses
+      INNER JOIN original_language_versions versions ON versions.id = verses.version_id
+      WHERE verses.book_id = ? AND verses.chapter_number = ?
+      ORDER BY verses.verse_number ASC;
+    `,
+    [bookId, chapterNumber],
+  );
+  const lexiconByWord = await getLexiconByOriginalWords(
+    rows.flatMap((row) => tokenizeOriginalText(row.text).map((word) => ({
+      language: getLexiconLanguage(row.language),
+      normalized: normalizeOriginalWord(word, row.language),
+    }))),
+  );
+
+  return rows.map((row) => ({
+    interlinearWords: createInterlinearWords(row.text, row.language, lexiconByWord),
+    language: row.language,
+    languageName: getOriginalLanguageName(row.language),
+    text: row.text,
+    transliteration: transliterateOriginalText(row.text, row.language),
+    verseNumber: row.verse_number,
+    versionAbbreviation: row.version_abbreviation,
+    versionId: row.version_id,
+  }));
+}
+
+export async function searchStrongLexicon(query: string): Promise<StrongLexiconEntry[]> {
+  const database = await getDatabase();
+  const normalizedQuery = query.trim();
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const strongNumber = normalizedQuery.toLocaleUpperCase();
+  const normalizedWord = normalizeOriginalWord(normalizedQuery, getLanguageFromStrongNumber(strongNumber));
+  const rows = await database.getAllAsync<StrongLexiconRow>(
+    `
+      SELECT
+        number,
+        language,
+        root_word,
+        transliteration,
+        pronunciation,
+        morphology,
+        definition
+      FROM strong_lexicon
+      WHERE number = ?
+        OR normalized_root_word = ?
+        OR LOWER(transliteration) LIKE ?
+      ORDER BY number ASC
+      LIMIT 24;
+    `,
+    [strongNumber, normalizedWord, `%${normalizedQuery.toLocaleLowerCase()}%`],
+  );
+
+  return rows.map(mapStrongLexiconRow);
+}
+
+export async function getChapterComparisonVerses(chapterId: string): Promise<BibleVerseComparison[]> {
+  const database = await getDatabase();
+  const rows = await database.getAllAsync<ComparisonVerseRow>(
+    `
+      SELECT
+        verses.version_id,
+        versions.abbreviation AS version_abbreviation,
+        verses.verse_number,
+        verses.text
+      FROM bible_verses verses
+      INNER JOIN bible_versions versions ON versions.id = verses.version_id
+      WHERE verses.chapter_id = ? AND verses.version_id = ?
+      ORDER BY verses.verse_number ASC;
+    `,
+    [chapterId, comparisonVersionId],
+  );
+
+  return rows.map((row) => ({
+    text: row.text,
+    verseNumber: row.verse_number,
+    versionAbbreviation: row.version_abbreviation,
+    versionId: row.version_id,
+  }));
 }
 
 export async function getFavoriteVerses(): Promise<BibleVerse[]> {
@@ -108,14 +256,27 @@ export async function getFavoriteVerses(): Promise<BibleVerse[]> {
         chapters.chapter_number,
         verses.verse_number,
         verses.text,
-        1 AS is_favorite
+        1 AS is_favorite,
+        (
+          SELECT highlights.color
+          FROM highlights
+          WHERE highlights.verse_id = verses.id AND highlights.deleted_at IS NULL
+          ORDER BY highlights.updated_at DESC
+          LIMIT 1
+        ) AS highlight_color,
+        (
+          SELECT COUNT(*)
+          FROM notes
+          WHERE notes.verse_id = verses.id AND notes.deleted_at IS NULL
+        ) AS notes_count
       FROM favorites
       INNER JOIN bible_verses verses ON verses.id = favorites.verse_id
       INNER JOIN bible_books books ON books.id = verses.book_id
       INNER JOIN bible_chapters chapters ON chapters.id = verses.chapter_id
-      WHERE favorites.deleted_at IS NULL
+      WHERE favorites.deleted_at IS NULL AND verses.version_id = ?
       ORDER BY favorites.updated_at DESC, favorites.created_at DESC;
     `,
+    [defaultVersionId],
   );
 
   return rows.map(mapVerseRow);
@@ -129,9 +290,10 @@ export async function toggleFavorite(verseId: string): Promise<boolean> {
   );
 
   if (!favorite) {
-    await database.runAsync('INSERT INTO favorites (id, verse_id) VALUES (?, ?);', [
+    await database.runAsync('INSERT INTO favorites (id, verse_id, collection_id) VALUES (?, ?, ?);', [
       `favorite-${verseId}`,
       verseId,
+      defaultCollectionId,
     ]);
     return true;
   }
@@ -207,7 +369,19 @@ export async function findReference(query: string): Promise<BibleVerse | null> {
         chapters.chapter_number,
         verses.verse_number,
         verses.text,
-        CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite
+        CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite,
+        (
+          SELECT highlights.color
+          FROM highlights
+          WHERE highlights.verse_id = verses.id AND highlights.deleted_at IS NULL
+          ORDER BY highlights.updated_at DESC
+          LIMIT 1
+        ) AS highlight_color,
+        (
+          SELECT COUNT(*)
+          FROM notes
+          WHERE notes.verse_id = verses.id AND notes.deleted_at IS NULL
+        ) AS notes_count
       FROM bible_verses verses
       INNER JOIN bible_books books ON books.id = verses.book_id
       INNER JOIN bible_chapters chapters ON chapters.id = verses.chapter_id
@@ -240,13 +414,275 @@ function mapVerseRow(row: VerseRow): BibleVerse {
     bookName: row.book_name,
     chapterId: row.chapter_id,
     chapterNumber: row.chapter_number,
+    highlightColor: row.highlight_color ?? undefined,
     id: row.id,
     isFavorite: row.is_favorite === 1,
+    notesCount: row.notes_count,
     text: row.text,
     verseNumber: row.verse_number,
     versionId: row.version_id,
   };
 }
+
+function getOriginalLanguageName(language: OriginalLanguageCode) {
+  if (language === 'grc') {
+    return 'Grego koiné';
+  }
+
+  if (language === 'arc') {
+    return 'Aramaico bíblico';
+  }
+
+  return 'Hebraico bíblico';
+}
+
+function transliterateOriginalText(text: string, language: OriginalLanguageCode) {
+  if (language === 'grc') {
+    return transliterateGreek(text);
+  }
+
+  return transliterateHebrew(text);
+}
+
+async function getLexiconByOriginalWords(
+  words: { language: 'grc' | 'he'; normalized: string }[],
+): Promise<Map<string, StrongLexiconEntry>> {
+  const uniqueWords = Array.from(
+    new Map(
+      words
+        .filter((word) => word.normalized)
+        .map((word) => [`${word.language}:${word.normalized}`, word]),
+    ).values(),
+  );
+
+  if (!uniqueWords.length) {
+    return new Map();
+  }
+
+  const database = await getDatabase();
+  const conditions = uniqueWords.map(() => '(language = ? AND normalized_root_word = ?)').join(' OR ');
+  const parameters = uniqueWords.flatMap((word) => [word.language, word.normalized]);
+  const rows = await database.getAllAsync<StrongLexiconRow>(
+    `
+      SELECT
+        number,
+        language,
+        root_word,
+        transliteration,
+        pronunciation,
+        morphology,
+        definition
+      FROM strong_lexicon
+      WHERE ${conditions}
+      ORDER BY number ASC;
+    `,
+    parameters,
+  );
+
+  const entries = new Map<string, StrongLexiconEntry>();
+
+  for (const row of rows) {
+    const entry = mapStrongLexiconRow(row);
+    const key = `${getLexiconLanguage(entry.language)}:${normalizeOriginalWord(entry.rootWord, entry.language)}`;
+
+    if (!entries.has(key)) {
+      entries.set(key, entry);
+    }
+  }
+
+  return entries;
+}
+
+function createInterlinearWords(
+  text: string,
+  language: OriginalLanguageCode,
+  lexiconByWord: Map<string, StrongLexiconEntry>,
+): InterlinearWord[] {
+  return tokenizeOriginalText(text).map((word, index) => {
+    const normalized = normalizeOriginalWord(word, language);
+    const strong = lexiconByWord.get(`${getLexiconLanguage(language)}:${normalized}`);
+
+    return {
+      id: `${index}-${word}`,
+      original: word,
+      position: index + 1,
+      strong,
+      transliteration: strong?.transliteration || transliterateOriginalText(word, language),
+    };
+  });
+}
+
+function tokenizeOriginalText(text: string) {
+  return text
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean);
+}
+
+function normalizeOriginalWord(value: string, language: OriginalLanguageCode) {
+  const normalized = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C7]/g, '')
+    .replace(/[׃׀־.,;:!?()[\]{}"']/g, '')
+    .trim()
+    .toLocaleLowerCase();
+
+  if (language === 'grc') {
+    return normalized.replace(/[᾽ʼ’]/g, '');
+  }
+
+  return normalized;
+}
+
+function getLexiconLanguage(language: OriginalLanguageCode): 'grc' | 'he' {
+  return language === 'grc' ? 'grc' : 'he';
+}
+
+function getLanguageFromStrongNumber(value: string): OriginalLanguageCode {
+  return value.startsWith('G') ? 'grc' : 'he';
+}
+
+function mapStrongLexiconRow(row: StrongLexiconRow): StrongLexiconEntry {
+  return {
+    definition: row.definition,
+    language: row.language,
+    morphology: row.morphology ?? undefined,
+    number: row.number,
+    pronunciation: row.pronunciation ?? undefined,
+    rootWord: row.root_word,
+    transliteration: row.transliteration,
+  };
+}
+
+function transliterateHebrew(text: string) {
+  const normalized = text.normalize('NFD');
+  let output = '';
+
+  for (const character of normalized) {
+    if (isHebrewMark(character)) {
+      continue;
+    }
+
+    output += hebrewTransliteration[character] ?? character;
+  }
+
+  return cleanTransliteration(output);
+}
+
+function transliterateGreek(text: string) {
+  const normalized = text.normalize('NFD');
+  let output = '';
+
+  for (const character of normalized) {
+    if (isCombiningMark(character)) {
+      continue;
+    }
+
+    output += greekTransliteration[character] ?? character;
+  }
+
+  return cleanTransliteration(output);
+}
+
+function isHebrewMark(character: string) {
+  const code = character.charCodeAt(0);
+  return (code >= 0x0591 && code <= 0x05bd) || code === 0x05bf || (code >= 0x05c1 && code <= 0x05c7);
+}
+
+function isCombiningMark(character: string) {
+  const code = character.charCodeAt(0);
+  return code >= 0x0300 && code <= 0x036f;
+}
+
+function cleanTransliteration(value: string) {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+const hebrewTransliteration: Record<string, string> = {
+  'א': "'",
+  'ב': 'b',
+  'ג': 'g',
+  'ד': 'd',
+  'ה': 'h',
+  'ו': 'w',
+  'ז': 'z',
+  'ח': 'ch',
+  'ט': 't',
+  'י': 'y',
+  'ך': 'k',
+  'כ': 'k',
+  'ל': 'l',
+  'ם': 'm',
+  'מ': 'm',
+  'ן': 'n',
+  'נ': 'n',
+  'ס': 's',
+  'ע': "'",
+  'ף': 'p',
+  'פ': 'p',
+  'ץ': 'ts',
+  'צ': 'ts',
+  'ק': 'q',
+  'ר': 'r',
+  'ש': 'sh',
+  'ת': 't',
+  '׃': '',
+  '׀': '',
+  '־': '-',
+};
+
+const greekTransliteration: Record<string, string> = {
+  'Α': 'A',
+  'α': 'a',
+  'Β': 'B',
+  'β': 'b',
+  'Γ': 'G',
+  'γ': 'g',
+  'Δ': 'D',
+  'δ': 'd',
+  'Ε': 'E',
+  'ε': 'e',
+  'Ζ': 'Z',
+  'ζ': 'z',
+  'Η': 'E',
+  'η': 'e',
+  'Θ': 'Th',
+  'θ': 'th',
+  'Ι': 'I',
+  'ι': 'i',
+  'Κ': 'K',
+  'κ': 'k',
+  'Λ': 'L',
+  'λ': 'l',
+  'Μ': 'M',
+  'μ': 'm',
+  'Ν': 'N',
+  'ν': 'n',
+  'Ξ': 'X',
+  'ξ': 'x',
+  'Ο': 'O',
+  'ο': 'o',
+  'Π': 'P',
+  'π': 'p',
+  'Ρ': 'R',
+  'ρ': 'r',
+  'Σ': 'S',
+  'σ': 's',
+  'ς': 's',
+  'Τ': 'T',
+  'τ': 't',
+  'Υ': 'Y',
+  'υ': 'y',
+  'Φ': 'Ph',
+  'φ': 'ph',
+  'Χ': 'Ch',
+  'χ': 'ch',
+  'Ψ': 'Ps',
+  'ψ': 'ps',
+  'Ω': 'O',
+  'ω': 'o',
+};
 
 function parseReference(query: string) {
   const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');

@@ -1,0 +1,372 @@
+{
+  "generatedAt": "2026-06-28",
+  "sources": {
+    "biblesupersearch": {
+      "name": "Bible SuperSearch Bible Downloads",
+      "downloadPage": "https://www.biblesupersearch.com/bible-downloads/",
+      "sqliteArchive": "https://downloads.biblesupersearch.com/bibles/sqlite/bibles_sqlite_6.0.zip",
+      "csvArchive": "https://downloads.biblesupersearch.com/bibles/csv/bibles_csv_6.0.zip",
+      "licenseNote": "Bible SuperSearch declara compartilhamento e redistribuicao para uso nao comercial; verificar copyright interno de cada modulo."
+    },
+    "scrollmapper": {
+      "name": "scrollmapper/bible_databases",
+      "repository": "https://github.com/scrollmapper/bible_databases.git",
+      "branch": "2025",
+      "licenseFile": "scrollmapper/docs/LICENSE.md",
+      "licenseNote": "Projeto distribuido sob MIT conforme arquivo de licenca copiado."
+    }
+  },
+  "packages": [
+    {
+      "id": "pt.almeida_ra.bss",
+      "language": "pt",
+      "layer": "portuguese",
+      "source": "biblesupersearch",
+      "abbreviation": "JFA-RA",
+      "name": "Traducao de Joao Ferreira de Almeida (Versao Revista e Atualizada)",
+      "path": "biblesupersearch/sqlite/pt/almeida_ra.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "pt.almeida_rc.bss",
+      "language": "pt",
+      "layer": "portuguese",
+      "source": "biblesupersearch",
+      "abbreviation": "JFA-RC",
+      "name": "Traducao de Joao Ferreira de Almeida Revista e Corrigida",
+      "path": "biblesupersearch/sqlite/pt/almeida_rc.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "pt.blivre.bss",
+      "language": "pt",
+      "layer": "portuguese",
+      "source": "biblesupersearch",
+      "abbreviation": "Biblia Livre",
+      "name": "Biblia Livre",
+      "path": "biblesupersearch/sqlite/pt/blivre.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.kjv.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "KJV",
+      "name": "Authorized King James Version",
+      "path": "biblesupersearch/sqlite/en/kjv.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.kjv_strongs.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "KJV Strongs",
+      "name": "KJV with Strongs",
+      "path": "biblesupersearch/sqlite/en/kjv_strongs.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "features": ["strong"],
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.asv.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "ASV",
+      "name": "American Standard Version",
+      "path": "biblesupersearch/sqlite/en/asv.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.asvs.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "ASVs",
+      "name": "American Standard Version w Strong's",
+      "path": "biblesupersearch/sqlite/en/asvs.sqlite",
+      "format": "sqlite",
+      "verses": 31086,
+      "features": ["strong"],
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.web.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "WEB",
+      "name": "World English Bible",
+      "path": "biblesupersearch/sqlite/en/web.sqlite",
+      "format": "sqlite",
+      "verses": 31103,
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.net.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "NET",
+      "name": "NET Bible",
+      "path": "biblesupersearch/sqlite/en/net.sqlite",
+      "format": "sqlite",
+      "verses": 31087,
+      "licenseCaution": true,
+      "copyrightFlag": false
+    },
+    {
+      "id": "en.geneva.bss",
+      "language": "en",
+      "layer": "english",
+      "source": "biblesupersearch",
+      "abbreviation": "Geneva",
+      "name": "Geneva Bible",
+      "path": "biblesupersearch/sqlite/en/geneva.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "es.rv_1909.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "RV 1909",
+      "name": "Reina Valera 1909",
+      "path": "biblesupersearch/sqlite/es/rv_1909.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "es.rv_1909_strongs.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "RV1909 S",
+      "name": "Reina-Valera 1909 w/Strong's",
+      "path": "biblesupersearch/sqlite/es/rv_1909_strongs.sqlite",
+      "format": "sqlite",
+      "verses": 31103,
+      "features": ["strong"],
+      "copyrightFlag": false
+    },
+    {
+      "id": "es.rvg.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "RVG",
+      "name": "Reina Valera Gomez",
+      "path": "biblesupersearch/sqlite/es/rvg.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "licenseCaution": true,
+      "copyrightFlag": true
+    },
+    {
+      "id": "es.rvg_2004.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "RVG 2004",
+      "name": "Reina Valera Gomez (2004)",
+      "path": "biblesupersearch/sqlite/es/rvg_2004.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "licenseCaution": true,
+      "copyrightFlag": true
+    },
+    {
+      "id": "es.rv_1858.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "RV 1858",
+      "name": "Reina Valera 1858 NT",
+      "path": "biblesupersearch/sqlite/es/rv_1858.sqlite",
+      "format": "sqlite",
+      "verses": 7957,
+      "scope": "new_testament",
+      "copyrightFlag": false
+    },
+    {
+      "id": "es.sagradas.bss",
+      "language": "es",
+      "layer": "spanish",
+      "source": "biblesupersearch",
+      "abbreviation": "Sagradas",
+      "name": "Sagradas Escrituras",
+      "path": "biblesupersearch/sqlite/es/sagradas.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "copyrightFlag": false
+    },
+    {
+      "id": "original.he.wlc.bss",
+      "language": "he",
+      "layer": "original",
+      "source": "biblesupersearch",
+      "abbreviation": "WLC",
+      "name": "Westminster Leningrad Codex",
+      "path": "biblesupersearch/sqlite/original/wlc.sqlite",
+      "format": "sqlite",
+      "verses": 23213,
+      "scope": "old_testament",
+      "features": ["hebrew"]
+    },
+    {
+      "id": "original.grc.tr.bss",
+      "language": "grc",
+      "layer": "original",
+      "source": "biblesupersearch",
+      "abbreviation": "TR",
+      "name": "Textus Receptus NT",
+      "path": "biblesupersearch/sqlite/original/tr.sqlite",
+      "format": "sqlite",
+      "verses": 7958,
+      "scope": "new_testament",
+      "features": ["greek"]
+    },
+    {
+      "id": "original.grc.trparsed.bss",
+      "language": "grc",
+      "layer": "original",
+      "source": "biblesupersearch",
+      "abbreviation": "TR Parsed",
+      "name": "Textus Receptus Parsed NT",
+      "path": "biblesupersearch/sqlite/original/trparsed.sqlite",
+      "format": "sqlite",
+      "verses": 7958,
+      "scope": "new_testament",
+      "features": ["greek", "morphology"]
+    },
+    {
+      "id": "original.he.modern.bss",
+      "language": "he",
+      "layer": "original",
+      "source": "biblesupersearch",
+      "abbreviation": "Hebrew Modern",
+      "name": "Tanakh Hebraico Moderno",
+      "path": "biblesupersearch/sqlite/original/he_modern.sqlite",
+      "format": "sqlite",
+      "verses": 31102,
+      "features": ["hebrew"]
+    },
+    {
+      "id": "en.kjv.scrollmapper",
+      "language": "en",
+      "layer": "english",
+      "source": "scrollmapper",
+      "abbreviation": "KJV",
+      "name": "King James Version (1769) with Strongs Numbers and Morphology and CatchWords",
+      "path": "scrollmapper/sqlite/en/KJV.db",
+      "format": "sqlite",
+      "features": ["strong", "morphology"]
+    },
+    {
+      "id": "en.asv.scrollmapper",
+      "language": "en",
+      "layer": "english",
+      "source": "scrollmapper",
+      "abbreviation": "ASV",
+      "name": "American Standard Version (1901)",
+      "path": "scrollmapper/sqlite/en/ASV.db",
+      "format": "sqlite"
+    },
+    {
+      "id": "en.geneva1599.scrollmapper",
+      "language": "en",
+      "layer": "english",
+      "source": "scrollmapper",
+      "abbreviation": "Geneva1599",
+      "name": "Geneva Bible (1599)",
+      "path": "scrollmapper/sqlite/en/Geneva1599.db",
+      "format": "sqlite"
+    },
+    {
+      "id": "original.hbo.wlc.scrollmapper",
+      "language": "hbo",
+      "layer": "original",
+      "source": "scrollmapper",
+      "abbreviation": "WLC",
+      "name": "Westminster Leningrad Codex",
+      "path": "scrollmapper/sqlite/original/WLC.db",
+      "format": "sqlite",
+      "features": ["hebrew"]
+    }
+  ],
+  "resources": [
+    {
+      "id": "strongs.definitions.bss",
+      "source": "biblesupersearch",
+      "path": "resources/strong/strongs_definitions.csv",
+      "format": "csv",
+      "rowsIncludingHeader": 15145
+    },
+    {
+      "id": "books.pt.bss",
+      "source": "biblesupersearch",
+      "path": "resources/books/books_pt.csv",
+      "format": "csv",
+      "rowsIncludingHeader": 67
+    },
+    {
+      "id": "books.en.bss",
+      "source": "biblesupersearch",
+      "path": "resources/books/books_en.csv",
+      "format": "csv",
+      "rowsIncludingHeader": 67
+    },
+    {
+      "id": "books.es.bss",
+      "source": "biblesupersearch",
+      "path": "resources/books/books_es.csv",
+      "format": "csv",
+      "rowsIncludingHeader": 67
+    },
+    {
+      "id": "books.he.bss",
+      "source": "biblesupersearch",
+      "path": "resources/books/books_he.csv",
+      "format": "csv",
+      "rowsIncludingHeader": 67
+    }
+  ],
+  "notIncluded": [
+    {
+      "id": "pt.naa",
+      "reason": "Nao encontrada nas fontes baixadas; exige verificacao de licenca antes de distribuir."
+    },
+    {
+      "id": "pt.ntlh",
+      "reason": "Licenca restrita; nao incluida."
+    },
+    {
+      "id": "pt.almeida_seculo_21",
+      "reason": "Nao encontrada nas fontes baixadas; exige verificacao de licenca antes de distribuir."
+    },
+    {
+      "id": "original.aramaic",
+      "reason": "Nao havia modulo aramaico separado nos pacotes verificados; trechos aramaicos podem estar contidos nos textos hebraicos conforme a fonte."
+    },
+    {
+      "id": "transliteration.hebrew_greek",
+      "reason": "Nao havia pacote dedicado de transliteracao nos downloads verificados."
+    }
+  ]
+}

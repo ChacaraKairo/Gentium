@@ -1,7 +1,8 @@
 {
   "common": {
     "back": "Back",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "retry": "Try again"
   },
   "tabs": {
     "home": "Home",
@@ -21,25 +22,54 @@
   },
   "bible": {
     "title": "Bible",
-    "subtitle": "Initial offline reading with book and chapter navigation.",
+    "subtitle": "Offline reading with original languages, Strong, and initial interlinear.",
     "emptyTitle": "Bible library in preparation",
     "emptyDescription": "Books, chapters, and verses arrive in v0.2.0.",
     "chapter": "Chapter {{chapter}}",
     "continueReading": "Continue latest reading",
     "favorite": "Favorite verse",
     "favoritesTitle": "Favorites",
+    "highlighted": "Highlighted verse",
+    "highlightWithColor": "Highlight verse with color",
     "newTestament": "New Testament",
+    "note": "Create note",
+    "notesCount": "{{count}} note",
+    "notesCount_plural": "{{count}} notes",
     "oldTestament": "Old Testament",
     "share": "Share verse",
-    "versionNotice": "PorBLivre - complete offline Bíblia Livre package.",
+    "versionNotice": "PorBLivre with original text, transliteration, WEB comparison, and Strong lexicon.",
+    "academicTools": {
+      "morphology": "Morphology: {{morphology}}",
+      "noStrongMatch": "There is no Strong link for this form in the local lexicon yet.",
+      "pronunciation": "Pronunciation: {{pronunciation}}",
+      "searchAction": "Search Strong",
+      "searchLabel": "Search Strong or original word",
+      "searchPlaceholder": "E.g. H7225, G25, αγαπη",
+      "title": "Academic tools",
+      "wordPanelTitle": "Original word"
+    },
+    "comparison": {
+      "versionLabel": "{{version}} comparison"
+    },
     "errors": {
       "load": "Could not load the offline Bible.",
-      "referenceNotFound": "Reference not found in the offline sample."
+      "referenceNotFound": "Reference not found in the offline Bible."
     },
     "search": {
       "action": "Search reference",
       "placeholder": "E.g. João 3:16",
       "referenceLabel": "Search Bible reference"
+    },
+    "originalLanguages": {
+      "description": "WLC for biblical Hebrew/Aramaic, Textus Receptus for Koine Greek, and local transliteration.",
+      "originalLabel": "{{language}} · {{version}}",
+      "title": "Original languages",
+      "unavailable": "Original text is not available for this verse."
+    },
+    "readingModes": {
+      "comparison": "Compare",
+      "original": "Original",
+      "translation": "Translation"
     }
   },
   "studies": {
@@ -51,8 +81,36 @@
   "notes": {
     "title": "Notes",
     "subtitle": "Reserved space for study notes.",
+    "subtitleV03": "Organize notes, highlights, tags, categories, and collections.",
+    "category": "Category",
+    "categoryPlaceholder": "E.g. Devotional",
+    "collectionName": "Collection name",
+    "collectionPlaceholder": "E.g. Promises",
+    "collections": "Favorite collections",
+    "content": "Content",
+    "contentPlaceholder": "Write your study observation",
+    "createCollection": "Create collection",
+    "defaultCategory": "General",
     "emptyTitle": "Notes are coming soon",
-    "emptyDescription": "The editor and personal organization will be implemented in the planned version."
+    "emptyDescription": "The editor and personal organization will be implemented in the planned version.",
+    "emptyDescriptionV03": "No notes found.",
+    "emptyHighlights": "No highlights found.",
+    "errors": {
+      "load": "Could not load your personal organization.",
+      "required": "Enter title and content to save the note."
+    },
+    "export": "Export JSON",
+    "highlightCategory": "Study",
+    "highlights": "Highlights",
+    "newNote": "New note",
+    "save": "Save",
+    "savedNotes": "Saved notes",
+    "search": "Search",
+    "searchPlaceholder": "Search by title, content, tag, or category",
+    "tags": "Tags",
+    "tagsPlaceholder": "E.g. faith, grace, sermon",
+    "titleLabel": "Note title",
+    "titlePlaceholder": "Title"
   },
   "settings": {
     "title": "More",
@@ -62,6 +120,8 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.1.0, technical foundation of the project."
+    "aboutDescription": "Version 0.5.0, offline Strong and initial interlinear.",
+    "bibleLicense": "Bible license",
+    "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }
 }

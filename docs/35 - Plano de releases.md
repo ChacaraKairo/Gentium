@@ -59,15 +59,15 @@ Primeira plataforma de estudos.
 
 Objetivo:
 
-Criar rotina de leitura.
+Adicionar suporte a idiomas originais.
 
 ### Funcionalidades
 
-- Planos de leitura
-- Lembretes
-- Histórico
-- Estatísticas
-- Revisões
+- Hebraico bíblico
+- Grego koiné
+- Aramaico bíblico
+- Transliteração
+- Comparação de versões
 
 ---
 
@@ -75,15 +75,17 @@ Criar rotina de leitura.
 
 Objetivo:
 
-Primeira versão pública Beta.
+Ferramentas acadêmicas iniciais.
 
 ### Funcionalidades
 
-- Melhorias gerais
-- Correções
-- Otimizações
-- Testes
-- Acessibilidade completa
+- Strong
+- Léxico grego
+- Léxico hebraico
+- Interlinear inicial
+- Painel de palavra original
+- Pesquisa por Strong
+- Pesquisa por palavra original
 
 ---
 
@@ -109,11 +111,11 @@ Primeira versão estável.
 
 ### Funcionalidades
 
-- Hebraico
-- Grego
-- Aramaico
-- Transliteração
-- Comparação de versões
+- Rotinas avançadas de leitura
+- Lembretes
+- Histórico
+- Estatísticas
+- Revisões
 
 ---
 
@@ -121,10 +123,10 @@ Primeira versão estável.
 
 ### Funcionalidades
 
-- Strong
-- Léxico
-- Morfologia
-- Interlinear
+- Morfologia avançada por ocorrência
+- Interlinear alinhado palavra por palavra
+- Léxico em português
+- Pesquisa acadêmica avançada
 
 ---
 

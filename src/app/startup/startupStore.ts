@@ -10,9 +10,11 @@ export const useStartupStore = create<StartupState>((set, get) => ({
   error: null,
   isReady: false,
   initialize: async (startupTask) => {
-    if (get().isReady) {
+    if (get().isReady && !get().error) {
       return;
     }
+
+    set({ error: null, isReady: false });
 
     try {
       await startupTask();
