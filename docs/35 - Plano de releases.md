@@ -164,19 +164,23 @@ Preparar o beta fechado.
 
 # v1.0.0
 
-Primeira versão estável.
+Objetivo:
+
+Primeira versão estável offline.
 
 ### Funcionalidades
 
 - Bíblia Offline
 - Estudos
 - Planos
+- Biblioteca avançada
 - Anotações
 - Marcações
 - Favoritos
 - Pesquisa
 - Exportação
-- Importação
+- Backup local
+- Diagnóstico de pacotes offline
 
 ---
 

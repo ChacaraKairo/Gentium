@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Share, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import {
   BetaDiagnosticItem,
   getBetaDiagnostics,
 } from '@/modules/settings/repositories/betaDiagnosticsRepository';
-import { AppText, BaseCard, ListItem } from '@/shared/components';
+import { createLocalBackupText } from '@/modules/settings/repositories/localBackupRepository';
+import { AppText, BaseCard, Button, ListItem } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
@@ -15,12 +16,30 @@ export function SettingsScreen() {
   const theme = useThemeTokens();
   const [diagnostics, setDiagnostics] = useState<BetaDiagnosticItem[]>([]);
   const [diagnosticsError, setDiagnosticsError] = useState(false);
+  const [backupError, setBackupError] = useState(false);
+  const [isExportingBackup, setIsExportingBackup] = useState(false);
 
   useEffect(() => {
     getBetaDiagnostics()
       .then(setDiagnostics)
       .catch(() => setDiagnosticsError(true));
   }, []);
+
+  async function exportBackup() {
+    setIsExportingBackup(true);
+    setBackupError(false);
+
+    try {
+      await Share.share({
+        message: await createLocalBackupText(),
+        title: t('settings.localBackup.shareTitle'),
+      });
+    } catch {
+      setBackupError(true);
+    } finally {
+      setIsExportingBackup(false);
+    }
+  }
 
   return (
     <Screen subtitle={t('settings.subtitle')} title={t('settings.title')}>
@@ -38,6 +57,19 @@ export function SettingsScreen() {
             ))}
           </View>
         )}
+      </BaseCard>
+      <BaseCard style={{ gap: theme.spacing.sm }}>
+        <AppText variant="heading">{t('settings.localBackup.title')}</AppText>
+        <AppText color="textSecondary">{t('settings.localBackup.description')}</AppText>
+        {backupError ? (
+          <AppText color="danger">{t('settings.localBackup.error')}</AppText>
+        ) : null}
+        <Button
+          isLoading={isExportingBackup}
+          label={t('settings.localBackup.action')}
+          onPress={exportBackup}
+          variant="secondary"
+        />
       </BaseCard>
       <ListItem
         description={t('settings.appearanceDescription')}

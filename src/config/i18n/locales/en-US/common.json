@@ -202,14 +202,21 @@
         "strongLexicon": "{{count}} Strong entries",
         "studyLessons": "{{count}} study lessons"
       },
-      "title": "Closed beta v0.9.0"
+      "title": "Stable version v1.0.0"
+    },
+    "localBackup": {
+      "action": "Export JSON backup",
+      "description": "Generate a local backup of notes, highlights, favorites, studies, and plans.",
+      "error": "Could not generate the local backup.",
+      "shareTitle": "Gentium local backup",
+      "title": "Local backup"
     },
     "appearance": "Appearance",
     "appearanceDescription": "The theme follows the device preference.",
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.9.0, closed beta with local diagnostics.",
+    "aboutDescription": "Version 1.0.0, first stable offline release.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

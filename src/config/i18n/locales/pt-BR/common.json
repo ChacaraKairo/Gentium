@@ -202,14 +202,21 @@
         "strongLexicon": "{{count}} verbetes Strong",
         "studyLessons": "{{count}} lições de estudo"
       },
-      "title": "Beta fechado v0.9.0"
+      "title": "Versão estável v1.0.0"
+    },
+    "localBackup": {
+      "action": "Exportar backup JSON",
+      "description": "Gere um backup local de anotações, marcações, favoritos, estudos e planos.",
+      "error": "Não foi possível gerar o backup local.",
+      "shareTitle": "Backup local Gentium",
+      "title": "Backup local"
     },
     "appearance": "Aparência",
     "appearanceDescription": "O tema acompanha a preferência do dispositivo.",
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.9.0, beta fechado com diagnóstico local.",
+    "aboutDescription": "Versão 1.0.0, primeira versão estável offline.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }
