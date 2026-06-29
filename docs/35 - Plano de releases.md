@@ -145,6 +145,23 @@ Biblioteca avançada offline inicial.
 
 ---
 
+# v0.9.0
+
+Objetivo:
+
+Preparar o beta fechado.
+
+### Funcionalidades
+
+- Correções gerais
+- Diagnóstico local
+- Checklist de pacotes offline
+- Ajustes de acessibilidade
+- Testes básicos
+- Validação de release
+
+---
+
 # v1.0.0
 
 Primeira versão estável.

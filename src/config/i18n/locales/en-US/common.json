@@ -190,12 +190,26 @@
   "settings": {
     "title": "More",
     "subtitle": "Initial settings and app information.",
+    "betaDiagnostics": {
+      "description": "Local checklist for validating offline packages before the closed beta.",
+      "error": "Could not load beta diagnostics.",
+      "items": {
+        "advancedResources": "{{count}} Bible commentaries in the advanced package",
+        "bibleBooks": "{{count}} Bible books loaded",
+        "bibleVerses": "{{count}} translation verses loaded",
+        "originalVerses": "{{count}} original language verses",
+        "readingPlanDays": "{{count}} reading plan days",
+        "strongLexicon": "{{count}} Strong entries",
+        "studyLessons": "{{count}} study lessons"
+      },
+      "title": "Closed beta v0.9.0"
+    },
     "appearance": "Appearance",
     "appearanceDescription": "The theme follows the device preference.",
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.8.0, offline advanced library.",
+    "aboutDescription": "Version 0.9.0, closed beta with local diagnostics.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

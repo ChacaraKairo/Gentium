@@ -15,6 +15,7 @@ export function ListItem({ description, icon, style, title, ...props }: ListItem
 
   return (
     <Pressable
+      accessibilityLabel={description ? `${title}. ${description}` : title}
       accessibilityRole="button"
       {...props}
       style={({ pressed }) => [

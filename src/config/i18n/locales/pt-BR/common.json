@@ -190,12 +190,26 @@
   "settings": {
     "title": "Mais",
     "subtitle": "Configurações iniciais e informações do aplicativo.",
+    "betaDiagnostics": {
+      "description": "Checklist local para validar os pacotes offline antes do beta fechado.",
+      "error": "Não foi possível carregar o diagnóstico beta.",
+      "items": {
+        "advancedResources": "{{count}} comentários bíblicos no pacote avançado",
+        "bibleBooks": "{{count}} livros bíblicos carregados",
+        "bibleVerses": "{{count}} versículos de tradução carregados",
+        "originalVerses": "{{count}} versículos em idiomas originais",
+        "readingPlanDays": "{{count}} dias de planos de leitura",
+        "strongLexicon": "{{count}} verbetes Strong",
+        "studyLessons": "{{count}} lições de estudo"
+      },
+      "title": "Beta fechado v0.9.0"
+    },
     "appearance": "Aparência",
     "appearanceDescription": "O tema acompanha a preferência do dispositivo.",
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.8.0, biblioteca avançada offline.",
+    "aboutDescription": "Versão 0.9.0, beta fechado com diagnóstico local.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }
