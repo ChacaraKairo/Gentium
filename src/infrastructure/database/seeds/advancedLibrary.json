@@ -1,0 +1,146 @@
+{
+  "commentaries": [
+    {
+      "id": "commentary-john-3-16",
+      "reference": "João 3:16",
+      "title": "O amor de Deus e a dádiva do Filho",
+      "author": "Gentium",
+      "content": "João 3:16 resume a lógica do evangelho: Deus ama, entrega o Filho, chama à fé e oferece vida eterna. A ênfase não está em mérito humano, mas na iniciativa graciosa de Deus.",
+      "position": 1
+    },
+    {
+      "id": "commentary-genesis-1-1",
+      "reference": "Gênesis 1:1",
+      "title": "Deus como origem de todas as coisas",
+      "author": "Gentium",
+      "content": "A abertura de Gênesis estabelece Deus como Criador soberano. Antes de qualquer história humana, o texto afirma dependência, ordem e propósito na criação.",
+      "position": 2
+    }
+  ],
+  "dictionaryEntries": [
+    {
+      "id": "dictionary-covenant",
+      "term": "Aliança",
+      "category": "Teologia Bíblica",
+      "definition": "Compromisso relacional estabelecido por Deus, com promessas, responsabilidades e sinais. A aliança organiza grandes momentos da história bíblica.",
+      "references": ["Gênesis 12:1-3", "Êxodo 19:5-6", "Lucas 22:20"],
+      "position": 1
+    },
+    {
+      "id": "dictionary-kingdom",
+      "term": "Reino de Deus",
+      "category": "Evangelhos",
+      "definition": "Governo de Deus anunciado e manifestado em Jesus Cristo, confrontando o mal e chamando pessoas ao arrependimento, fé e discipulado.",
+      "references": ["Marcos 1:14-15", "Mateus 6:33", "Lucas 17:20-21"],
+      "position": 2
+    },
+    {
+      "id": "dictionary-grace",
+      "term": "Graça",
+      "category": "Doutrina",
+      "definition": "Favor imerecido de Deus, expresso na salvação, no sustento e na transformação do seu povo.",
+      "references": ["Efésios 2:8-10", "Tito 2:11-14"],
+      "position": 3
+    }
+  ],
+  "crossReferences": [
+    {
+      "id": "cross-john-3-16",
+      "sourceReference": "João 3:16",
+      "targetReference": "Romanos 5:8",
+      "title": "Amor demonstrado",
+      "note": "Romanos explicita que o amor de Deus é demonstrado na entrega de Cristo por pecadores.",
+      "position": 1
+    },
+    {
+      "id": "cross-genesis-1-1",
+      "sourceReference": "Gênesis 1:1",
+      "targetReference": "João 1:1-3",
+      "title": "Criação pelo Verbo",
+      "note": "João retoma a linguagem de começo e relaciona a criação ao Verbo.",
+      "position": 2
+    },
+    {
+      "id": "cross-mark-1-15",
+      "sourceReference": "Marcos 1:15",
+      "targetReference": "Mateus 4:17",
+      "title": "Chamado ao arrependimento",
+      "note": "Mateus e Marcos preservam o anúncio inicial do Reino e o chamado ao arrependimento.",
+      "position": 3
+    }
+  ],
+  "gospelParallels": [
+    {
+      "id": "parallel-feeding-five-thousand",
+      "title": "Alimentação dos cinco mil",
+      "summary": "Um dos sinais narrados nos quatro Evangelhos, destacando compaixão, provisão e identidade de Jesus.",
+      "references": ["Mateus 14:13-21", "Marcos 6:30-44", "Lucas 9:10-17", "João 6:1-15"],
+      "position": 1
+    },
+    {
+      "id": "parallel-baptism-jesus",
+      "title": "Batismo de Jesus",
+      "summary": "O início público do ministério de Jesus, com testemunho do Pai e presença do Espírito.",
+      "references": ["Mateus 3:13-17", "Marcos 1:9-11", "Lucas 3:21-22"],
+      "position": 2
+    }
+  ],
+  "maps": [
+    {
+      "id": "map-galilee-ministry",
+      "title": "Ministério na Galileia",
+      "region": "Galileia",
+      "description": "Região ao norte de Israel onde Jesus ensinou, chamou discípulos e realizou muitos sinais.",
+      "places": ["Nazaré", "Cafarnaum", "Caná", "Mar da Galileia"],
+      "references": ["Mateus 4:12-17", "João 2:1-12"],
+      "position": 1
+    },
+    {
+      "id": "map-exodus-route",
+      "title": "Êxodo e deserto",
+      "region": "Egito, Sinai e deserto",
+      "description": "Percurso teológico da libertação, formação do povo e aliança no Sinai.",
+      "places": ["Egito", "Mar Vermelho", "Sinai", "Deserto"],
+      "references": ["Êxodo 12:31-42", "Êxodo 19:1-6"],
+      "position": 2
+    }
+  ],
+  "timelines": [
+    {
+      "id": "timeline-patriarchs",
+      "title": "Patriarcas",
+      "period": "Gênesis 12–50",
+      "summary": "Chamado de Abraão, promessas, família da aliança e ida ao Egito.",
+      "events": ["Chamado de Abraão", "Nascimento de Isaque", "Jacó e seus filhos", "José no Egito"],
+      "references": ["Gênesis 12:1-3", "Gênesis 50:20"],
+      "position": 1
+    },
+    {
+      "id": "timeline-passion-week",
+      "title": "Semana da Paixão",
+      "period": "Última semana do ministério terreno de Jesus",
+      "summary": "Entrada em Jerusalém, ceia, julgamento, crucificação e ressurreição.",
+      "events": ["Entrada triunfal", "Última ceia", "Crucificação", "Ressurreição"],
+      "references": ["Mateus 21:1-11", "Mateus 28:1-10"],
+      "position": 2
+    }
+  ],
+  "genealogies": [
+    {
+      "id": "genealogy-abraham-david",
+      "title": "De Abraão a Davi",
+      "summary": "Linha messiânica destacada na abertura do Evangelho de Mateus.",
+      "people": ["Abraão", "Isaque", "Jacó", "Judá", "Boaz", "Jessé", "Davi"],
+      "references": ["Mateus 1:1-6", "Rute 4:18-22"],
+      "position": 1
+    },
+    {
+      "id": "genealogy-adam-noah",
+      "title": "De Adão a Noé",
+      "summary": "Genealogia primordial que conecta criação, queda e preservação da linhagem humana.",
+      "people": ["Adão", "Sete", "Enos", "Enoque", "Matusalém", "Lameque", "Noé"],
+      "references": ["Gênesis 5:1-32"],
+      "position": 2
+    }
+  ]
+}

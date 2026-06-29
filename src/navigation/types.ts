@@ -3,6 +3,7 @@ export type MainTabParamList = {
   Bible: undefined;
   Studies: undefined;
   ReadingPlans: undefined;
+  AdvancedLibrary: undefined;
   Notes: undefined;
   More: undefined;
 };

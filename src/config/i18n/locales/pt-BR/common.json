@@ -9,6 +9,7 @@
     "bible": "Bíblia",
     "studies": "Estudos",
     "readingPlans": "Planos",
+    "advancedLibrary": "Biblioteca",
     "notes": "Anotações",
     "more": "Mais"
   },
@@ -127,6 +128,31 @@
     "statsTitle": "Estatísticas",
     "todayTitle": "Leitura do dia"
   },
+  "advancedLibrary": {
+    "title": "Biblioteca",
+    "subtitle": "Recursos auxiliares offline para aprofundar o estudo bíblico.",
+    "emptySection": "Nenhum recurso encontrado nesta seção.",
+    "errors": {
+      "load": "Não foi possível carregar a biblioteca avançada."
+    },
+    "noReferenceResults": "Nenhum recurso vinculado a essa referência.",
+    "referenceResults": "Recursos vinculados a {{reference}}",
+    "referenceSearchTitle": "Buscar por referência",
+    "searchAction": "Buscar recursos",
+    "searchLabel": "Pesquisar recursos por referência bíblica",
+    "searchPlaceholder": "Ex.: João 3:16",
+    "sectionCount": "{{count}} recurso",
+    "sectionCount_plural": "{{count}} recursos",
+    "sections": {
+      "commentaries": "Comentários bíblicos",
+      "crossReferences": "Referências cruzadas",
+      "dictionary": "Dicionário bíblico",
+      "genealogies": "Árvores genealógicas",
+      "maps": "Mapas bíblicos",
+      "parallels": "Paralelos dos Evangelhos",
+      "timelines": "Cronologias"
+    }
+  },
   "notes": {
     "title": "Anotações",
     "subtitle": "Espaço reservado para suas anotações de estudo.",
@@ -169,7 +195,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.7.0, planos de leitura offline.",
+    "aboutDescription": "Versão 0.8.0, biblioteca avançada offline.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

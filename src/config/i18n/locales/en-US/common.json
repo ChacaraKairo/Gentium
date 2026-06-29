@@ -9,6 +9,7 @@
     "bible": "Bible",
     "studies": "Studies",
     "readingPlans": "Plans",
+    "advancedLibrary": "Library",
     "notes": "Notes",
     "more": "More"
   },
@@ -127,6 +128,31 @@
     "statsTitle": "Stats",
     "todayTitle": "Today's reading"
   },
+  "advancedLibrary": {
+    "title": "Library",
+    "subtitle": "Offline study aids for deeper Bible study.",
+    "emptySection": "No resources found in this section.",
+    "errors": {
+      "load": "Could not load the advanced library."
+    },
+    "noReferenceResults": "No resources linked to this reference.",
+    "referenceResults": "Resources linked to {{reference}}",
+    "referenceSearchTitle": "Search by reference",
+    "searchAction": "Search resources",
+    "searchLabel": "Search resources by Bible reference",
+    "searchPlaceholder": "E.g. João 3:16",
+    "sectionCount": "{{count}} resource",
+    "sectionCount_plural": "{{count}} resources",
+    "sections": {
+      "commentaries": "Bible commentaries",
+      "crossReferences": "Cross references",
+      "dictionary": "Bible dictionary",
+      "genealogies": "Genealogies",
+      "maps": "Bible maps",
+      "parallels": "Gospel parallels",
+      "timelines": "Timelines"
+    }
+  },
   "notes": {
     "title": "Notes",
     "subtitle": "Reserved space for study notes.",
@@ -169,7 +195,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.7.0, offline reading plans.",
+    "aboutDescription": "Version 0.8.0, offline advanced library.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

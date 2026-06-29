@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 
+import { AdvancedLibraryScreen } from '@/modules/advancedLibrary/screens/AdvancedLibraryScreen';
 import { BibleScreen } from '@/modules/bible/screens/BibleScreen';
 import { HomeScreen } from '@/modules/home/screens/HomeScreen';
 import { NotesScreen } from '@/modules/notes/screens/NotesScreen';
@@ -14,6 +15,7 @@ import { useThemeTokens } from '@/theme/useThemeTokens';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const icons: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
+  AdvancedLibrary: 'file-tray-full-outline',
   Bible: 'book-outline',
   Home: 'home-outline',
   More: 'menu-outline',
@@ -54,6 +56,11 @@ export function RootNavigator() {
         component={ReadingPlansScreen}
         name="ReadingPlans"
         options={{ title: t('tabs.readingPlans') }}
+      />
+      <Tab.Screen
+        component={AdvancedLibraryScreen}
+        name="AdvancedLibrary"
+        options={{ title: t('tabs.advancedLibrary') }}
       />
       <Tab.Screen component={NotesScreen} name="Notes" options={{ title: t('tabs.notes') }} />
       <Tab.Screen component={SettingsScreen} name="More" options={{ title: t('tabs.more') }} />

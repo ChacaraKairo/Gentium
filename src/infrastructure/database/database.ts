@@ -1,6 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 import { runMigrations } from './migrations';
+import { seedAdvancedLibrary } from './seedAdvancedLibrary';
 import { seedBiblePackage } from './seedBible';
 import { seedReadingPlans } from './seedReadingPlans';
 import { seedStudiesLibrary } from './seedStudies';
@@ -25,4 +26,5 @@ export async function initializeAppDatabase() {
   await seedBiblePackage(database);
   await seedStudiesLibrary(database);
   await seedReadingPlans(database);
+  await seedAdvancedLibrary(database);
 }

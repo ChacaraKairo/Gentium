@@ -139,3 +139,77 @@ export type ReadingPlanSeed = {
 export type ReadingPlansSeed = {
   plans: ReadingPlanSeed[];
 };
+
+export type CommentarySeed = {
+  author: string;
+  content: string;
+  id: string;
+  position: number;
+  reference: string;
+  title: string;
+};
+
+export type DictionaryEntrySeed = {
+  category: string;
+  definition: string;
+  id: string;
+  position: number;
+  references: string[];
+  term: string;
+};
+
+export type CrossReferenceSeed = {
+  id: string;
+  note: string;
+  position: number;
+  sourceReference: string;
+  targetReference: string;
+  title: string;
+};
+
+export type GospelParallelSeed = {
+  id: string;
+  position: number;
+  references: string[];
+  summary: string;
+  title: string;
+};
+
+export type BibleMapSeed = {
+  description: string;
+  id: string;
+  places: string[];
+  position: number;
+  references: string[];
+  region: string;
+  title: string;
+};
+
+export type BibleTimelineSeed = {
+  events: string[];
+  id: string;
+  period: string;
+  position: number;
+  references: string[];
+  summary: string;
+  title: string;
+};
+
+export type BibleGenealogySeed = {
+  id: string;
+  people: string[];
+  position: number;
+  references: string[];
+  summary: string;
+  title: string;
+};
+
+export type AdvancedLibrarySeed = {
+  commentaries: CommentarySeed[];
+  crossReferences: CrossReferenceSeed[];
+  dictionaryEntries: DictionaryEntrySeed[];
+  genealogies: BibleGenealogySeed[];
+  gospelParallels: GospelParallelSeed[];
+  maps: BibleMapSeed[];
+  timelines: BibleTimelineSeed[];
+};

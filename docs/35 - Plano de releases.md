@@ -127,6 +127,24 @@ Planos de leitura offline iniciais.
 
 ---
 
+# v0.8.0
+
+Objetivo:
+
+Biblioteca avançada offline inicial.
+
+### Funcionalidades
+
+- Comentários bíblicos
+- Dicionário bíblico
+- Referências cruzadas
+- Paralelos dos Evangelhos
+- Mapas bíblicos
+- Cronologias
+- Árvores genealógicas
+
+---
+
 # v1.0.0
 
 Primeira versão estável.

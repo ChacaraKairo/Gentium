@@ -440,6 +440,100 @@ const migrations: Migration[] = [
       `);
     },
   },
+  {
+    id: 9,
+    name: 'create_advanced_library_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS bible_commentaries (
+          id TEXT PRIMARY KEY NOT NULL,
+          reference TEXT NOT NULL,
+          title TEXT NOT NULL,
+          author TEXT NOT NULL,
+          content TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS bible_dictionary_entries (
+          id TEXT PRIMARY KEY NOT NULL,
+          term TEXT NOT NULL,
+          category TEXT NOT NULL,
+          definition TEXT NOT NULL,
+          references_json TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS bible_cross_references (
+          id TEXT PRIMARY KEY NOT NULL,
+          source_reference TEXT NOT NULL,
+          target_reference TEXT NOT NULL,
+          title TEXT NOT NULL,
+          note TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS gospel_parallels (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          references_json TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS bible_maps (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          region TEXT NOT NULL,
+          description TEXT NOT NULL,
+          places_json TEXT NOT NULL,
+          references_json TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS bible_timelines (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          period TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          events_json TEXT NOT NULL,
+          references_json TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS bible_genealogies (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          people_json TEXT NOT NULL,
+          references_json TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_bible_commentaries_reference
+          ON bible_commentaries(reference);
+        CREATE INDEX IF NOT EXISTS idx_bible_dictionary_term
+          ON bible_dictionary_entries(term);
+        CREATE INDEX IF NOT EXISTS idx_bible_cross_references_source
+          ON bible_cross_references(source_reference);
+        CREATE INDEX IF NOT EXISTS idx_bible_cross_references_target
+          ON bible_cross_references(target_reference);
+      `);
+    },
+  },
 ];
 
 async function ensureMigrationTable(database: SQLiteDatabase) {
