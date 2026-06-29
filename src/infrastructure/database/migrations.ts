@@ -270,6 +270,104 @@ const migrations: Migration[] = [
       `);
     },
   },
+  {
+    id: 7,
+    name: 'create_studies_schema',
+    up: async (database) => {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS study_areas (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS study_categories (
+          id TEXT PRIMARY KEY NOT NULL,
+          area_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (area_id) REFERENCES study_areas(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_courses (
+          id TEXT PRIMARY KEY NOT NULL,
+          category_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          level TEXT NOT NULL,
+          estimated_minutes INTEGER NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (category_id) REFERENCES study_categories(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_modules (
+          id TEXT PRIMARY KEY NOT NULL,
+          course_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (course_id) REFERENCES study_courses(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_lessons (
+          id TEXT PRIMARY KEY NOT NULL,
+          module_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          content TEXT NOT NULL,
+          estimated_minutes INTEGER NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (module_id) REFERENCES study_modules(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_lesson_references (
+          id TEXT PRIMARY KEY NOT NULL,
+          lesson_id TEXT NOT NULL,
+          reference TEXT NOT NULL,
+          position INTEGER NOT NULL,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (lesson_id) REFERENCES study_lessons(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_course_progress (
+          course_id TEXT PRIMARY KEY NOT NULL,
+          started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          completed_at TEXT,
+          last_activity_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (course_id) REFERENCES study_courses(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS study_lesson_progress (
+          lesson_id TEXT PRIMARY KEY NOT NULL,
+          course_id TEXT NOT NULL,
+          completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (lesson_id) REFERENCES study_lessons(id) ON DELETE CASCADE,
+          FOREIGN KEY (course_id) REFERENCES study_courses(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_study_categories_area ON study_categories(area_id, position);
+        CREATE INDEX IF NOT EXISTS idx_study_courses_category ON study_courses(category_id, position);
+        CREATE INDEX IF NOT EXISTS idx_study_modules_course ON study_modules(course_id, position);
+        CREATE INDEX IF NOT EXISTS idx_study_lessons_module ON study_lessons(module_id, position);
+        CREATE INDEX IF NOT EXISTS idx_study_lesson_references_lesson
+          ON study_lesson_references(lesson_id, position);
+        CREATE INDEX IF NOT EXISTS idx_study_lesson_progress_course
+          ON study_lesson_progress(course_id);
+      `);
+    },
+  },
 ];
 
 async function ensureMigrationTable(database: SQLiteDatabase) {

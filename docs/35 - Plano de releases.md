@@ -89,6 +89,25 @@ Ferramentas acadêmicas iniciais.
 
 ---
 
+# v0.6.0
+
+Objetivo:
+
+Sistema de estudos offline inicial.
+
+### Funcionalidades
+
+- Biblioteca de estudos
+- Áreas
+- Categorias
+- Cursos
+- Módulos
+- Lições
+- Progresso de estudos
+- Referências bíblicas
+
+---
+
 # v1.0.0
 
 Primeira versão estável.

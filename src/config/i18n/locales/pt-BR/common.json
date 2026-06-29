@@ -74,9 +74,29 @@
   },
   "studies": {
     "title": "Estudos",
-    "subtitle": "Espaço reservado para a futura biblioteca de estudos.",
+    "subtitle": "Biblioteca offline de cursos, módulos, lições e progresso.",
+    "areaSummary": "{{courses}} curso · {{lessons}} lições · {{progress}}%",
+    "categorySummary": "{{courses}} curso · {{lessons}} lições · {{progress}}%",
+    "completeLesson": "Concluir lição",
+    "continueCourse": "Continuar curso",
+    "courseMeta": "{{level}} · {{minutes}} min",
+    "courseSummary": "{{lessons}} lições · {{minutes}} min · {{progress}}%",
     "emptyTitle": "Estudos ainda não disponíveis",
-    "emptyDescription": "Cursos, módulos e lições estão previstos para versões posteriores."
+    "emptyDescription": "Cursos, módulos e lições estão previstos para versões posteriores.",
+    "errors": {
+      "load": "Não foi possível carregar a biblioteca de estudos."
+    },
+    "lessonCompleted": "Lição concluída",
+    "lessonSummary": "{{minutes}} min",
+    "levels": {
+      "advanced": "Avançado",
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário"
+    },
+    "libraryDescription": "Cursos iniciais para estudar a Bíblia de forma progressiva e offline.",
+    "libraryTitle": "Biblioteca de estudos",
+    "progress": "{{completed}} de {{total}} lições concluídas",
+    "startCourse": "Iniciar curso"
   },
   "notes": {
     "title": "Anotações",
@@ -120,7 +140,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 0.5.0, Strong e interlinear inicial offline.",
+    "aboutDescription": "Versão 0.6.0, estudos offline com progresso.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

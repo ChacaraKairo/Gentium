@@ -61,3 +61,51 @@ export type StrongLexiconEntrySeed = {
 export type StrongLexiconPackageSeed = {
   entries: StrongLexiconEntrySeed[];
 };
+
+export type StudyLessonSeed = {
+  content: string;
+  estimatedMinutes: number;
+  id: string;
+  position: number;
+  references: string[];
+  summary: string;
+  title: string;
+};
+
+export type StudyModuleSeed = {
+  description: string;
+  id: string;
+  lessons: StudyLessonSeed[];
+  position: number;
+  title: string;
+};
+
+export type StudyCourseSeed = {
+  description: string;
+  estimatedMinutes: number;
+  id: string;
+  level: 'advanced' | 'beginner' | 'intermediate';
+  modules: StudyModuleSeed[];
+  position: number;
+  title: string;
+};
+
+export type StudyCategorySeed = {
+  courses: StudyCourseSeed[];
+  description: string;
+  id: string;
+  position: number;
+  title: string;
+};
+
+export type StudyAreaSeed = {
+  categories: StudyCategorySeed[];
+  description: string;
+  id: string;
+  position: number;
+  title: string;
+};
+
+export type StudiesLibrarySeed = {
+  areas: StudyAreaSeed[];
+};

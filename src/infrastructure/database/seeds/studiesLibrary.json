@@ -1,0 +1,143 @@
+{
+  "areas": [
+    {
+      "id": "intro-bible",
+      "title": "Introdução à Bíblia",
+      "description": "Fundamentos para ler, interpretar e estudar as Escrituras com contexto.",
+      "position": 1,
+      "categories": [
+        {
+          "id": "intro-bible-foundations",
+          "title": "Fundamentos",
+          "description": "Primeiros passos para entender a estrutura e a mensagem bíblica.",
+          "position": 1,
+          "courses": [
+            {
+              "id": "course-how-to-study-bible",
+              "title": "Como Estudar a Bíblia",
+              "description": "Uma trilha introdutória sobre leitura, observação, interpretação e aplicação.",
+              "level": "beginner",
+              "estimatedMinutes": 42,
+              "position": 1,
+              "modules": [
+                {
+                  "id": "module-reading-with-context",
+                  "title": "Leitura com Contexto",
+                  "description": "Aprenda a observar o texto antes de tirar conclusões.",
+                  "position": 1,
+                  "lessons": [
+                    {
+                      "id": "lesson-observe-before-interpreting",
+                      "title": "Observe antes de interpretar",
+                      "summary": "A observação cuidadosa protege o estudante de leituras apressadas.",
+                      "content": "Comece perguntando o que o texto diz. Identifique personagens, ações, repetições, contrastes, conectivos e termos importantes. A interpretação nasce de uma observação paciente, não de uma impressão inicial.",
+                      "estimatedMinutes": 8,
+                      "position": 1,
+                      "references": ["Neemias 8:8", "Lucas 24:27"]
+                    },
+                    {
+                      "id": "lesson-literary-context",
+                      "title": "Contexto literário",
+                      "summary": "Cada passagem pertence a um argumento, narrativa, poema ou discurso maior.",
+                      "content": "Leia os parágrafos ao redor da passagem. Pergunte como a seção anterior prepara o tema e como a próxima seção desenvolve a ideia. O contexto literário ajuda a perceber o fluxo do pensamento bíblico.",
+                      "estimatedMinutes": 10,
+                      "position": 2,
+                      "references": ["João 20:30-31", "Romanos 12:1-2"]
+                    },
+                    {
+                      "id": "lesson-application",
+                      "title": "Aplicação responsável",
+                      "summary": "Aplicar a Bíblia exige respeitar o sentido do texto e responder com obediência.",
+                      "content": "Depois de observar e interpretar, pergunte como a passagem forma convicções, corrige atitudes e orienta práticas. A aplicação não força o texto a dizer algo novo; ela permite que a mensagem bíblica alcance a vida.",
+                      "estimatedMinutes": 9,
+                      "position": 3,
+                      "references": ["Tiago 1:22", "2 Timóteo 3:16-17"]
+                    }
+                  ]
+                },
+                {
+                  "id": "module-bible-structure",
+                  "title": "Estrutura da Bíblia",
+                  "description": "Entenda testamentos, gêneros literários e a unidade da história bíblica.",
+                  "position": 2,
+                  "lessons": [
+                    {
+                      "id": "lesson-testaments",
+                      "title": "Antigo e Novo Testamento",
+                      "summary": "Os testamentos formam uma história única de criação, queda, promessa, redenção e consumação.",
+                      "content": "O Antigo Testamento prepara a esperança messiânica por meio da aliança, da lei, dos profetas e da sabedoria. O Novo Testamento apresenta Cristo, a igreja e a esperança final. Ler os dois juntos revela a unidade da mensagem bíblica.",
+                      "estimatedMinutes": 8,
+                      "position": 1,
+                      "references": ["Gênesis 12:1-3", "Mateus 5:17"]
+                    },
+                    {
+                      "id": "lesson-genres",
+                      "title": "Gêneros literários",
+                      "summary": "Narrativa, poesia, profecia, evangelho e carta devem ser lidos com atenção ao seu modo de comunicar.",
+                      "content": "Um salmo usa imagens poéticas; uma carta desenvolve argumento; uma narrativa mostra ações no tempo. Reconhecer o gênero ajuda o estudante a ouvir o texto em seus próprios termos.",
+                      "estimatedMinutes": 7,
+                      "position": 2,
+                      "references": ["Salmos 1:1-3", "1 Coríntios 15:1-4"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new-testament",
+      "title": "Novo Testamento",
+      "description": "Cursos introdutórios sobre os Evangelhos, Atos e cartas apostólicas.",
+      "position": 2,
+      "categories": [
+        {
+          "id": "new-testament-gospels",
+          "title": "Evangelhos",
+          "description": "A vida, ensino, morte e ressurreição de Jesus Cristo.",
+          "position": 1,
+          "courses": [
+            {
+              "id": "course-intro-gospels",
+              "title": "Introdução aos Evangelhos",
+              "description": "Uma visão inicial dos quatro testemunhos canônicos sobre Jesus.",
+              "level": "beginner",
+              "estimatedMinutes": 32,
+              "position": 1,
+              "modules": [
+                {
+                  "id": "module-four-witnesses",
+                  "title": "Quatro Testemunhos",
+                  "description": "Como Mateus, Marcos, Lucas e João apresentam a mesma boa notícia.",
+                  "position": 1,
+                  "lessons": [
+                    {
+                      "id": "lesson-why-four-gospels",
+                      "title": "Por que quatro Evangelhos?",
+                      "summary": "Os Evangelhos apresentam testemunhos complementares sobre Jesus.",
+                      "content": "Cada Evangelho possui ênfases próprias, público provável e seleção de episódios. Juntos, eles oferecem um retrato rico da pessoa e obra de Cristo.",
+                      "estimatedMinutes": 9,
+                      "position": 1,
+                      "references": ["Lucas 1:1-4", "João 21:24-25"]
+                    },
+                    {
+                      "id": "lesson-kingdom-message",
+                      "title": "A mensagem do Reino",
+                      "summary": "Jesus anuncia o Reino de Deus e chama pessoas ao arrependimento e à fé.",
+                      "content": "O Reino é uma das chaves para ler os Evangelhos. Nas palavras e obras de Jesus, Deus manifesta seu governo, confronta o mal e chama discípulos para uma nova vida.",
+                      "estimatedMinutes": 10,
+                      "position": 2,
+                      "references": ["Marcos 1:14-15", "Mateus 6:33"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -74,9 +74,29 @@
   },
   "studies": {
     "title": "Studies",
-    "subtitle": "Reserved space for the future studies library.",
+    "subtitle": "Offline library with courses, modules, lessons, and progress.",
+    "areaSummary": "{{courses}} course · {{lessons}} lessons · {{progress}}%",
+    "categorySummary": "{{courses}} course · {{lessons}} lessons · {{progress}}%",
+    "completeLesson": "Complete lesson",
+    "continueCourse": "Continue course",
+    "courseMeta": "{{level}} · {{minutes}} min",
+    "courseSummary": "{{lessons}} lessons · {{minutes}} min · {{progress}}%",
     "emptyTitle": "Studies are not available yet",
-    "emptyDescription": "Courses, modules, and lessons are planned for later versions."
+    "emptyDescription": "Courses, modules, and lessons are planned for later versions.",
+    "errors": {
+      "load": "Could not load the studies library."
+    },
+    "lessonCompleted": "Lesson completed",
+    "lessonSummary": "{{minutes}} min",
+    "levels": {
+      "advanced": "Advanced",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate"
+    },
+    "libraryDescription": "Initial courses for studying the Bible progressively and offline.",
+    "libraryTitle": "Studies library",
+    "progress": "{{completed}} of {{total}} lessons completed",
+    "startCourse": "Start course"
   },
   "notes": {
     "title": "Notes",
@@ -120,7 +140,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 0.5.0, offline Strong and initial interlinear.",
+    "aboutDescription": "Version 0.6.0, offline studies with progress.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }
