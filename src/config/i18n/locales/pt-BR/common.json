@@ -43,10 +43,16 @@
     "academicTools": {
       "morphology": "Morfologia: {{morphology}}",
       "noStrongMatch": "Ainda não há vínculo Strong para esta forma no léxico local.",
+      "noResults": "Nenhum verbete ou ocorrência original encontrado.",
+      "occurrenceLabel": "{{reference}} · {{language}}",
+      "occurrencesTitle": "{{count}} ocorrência em idioma original",
+      "occurrencesTitle_plural": "{{count}} ocorrências em idioma original",
       "pronunciation": "Pronúncia: {{pronunciation}}",
-      "searchAction": "Buscar Strong",
+      "searchAction": "Buscar léxico e originais",
       "searchLabel": "Pesquisar Strong ou palavra original",
       "searchPlaceholder": "Ex.: H7225, G25, αγαπη",
+      "searching": "Pesquisando no léxico e nos idiomas originais...",
+      "strongTitle": "Léxico Strong",
       "title": "Ferramentas acadêmicas",
       "wordPanelTitle": "Palavra original"
     },
@@ -219,7 +225,7 @@
         "strongLexicon": "{{count}} verbetes Strong",
         "studyLessons": "{{count}} lições de estudo"
       },
-      "title": "Versão v1.1.0"
+      "title": "Versão v1.2.0"
     },
     "localBackup": {
       "action": "Exportar backup JSON",
@@ -233,7 +239,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 1.1.0, busca bíblica avançada e seleção de tradução.",
+    "aboutDescription": "Versão 1.2.0, expansão acadêmica com Strong e busca em idiomas originais.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

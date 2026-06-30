@@ -9,6 +9,7 @@ import {
   BibleVersion,
   InterlinearWord,
   OriginalLanguageCode,
+  OriginalLanguageSearchResult,
   OriginalLanguageVerse,
   ReadingLocation,
   StrongLexiconEntry,
@@ -56,6 +57,16 @@ type OriginalVerseRow = {
   verse_number: number;
   version_abbreviation: string;
   version_id: string;
+};
+
+type OriginalSearchRow = {
+  book_id: string;
+  book_name: string;
+  chapter_number: number;
+  language: OriginalLanguageCode;
+  text: string;
+  verse_number: number;
+  version_abbreviation: string;
 };
 
 type ComparisonVerseRow = {
@@ -253,6 +264,49 @@ export async function searchStrongLexicon(query: string): Promise<StrongLexiconE
   );
 
   return rows.map(mapStrongLexiconRow);
+}
+
+export async function searchOriginalLanguageOccurrences(
+  query: string,
+): Promise<OriginalLanguageSearchResult[]> {
+  const database = await getDatabase();
+  const normalizedQuery = query.trim();
+
+  if (normalizedQuery.length < 2) {
+    return [];
+  }
+
+  const rows = await database.getAllAsync<OriginalSearchRow>(
+    `
+      SELECT
+        verses.book_id,
+        books.name AS book_name,
+        verses.chapter_number,
+        verses.verse_number,
+        verses.language,
+        versions.abbreviation AS version_abbreviation,
+        verses.text
+      FROM original_language_verses verses
+      INNER JOIN original_language_versions versions ON versions.id = verses.version_id
+      INNER JOIN bible_books books ON books.id = verses.book_id
+      WHERE LOWER(verses.text) LIKE ?
+      ORDER BY books.position ASC, verses.chapter_number ASC, verses.verse_number ASC
+      LIMIT 24;
+    `,
+    [`%${normalizedQuery.toLocaleLowerCase()}%`],
+  );
+
+  return rows.map((row) => ({
+    bookId: row.book_id,
+    bookName: row.book_name,
+    chapterNumber: row.chapter_number,
+    language: row.language,
+    languageName: getOriginalLanguageName(row.language),
+    text: row.text,
+    transliteration: transliterateOriginalText(row.text, row.language),
+    verseNumber: row.verse_number,
+    versionAbbreviation: row.version_abbreviation,
+  }));
 }
 
 export async function getChapterComparisonVerses(

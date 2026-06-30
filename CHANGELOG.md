@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — Expansão acadêmica
+
+- Busca acadêmica unificada para Strong e idiomas originais.
+- Pesquisa por ocorrências em hebraico, aramaico e grego.
+- Resultados originais com transliteração e abertura direta do capítulo.
+- Painel acadêmico com estados de carregamento, vazio e seções dedicadas.
+- Metadados, documentação e validação atualizados para 1.2.0.
+
 ## 1.1.0 — Expansão bíblica
 
 - Busca bíblica avançada com filtragem enquanto digita.

@@ -43,10 +43,16 @@
     "academicTools": {
       "morphology": "Morphology: {{morphology}}",
       "noStrongMatch": "There is no Strong link for this form in the local lexicon yet.",
+      "noResults": "No lexicon entry or original-language occurrence found.",
+      "occurrenceLabel": "{{reference}} · {{language}}",
+      "occurrencesTitle": "{{count}} original-language occurrence",
+      "occurrencesTitle_plural": "{{count}} original-language occurrences",
       "pronunciation": "Pronunciation: {{pronunciation}}",
-      "searchAction": "Search Strong",
+      "searchAction": "Search lexicon and originals",
       "searchLabel": "Search Strong or original word",
       "searchPlaceholder": "E.g. H7225, G25, αγαπη",
+      "searching": "Searching the lexicon and original languages...",
+      "strongTitle": "Strong lexicon",
       "title": "Academic tools",
       "wordPanelTitle": "Original word"
     },
@@ -219,7 +225,7 @@
         "strongLexicon": "{{count}} Strong entries",
         "studyLessons": "{{count}} study lessons"
       },
-      "title": "Version v1.1.0"
+      "title": "Version v1.2.0"
     },
     "localBackup": {
       "action": "Export JSON backup",
@@ -233,7 +239,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 1.1.0, advanced Bible search and translation selection.",
+    "aboutDescription": "Version 1.2.0, academic expansion with Strong and original-language search.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

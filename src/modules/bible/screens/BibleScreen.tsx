@@ -14,6 +14,7 @@ import {
   getLastReading,
   saveLastReading,
   searchBible,
+  searchOriginalLanguageOccurrences,
   searchStrongLexicon,
   toggleFavorite,
 } from '@/modules/bible/repositories/bibleRepository';
@@ -26,6 +27,7 @@ import {
   BibleVerseComparison,
   BibleVersion,
   InterlinearWord,
+  OriginalLanguageSearchResult,
   OriginalLanguageVerse,
   StrongLexiconEntry,
 } from '@/modules/bible/types';
@@ -59,6 +61,10 @@ export function BibleScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const [strongQuery, setStrongQuery] = useState('');
   const [strongResults, setStrongResults] = useState<StrongLexiconEntry[]>([]);
+  const [originalSearchResults, setOriginalSearchResults] = useState<OriginalLanguageSearchResult[]>(
+    [],
+  );
+  const [isAcademicSearching, setIsAcademicSearching] = useState(false);
   const [activeNoteVerseId, setActiveNoteVerseId] = useState<string | null>(null);
   const [noteContent, setNoteContent] = useState('');
   const [noteTags, setNoteTags] = useState('');
@@ -221,7 +227,7 @@ export function BibleScreen() {
       }
 
       setChapters(chapterRows);
-        await openChapter(book, chapter, lastReading.versionId ?? selectedVersionId);
+      await openChapter(book, chapter, lastReading.versionId ?? selectedVersionId);
     } catch {
       setError(t('bible.errors.load'));
     } finally {
@@ -386,14 +392,95 @@ export function BibleScreen() {
     });
   }, []);
 
-  const searchStrong = useCallback(async () => {
+  const searchAcademic = useCallback(async () => {
     if (!strongQuery.trim()) {
       setStrongResults([]);
+      setOriginalSearchResults([]);
       return;
     }
 
-    setStrongResults(await searchStrongLexicon(strongQuery));
+    setIsAcademicSearching(true);
+
+    try {
+      const [strongRows, originalRows] = await Promise.all([
+        searchStrongLexicon(strongQuery),
+        searchOriginalLanguageOccurrences(strongQuery),
+      ]);
+      setStrongResults(strongRows);
+      setOriginalSearchResults(originalRows);
+    } catch {
+      setStrongResults([]);
+      setOriginalSearchResults([]);
+    } finally {
+      setIsAcademicSearching(false);
+    }
   }, [strongQuery]);
+
+  useEffect(() => {
+    const query = strongQuery.trim();
+
+    if (query.length < 2) {
+      setStrongResults([]);
+      setOriginalSearchResults([]);
+      setIsAcademicSearching(false);
+      return;
+    }
+
+    let isActive = true;
+    setIsAcademicSearching(true);
+
+    const timeout = setTimeout(() => {
+      Promise.all([searchStrongLexicon(query), searchOriginalLanguageOccurrences(query)])
+        .then(([strongRows, originalRows]) => {
+          if (isActive) {
+            setStrongResults(strongRows);
+            setOriginalSearchResults(originalRows);
+          }
+        })
+        .catch(() => {
+          if (isActive) {
+            setStrongResults([]);
+            setOriginalSearchResults([]);
+          }
+        })
+        .finally(() => {
+          if (isActive) {
+            setIsAcademicSearching(false);
+          }
+        });
+    }, 220);
+
+    return () => {
+      isActive = false;
+      clearTimeout(timeout);
+    };
+  }, [strongQuery]);
+
+  const openOriginalOccurrence = useCallback(
+    async (occurrence: OriginalLanguageSearchResult) => {
+      const book = books.find((item) => item.id === occurrence.bookId);
+
+      if (!book) {
+        setError(t('bible.errors.referenceNotFound'));
+        return;
+      }
+
+      const chapterRows = await getBibleChapters(book.id);
+      const chapter = chapterRows.find(
+        (item) => item.chapterNumber === occurrence.chapterNumber,
+      );
+
+      if (!chapter) {
+        setError(t('bible.errors.referenceNotFound'));
+        return;
+      }
+
+      setChapters(chapterRows);
+      setReadingMode('original');
+      await openChapter(book, chapter);
+    },
+    [books, openChapter, t],
+  );
 
   const goBack = useCallback(() => {
     if (selectedChapter) {
@@ -607,18 +694,60 @@ export function BibleScreen() {
               accessibilityLabel={t('bible.academicTools.searchLabel')}
               autoCapitalize="characters"
               onChangeText={setStrongQuery}
-              onSubmitEditing={searchStrong}
+              onSubmitEditing={searchAcademic}
               placeholder={t('bible.academicTools.searchPlaceholder')}
               returnKeyType="search"
               value={strongQuery}
             />
-            <Button label={t('bible.academicTools.searchAction')} onPress={searchStrong} variant="secondary" />
+            <Button
+              isLoading={isAcademicSearching}
+              label={t('bible.academicTools.searchAction')}
+              onPress={searchAcademic}
+              variant="secondary"
+            />
+            {isAcademicSearching ? (
+              <AppText color="textSecondary" variant="caption">
+                {t('bible.academicTools.searching')}
+              </AppText>
+            ) : null}
             {strongResults.length ? (
               <View style={{ gap: theme.spacing.sm }}>
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.academicTools.strongTitle')}
+                </AppText>
                 {strongResults.map((entry) => (
                   <StrongEntryPanel entry={entry} key={entry.number} />
                 ))}
               </View>
+            ) : null}
+            {originalSearchResults.length ? (
+              <View style={{ gap: theme.spacing.sm }}>
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.academicTools.occurrencesTitle', {
+                    count: originalSearchResults.length,
+                  })}
+                </AppText>
+                {originalSearchResults.map((occurrence) => (
+                  <ListItem
+                    description={occurrence.transliteration || occurrence.text}
+                    icon="language-outline"
+                    key={`${occurrence.bookId}-${occurrence.chapterNumber}-${occurrence.verseNumber}-${occurrence.versionAbbreviation}`}
+                    onPress={() => openOriginalOccurrence(occurrence)}
+                    title={t('bible.academicTools.occurrenceLabel', {
+                      language: occurrence.languageName,
+                      reference: `${occurrence.bookName} ${occurrence.chapterNumber}:${occurrence.verseNumber}`,
+                    })}
+                  />
+                ))}
+              </View>
+            ) : null}
+            {strongQuery.trim().length >= 2 &&
+            !isAcademicSearching &&
+            !strongResults.length &&
+            !originalSearchResults.length ? (
+              <AppText color="textSecondary" variant="caption">
+                {t('bible.academicTools.noResults')}
+              </AppText>
             ) : null}
           </BaseCard>
 

@@ -54,6 +54,18 @@ export type OriginalLanguageVerse = {
   versionId: string;
 };
 
+export type OriginalLanguageSearchResult = {
+  bookId: string;
+  bookName: string;
+  chapterNumber: number;
+  language: OriginalLanguageCode;
+  languageName: string;
+  text: string;
+  transliteration: string;
+  verseNumber: number;
+  versionAbbreviation: string;
+};
+
 export type StrongLexiconEntry = {
   definition: string;
   language: OriginalLanguageCode;

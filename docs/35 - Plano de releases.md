@@ -206,10 +206,11 @@ Expandir a experiência bíblica.
 
 ### Funcionalidades
 
-- Morfologia avançada por ocorrência
-- Interlinear alinhado palavra por palavra
-- Léxico em português
-- Pesquisa acadêmica avançada
+- Melhorias no interlinear
+- Mais léxicos e painel Strong contextual
+- Mais dados morfológicos disponíveis no painel acadêmico
+- Pesquisa avançada por idioma original
+- Resultados originais navegáveis por referência
 
 ---
 
