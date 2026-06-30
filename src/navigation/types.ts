@@ -1,6 +1,6 @@
 export type MainTabParamList = {
   Home: undefined;
-  Bible: { initialReference?: string } | undefined;
+  Bible: { initialReadingMode?: 'comparison' | 'original' | 'translation'; initialReference?: string } | undefined;
   Donations: undefined;
   Studies: undefined;
   ReadingPlans: undefined;

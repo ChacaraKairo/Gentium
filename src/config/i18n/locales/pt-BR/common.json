@@ -17,11 +17,18 @@
   "home": {
     "title": "Gentium",
     "subtitle": "Uma base serena para leitura e estudo das Escrituras.",
+    "bibleExperienceDescription": "Acesse as traduções offline, compare versões e leia as Escrituras nos idiomas originais.",
+    "bibleExperienceTitle": "Bíblia completa",
+    "bibleVersionsAction": "Abrir versões bíblicas",
     "continueReading": "Continuar leitura",
     "continueDescription": "A leitura bíblica offline será ativada na próxima etapa.",
     "continueDescriptionV02": "Abra a Bíblia offline e retome sua última leitura.",
+    "donationsAction": "Fazer uma doação",
+    "donationsDescription": "Contribua voluntariamente com um valor fixo ou livre para apoiar a continuidade do Gentium.",
+    "donationsTitle": "Apoie o projeto",
     "foundation": "Fundação v0.1.0",
-    "foundationDescription": "Tema, navegação, SQLite, internacionalização e UI Kit inicial estão preparados."
+    "foundationDescription": "Tema, navegação, SQLite, internacionalização e UI Kit inicial estão preparados.",
+    "originalScripturesAction": "Abrir Escrituras no original"
   },
   "bible": {
     "title": "Bíblia",

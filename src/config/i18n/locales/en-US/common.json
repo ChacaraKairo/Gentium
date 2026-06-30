@@ -17,11 +17,18 @@
   "home": {
     "title": "Gentium",
     "subtitle": "A calm foundation for reading and studying Scripture.",
+    "bibleExperienceDescription": "Open offline translations, compare versions, and read Scripture in the original languages.",
+    "bibleExperienceTitle": "Complete Bible",
+    "bibleVersionsAction": "Open Bible versions",
     "continueReading": "Continue reading",
     "continueDescription": "Offline Bible reading will be enabled in the next stage.",
     "continueDescriptionV02": "Open the offline Bible and resume your latest reading.",
+    "donationsAction": "Make a donation",
+    "donationsDescription": "Contribute voluntarily with a fixed or custom amount to support Gentium's continuity.",
+    "donationsTitle": "Support the project",
     "foundation": "Foundation v0.1.0",
-    "foundationDescription": "Theme, navigation, SQLite, internationalization, and the initial UI Kit are ready."
+    "foundationDescription": "Theme, navigation, SQLite, internationalization, and the initial UI Kit are ready.",
+    "originalScripturesAction": "Open original Scriptures"
   },
   "bible": {
     "title": "Bible",

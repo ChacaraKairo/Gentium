@@ -115,6 +115,14 @@ export function BibleScreen() {
   }, [route.params?.initialReference]);
 
   useEffect(() => {
+    const initialReadingMode = route.params?.initialReadingMode;
+
+    if (initialReadingMode) {
+      setReadingMode(initialReadingMode);
+    }
+  }, [route.params?.initialReadingMode]);
+
+  useEffect(() => {
     const query = reference.trim();
 
     if (query.length < 2) {

@@ -56,6 +56,11 @@ for (const key of [
 
 for (const key of [
   'tabs.donations',
+  'home.bibleExperienceTitle',
+  'home.bibleVersionsAction',
+  'home.originalScripturesAction',
+  'home.donationsTitle',
+  'home.donationsAction',
   'donations.title',
   'donations.action',
   'donations.amountTitle',
