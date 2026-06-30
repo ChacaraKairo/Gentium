@@ -7,6 +7,7 @@
   "tabs": {
     "home": "Início",
     "bible": "Bíblia",
+    "donations": "Doações",
     "studies": "Estudos",
     "readingPlans": "Planos",
     "advancedLibrary": "Biblioteca",
@@ -96,6 +97,22 @@
     "versions": {
       "title": "Tradução"
     }
+  },
+  "donations": {
+    "action": "Apoiar o Gentium",
+    "amountTitle": "Escolha um valor",
+    "checkoutError": "Não foi possível abrir o checkout de doação.",
+    "checkoutNotConfigured": "O checkout Asaas ainda não foi configurado no ambiente.",
+    "customAmountLabel": "Valor livre da doação",
+    "customAmountPlaceholder": "Outro valor em reais",
+    "description": "As doações são voluntárias e ajudam a manter o desenvolvimento, os pacotes offline e a melhoria contínua do Gentium.",
+    "fixedAmount": "R$ {{amount}}",
+    "heading": "Apoio voluntário",
+    "selectedAmount": "Valor selecionado: R$ {{amount}}",
+    "shareMessage": "Quero apoiar o Gentium com R$ {{amount}}. Configure o checkout Asaas para concluir esta doação.",
+    "shareTitle": "Apoiar o Gentium",
+    "subtitle": "Contribua de forma voluntária para a continuidade do projeto.",
+    "title": "Doações"
   },
   "studies": {
     "title": "Estudos",
@@ -228,7 +245,7 @@
         "strongLexicon": "{{count}} verbetes Strong",
         "studyLessons": "{{count}} lições de estudo"
       },
-      "title": "Versão v1.3.0"
+      "title": "Versão v1.4.0 MVP"
     },
     "localBackup": {
       "action": "Exportar backup JSON",
@@ -239,10 +256,12 @@
     },
     "appearance": "Aparência",
     "appearanceDescription": "O tema acompanha a preferência do dispositivo.",
+    "donations": "Doações",
+    "donationsDescription": "Apoie voluntariamente a continuidade do Gentium.",
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 1.3.0, expansão de estudos com novos cursos, progresso e integração bíblica.",
+    "aboutDescription": "Versão 1.4.0 MVP, plataforma offline revisada com doações voluntárias preparadas.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

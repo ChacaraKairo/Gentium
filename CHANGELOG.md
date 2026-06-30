@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 — MVP Ideal
+
+- Revisão de MVP da plataforma offline.
+- Tela de doações voluntárias em Mais.
+- Valores fixos de doação e valor livre para escolha do usuário.
+- Ambiente Asaas preparado com `.env` local e `.env.example`.
+- Documentação e validação de release atualizadas para 1.4.0.
+
 ## 1.3.0 — Expansão de estudos
 
 - Biblioteca de estudos ampliada com novas áreas, cursos e lições.

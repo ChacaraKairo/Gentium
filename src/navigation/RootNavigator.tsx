@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AdvancedLibraryScreen } from '@/modules/advancedLibrary/screens/AdvancedLibraryScreen';
 import { BibleScreen } from '@/modules/bible/screens/BibleScreen';
+import { DonationsScreen } from '@/modules/donations/screens/DonationsScreen';
 import { HomeScreen } from '@/modules/home/screens/HomeScreen';
 import { NotesScreen } from '@/modules/notes/screens/NotesScreen';
 import { ReadingPlansScreen } from '@/modules/readingPlans/screens/ReadingPlansScreen';
@@ -17,6 +18,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const icons: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   AdvancedLibrary: 'file-tray-full-outline',
   Bible: 'book-outline',
+  Donations: 'heart-circle-outline',
   Home: 'home-outline',
   More: 'menu-outline',
   Notes: 'create-outline',
@@ -51,6 +53,14 @@ export function RootNavigator() {
     >
       <Tab.Screen component={HomeScreen} name="Home" options={{ title: t('tabs.home') }} />
       <Tab.Screen component={BibleScreen} name="Bible" options={{ title: t('tabs.bible') }} />
+      <Tab.Screen
+        component={DonationsScreen}
+        name="Donations"
+        options={{
+          tabBarButton: () => null,
+          title: t('tabs.donations'),
+        }}
+      />
       <Tab.Screen component={StudiesScreen} name="Studies" options={{ title: t('tabs.studies') }} />
       <Tab.Screen
         component={ReadingPlansScreen}

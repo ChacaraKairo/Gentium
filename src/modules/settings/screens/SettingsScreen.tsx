@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Share, View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -7,12 +8,14 @@ import {
   getBetaDiagnostics,
 } from '@/modules/settings/repositories/betaDiagnosticsRepository';
 import { createLocalBackupText } from '@/modules/settings/repositories/localBackupRepository';
+import { MainTabParamList } from '@/navigation/types';
 import { AppText, BaseCard, Button, ListItem } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 export function SettingsScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation<NavigationProp<MainTabParamList>>();
   const theme = useThemeTokens();
   const [diagnostics, setDiagnostics] = useState<BetaDiagnosticItem[]>([]);
   const [diagnosticsError, setDiagnosticsError] = useState(false);
@@ -71,6 +74,12 @@ export function SettingsScreen() {
           variant="secondary"
         />
       </BaseCard>
+      <ListItem
+        description={t('settings.donationsDescription')}
+        icon="heart-circle-outline"
+        onPress={() => navigation.navigate('Donations')}
+        title={t('settings.donations')}
+      />
       <ListItem
         description={t('settings.appearanceDescription')}
         icon="contrast-outline"

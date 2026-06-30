@@ -231,9 +231,14 @@ Expandir a experiência bíblica.
 
 ### Funcionalidades
 
-- Árvores Genealógicas
-- Referências Cruzadas
-- Paralelos Bíblicos
+- Revisão geral do MVP offline
+- Bíblia offline, estudos, planos, biblioteca avançada e anotações consolidados
+- Acessibilidade refinada
+- Internacionalização revisada
+- Backup local revisado
+- Alta estabilidade
+- Documentação completa
+- Doações voluntárias preparadas com ambiente Asaas
 
 ---
 
