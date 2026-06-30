@@ -99,6 +99,8 @@
     "originalLanguages": {
       "description": "WLC for biblical Hebrew/Aramaic, Textus Receptus for Koine Greek, and local transliteration.",
       "originalLabel": "{{language}} · {{version}}",
+      "pronunciationLabel": "Pronunciation in Latin characters",
+      "scriptLabel": "Scripture in the original",
       "title": "Original languages",
       "unavailable": "Original text is not available for this verse."
     },
@@ -119,6 +121,7 @@
       "portuguese": "Portuguese",
       "portugueseDescription": "{{version}} offline in Portuguese.",
       "selected": "Current selection: {{mode}}",
+      "selectedOption": "Selected: {{option}}",
       "spanish": "Spanish",
       "spanishDescription": "Spanish version being prepared for a future offline package.",
       "title": "Bible versions"

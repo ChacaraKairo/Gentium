@@ -566,6 +566,10 @@ export function BibleScreen() {
   const selectedVersion = versions.find((version) => version.id === selectedVersionId);
   const portugueseVersion = versions.find((version) => version.language === 'pt-BR');
   const englishVersion = versions.find((version) => version.language === 'en-US');
+  const isPortugueseSelected =
+    readingMode === 'translation' && selectedVersionId === portugueseVersion?.id;
+  const isEnglishSelected = readingMode === 'translation' && selectedVersionId === englishVersion?.id;
+  const isOriginalSelected = readingMode === 'original';
 
   return (
     <Screen subtitle={t('bible.subtitle')} title={t('bible.title')}>
@@ -654,7 +658,14 @@ export function BibleScreen() {
                 }
                 setReadingMode('translation');
               }}
-              title={t('bible.versionPicker.portuguese')}
+              style={getVersionPickerStyle(isPortugueseSelected, theme)}
+              title={
+                isPortugueseSelected
+                  ? t('bible.versionPicker.selectedOption', {
+                      option: t('bible.versionPicker.portuguese'),
+                    })
+                  : t('bible.versionPicker.portuguese')
+              }
             />
             <ListItem
               description={t('bible.versionPicker.englishDescription', {
@@ -667,7 +678,14 @@ export function BibleScreen() {
                 }
                 setReadingMode('translation');
               }}
-              title={t('bible.versionPicker.english')}
+              style={getVersionPickerStyle(isEnglishSelected, theme)}
+              title={
+                isEnglishSelected
+                  ? t('bible.versionPicker.selectedOption', {
+                      option: t('bible.versionPicker.english'),
+                    })
+                  : t('bible.versionPicker.english')
+              }
             />
             <ListItem
               description={t('bible.versionPicker.spanishDescription')}
@@ -679,7 +697,14 @@ export function BibleScreen() {
               description={t('bible.versionPicker.originalDescription')}
               icon="school-outline"
               onPress={() => setReadingMode('original')}
-              title={t('bible.versionPicker.original')}
+              style={getVersionPickerStyle(isOriginalSelected, theme)}
+              title={
+                isOriginalSelected
+                  ? t('bible.versionPicker.selectedOption', {
+                      option: t('bible.versionPicker.original'),
+                    })
+                  : t('bible.versionPicker.original')
+              }
             />
           </View>
           <AppText color="textSecondary" variant="caption">
@@ -1039,6 +1064,14 @@ function getSearchResultIcon(matchType: BibleSearchResult['matchType']) {
   return 'search-outline';
 }
 
+function getVersionPickerStyle(isSelected: boolean, theme: ReturnType<typeof useThemeTokens>) {
+  return ({ pressed }: { pressed: boolean }) => ({
+    backgroundColor: isSelected ? theme.colors.muted : theme.colors.surface,
+    borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+    opacity: pressed ? 0.72 : 1,
+  });
+}
+
 function OriginalVersePanel({
   onSelectWord,
   originalVerse,
@@ -1060,17 +1093,40 @@ function OriginalVersePanel({
   }
 
   return (
-    <View style={{ gap: theme.spacing.xs }}>
+    <View style={{ gap: theme.spacing.sm }}>
       <AppText color="primary" variant="caption">
         {t('bible.originalLanguages.originalLabel', {
           language: originalVerse.languageName,
           version: originalVerse.versionAbbreviation,
         })}
       </AppText>
-      <AppText>{originalVerse.text}</AppText>
-      <AppText color="textSecondary" variant="caption">
-        {originalVerse.transliteration}
-      </AppText>
+      <View
+        style={{
+          borderColor: theme.colors.border,
+          borderRadius: theme.radius.sm,
+          borderWidth: 1,
+          gap: theme.spacing.xs,
+          padding: theme.spacing.sm,
+        }}
+      >
+        <AppText color="textSecondary" variant="caption">
+          {t('bible.originalLanguages.scriptLabel')}
+        </AppText>
+        <AppText>{originalVerse.text}</AppText>
+      </View>
+      <View
+        style={{
+          backgroundColor: theme.colors.muted,
+          borderRadius: theme.radius.sm,
+          gap: theme.spacing.xs,
+          padding: theme.spacing.sm,
+        }}
+      >
+        <AppText color="textSecondary" variant="caption">
+          {t('bible.originalLanguages.pronunciationLabel')}
+        </AppText>
+        <AppText>{originalVerse.transliteration}</AppText>
+      </View>
       {originalVerse.interlinearWords.length ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
           {originalVerse.interlinearWords.map((word) => (
