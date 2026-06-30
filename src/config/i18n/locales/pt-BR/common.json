@@ -39,7 +39,7 @@
     "notesCount_plural": "{{count}} anotações",
     "oldTestament": "Antigo Testamento",
     "share": "Compartilhar versículo",
-    "versionNotice": "PorBLivre com original, transliteração, comparação WEB e léxico Strong.",
+    "versionNotice": "{{version}} com busca avançada, original, transliteração, comparação e léxico Strong.",
     "academicTools": {
       "morphology": "Morfologia: {{morphology}}",
       "noStrongMatch": "Ainda não há vínculo Strong para esta forma no léxico local.",
@@ -58,9 +58,23 @@
       "referenceNotFound": "Referência não encontrada na Bíblia offline."
     },
     "search": {
-      "action": "Buscar referência",
-      "placeholder": "Ex.: João 3:16",
-      "referenceLabel": "Pesquisar referência bíblica"
+      "action": "Abrir melhor resultado",
+      "matchTypes": {
+        "book": "Livro",
+        "reference": "Referência",
+        "text": "Texto"
+      },
+      "noResults": "Nenhum resultado encontrado.",
+      "placeholder": "Digite João, João 3, graça, amor...",
+      "referenceLabel": "Pesquisar Bíblia por referência, livro ou texto",
+      "resultsCount": "{{count}} resultado",
+      "resultsCount_plural": "{{count}} resultados",
+      "scopes": {
+        "all": "Toda a Bíblia",
+        "currentChapter": "Capítulo atual"
+      },
+      "searching": "Filtrando resultados...",
+      "title": "Busca avançada"
     },
     "originalLanguages": {
       "description": "WLC para hebraico/aramaico bíblico, Textus Receptus para grego koiné e transliteração local.",
@@ -72,6 +86,9 @@
       "comparison": "Comparar",
       "original": "Original",
       "translation": "Tradução"
+    },
+    "versions": {
+      "title": "Tradução"
     }
   },
   "studies": {
@@ -202,7 +219,7 @@
         "strongLexicon": "{{count}} verbetes Strong",
         "studyLessons": "{{count}} lições de estudo"
       },
-      "title": "Versão estável v1.0.0"
+      "title": "Versão v1.1.0"
     },
     "localBackup": {
       "action": "Exportar backup JSON",
@@ -216,7 +233,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 1.0.0, primeira versão estável offline.",
+    "aboutDescription": "Versão 1.1.0, busca bíblica avançada e seleção de tradução.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

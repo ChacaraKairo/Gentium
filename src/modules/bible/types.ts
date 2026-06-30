@@ -35,6 +35,12 @@ export type BibleVerse = {
   versionId: string;
 };
 
+export type BibleSearchScope = 'all' | 'currentChapter';
+
+export type BibleSearchResult = BibleVerse & {
+  matchType: 'book' | 'reference' | 'text';
+};
+
 export type OriginalLanguageCode = 'arc' | 'grc' | 'he';
 
 export type OriginalLanguageVerse = {
@@ -77,4 +83,5 @@ export type ReadingLocation = {
   bookId: string;
   chapterId: string;
   verseId?: string;
+  versionId?: string;
 };

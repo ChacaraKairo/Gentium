@@ -186,13 +186,19 @@ Primeira versão estável offline.
 
 # v1.1.0
 
+Objetivo:
+
+Expandir a experiência bíblica.
+
 ### Funcionalidades
 
-- Rotinas avançadas de leitura
-- Lembretes
-- Histórico
-- Estatísticas
-- Revisões
+- Busca avançada com filtro ao digitar
+- Busca por livro, referência e texto
+- Busca sem acento
+- Escopo por capítulo atual
+- Seleção de tradução principal
+- Comparação automática de versões
+- Última leitura com versão selecionada
 
 ---
 

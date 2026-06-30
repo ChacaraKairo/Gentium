@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 — Expansão bíblica
+
+- Busca bíblica avançada com filtragem enquanto digita.
+- Busca por livro, referência, capítulo e texto do versículo.
+- Busca sem acento para termos em português.
+- Escopo de busca para toda a Bíblia ou capítulo atual.
+- Seleção da tradução principal na leitura bíblica.
+- Comparação automática com a outra versão offline.
+- Última leitura preserva a tradução selecionada.
+
 ## 1.0.0 — Primeira versão estável
 
 - Bíblia offline com PorBLivre, WEB para comparação e textos originais.

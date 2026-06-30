@@ -39,7 +39,7 @@
     "notesCount_plural": "{{count}} notes",
     "oldTestament": "Old Testament",
     "share": "Share verse",
-    "versionNotice": "PorBLivre with original text, transliteration, WEB comparison, and Strong lexicon.",
+    "versionNotice": "{{version}} with advanced search, original text, transliteration, comparison, and Strong lexicon.",
     "academicTools": {
       "morphology": "Morphology: {{morphology}}",
       "noStrongMatch": "There is no Strong link for this form in the local lexicon yet.",
@@ -58,9 +58,23 @@
       "referenceNotFound": "Reference not found in the offline Bible."
     },
     "search": {
-      "action": "Search reference",
-      "placeholder": "E.g. João 3:16",
-      "referenceLabel": "Search Bible reference"
+      "action": "Open best result",
+      "matchTypes": {
+        "book": "Book",
+        "reference": "Reference",
+        "text": "Text"
+      },
+      "noResults": "No results found.",
+      "placeholder": "Type João, João 3, grace, love...",
+      "referenceLabel": "Search Bible by reference, book, or text",
+      "resultsCount": "{{count}} result",
+      "resultsCount_plural": "{{count}} results",
+      "scopes": {
+        "all": "Whole Bible",
+        "currentChapter": "Current chapter"
+      },
+      "searching": "Filtering results...",
+      "title": "Advanced search"
     },
     "originalLanguages": {
       "description": "WLC for biblical Hebrew/Aramaic, Textus Receptus for Koine Greek, and local transliteration.",
@@ -72,6 +86,9 @@
       "comparison": "Compare",
       "original": "Original",
       "translation": "Translation"
+    },
+    "versions": {
+      "title": "Translation"
     }
   },
   "studies": {
@@ -202,7 +219,7 @@
         "strongLexicon": "{{count}} Strong entries",
         "studyLessons": "{{count}} study lessons"
       },
-      "title": "Stable version v1.0.0"
+      "title": "Version v1.1.0"
     },
     "localBackup": {
       "action": "Export JSON backup",
@@ -216,7 +233,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 1.0.0, first stable offline release.",
+    "aboutDescription": "Version 1.1.0, advanced Bible search and translation selection.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

@@ -6,20 +6,25 @@ import {
   findReference,
   getBibleBooks,
   getBibleChapters,
+  getBibleVersions,
   getChapterComparisonVerses,
   getChapterOriginalVerses,
   getChapterVerses,
   getFavoriteVerses,
   getLastReading,
   saveLastReading,
+  searchBible,
   searchStrongLexicon,
   toggleFavorite,
 } from '@/modules/bible/repositories/bibleRepository';
 import {
   BibleBook,
   BibleChapter,
+  BibleSearchResult,
+  BibleSearchScope,
   BibleVerse,
   BibleVerseComparison,
+  BibleVersion,
   InterlinearWord,
   OriginalLanguageVerse,
   StrongLexiconEntry,
@@ -38,6 +43,7 @@ export function BibleScreen() {
   const theme = useThemeTokens();
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [chapters, setChapters] = useState<BibleChapter[]>([]);
+  const [versions, setVersions] = useState<BibleVersion[]>([]);
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [originalVerses, setOriginalVerses] = useState<OriginalLanguageVerse[]>([]);
   const [comparisonVerses, setComparisonVerses] = useState<BibleVerseComparison[]>([]);
@@ -48,6 +54,9 @@ export function BibleScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reference, setReference] = useState('');
+  const [searchResults, setSearchResults] = useState<BibleSearchResult[]>([]);
+  const [searchScope, setSearchScope] = useState<BibleSearchScope>('all');
+  const [isSearching, setIsSearching] = useState(false);
   const [strongQuery, setStrongQuery] = useState('');
   const [strongResults, setStrongResults] = useState<StrongLexiconEntry[]>([]);
   const [activeNoteVerseId, setActiveNoteVerseId] = useState<string | null>(null);
@@ -57,18 +66,24 @@ export function BibleScreen() {
   const [readingMode, setReadingMode] = useState<'comparison' | 'original' | 'translation'>(
     'translation',
   );
+  const [selectedVersionId, setSelectedVersionId] = useState('por-blivre');
 
   const loadBooks = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const [bookRows, favoriteRows, lastReading] = await Promise.all([
+      const [bookRows, versionRows, favoriteRows, lastReading] = await Promise.all([
         getBibleBooks(),
+        getBibleVersions(),
         getFavoriteVerses(),
         getLastReading(),
       ]);
       setBooks(bookRows);
+      setVersions(versionRows);
+      if (lastReading?.versionId) {
+        setSelectedVersionId(lastReading.versionId);
+      }
       setFavoriteVerses(favoriteRows);
       setHasLastReading(Boolean(lastReading));
     } catch {
@@ -81,6 +96,48 @@ export function BibleScreen() {
   useEffect(() => {
     loadBooks();
   }, [loadBooks]);
+
+  useEffect(() => {
+    const query = reference.trim();
+
+    if (query.length < 2) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    let isActive = true;
+    setIsSearching(true);
+
+    const timeout = setTimeout(() => {
+      searchBible(query, {
+        chapterId: selectedChapter?.id,
+        limit: 18,
+        scope: searchScope,
+        versionId: selectedVersionId,
+      })
+        .then((results) => {
+          if (isActive) {
+            setSearchResults(results);
+          }
+        })
+        .catch(() => {
+          if (isActive) {
+            setSearchResults([]);
+          }
+        })
+        .finally(() => {
+          if (isActive) {
+            setIsSearching(false);
+          }
+        });
+    }, 220);
+
+    return () => {
+      isActive = false;
+      clearTimeout(timeout);
+    };
+  }, [reference, searchScope, selectedChapter?.id, selectedVersionId]);
 
   const openBook = useCallback(
     async (book: BibleBook) => {
@@ -106,15 +163,15 @@ export function BibleScreen() {
   );
 
   const openChapter = useCallback(
-    async (book: BibleBook, chapter: BibleChapter) => {
+    async (book: BibleBook, chapter: BibleChapter, versionId = selectedVersionId) => {
       setIsLoading(true);
       setError(null);
 
       try {
         const [verseRows, originalRows, comparisonRows] = await Promise.all([
-          getChapterVerses(chapter.id),
+          getChapterVerses(chapter.id, versionId),
           getChapterOriginalVerses(book.id, chapter.chapterNumber),
-          getChapterComparisonVerses(chapter.id),
+          getChapterComparisonVerses(chapter.id, versionId),
         ]);
         setSelectedBook(book);
         setSelectedChapter(chapter);
@@ -122,7 +179,7 @@ export function BibleScreen() {
         setOriginalVerses(originalRows);
         setComparisonVerses(comparisonRows);
         setSelectedAcademicWord(null);
-        await saveLastReading({ bookId: book.id, chapterId: chapter.id });
+        await saveLastReading({ bookId: book.id, chapterId: chapter.id, versionId });
         setHasLastReading(true);
       } catch {
         setError(t('bible.errors.load'));
@@ -130,7 +187,7 @@ export function BibleScreen() {
         setIsLoading(false);
       }
     },
-    [t],
+    [selectedVersionId, t],
   );
 
   const continueReading = useCallback(async () => {
@@ -146,6 +203,9 @@ export function BibleScreen() {
       }
 
       const book = books.find((item) => item.id === lastReading.bookId);
+      if (lastReading.versionId) {
+        setSelectedVersionId(lastReading.versionId);
+      }
 
       if (!book) {
         setIsLoading(false);
@@ -161,13 +221,38 @@ export function BibleScreen() {
       }
 
       setChapters(chapterRows);
-      await openChapter(book, chapter);
+        await openChapter(book, chapter, lastReading.versionId ?? selectedVersionId);
     } catch {
       setError(t('bible.errors.load'));
     } finally {
       setIsLoading(false);
     }
-  }, [books, openChapter, t]);
+  }, [books, openChapter, selectedVersionId, t]);
+
+  const openSearchResult = useCallback(
+    async (verse: BibleSearchResult) => {
+      const book = books.find((item) => item.id === verse.bookId);
+
+      if (!book) {
+        setError(t('bible.errors.referenceNotFound'));
+        return;
+      }
+
+      const chapterRows = await getBibleChapters(book.id);
+      const chapter = chapterRows.find((item) => item.id === verse.chapterId);
+
+      if (!chapter) {
+        setError(t('bible.errors.referenceNotFound'));
+        return;
+      }
+
+      setReference(formatReference(verse));
+      setSearchResults([]);
+      setChapters(chapterRows);
+      await openChapter(book, chapter);
+    },
+    [books, openChapter, t],
+  );
 
   const searchReference = useCallback(async () => {
     if (!reference.trim()) {
@@ -178,9 +263,16 @@ export function BibleScreen() {
     setError(null);
 
     try {
-      const verse = await findReference(reference);
+      const verse = await findReference(reference, selectedVersionId);
 
       if (!verse) {
+        const [firstResult] = searchResults;
+
+        if (firstResult) {
+          await openSearchResult(firstResult);
+          return;
+        }
+
         setError(t('bible.errors.referenceNotFound'));
         return;
       }
@@ -207,7 +299,39 @@ export function BibleScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [books, openChapter, reference, t]);
+  }, [books, openChapter, openSearchResult, reference, searchResults, selectedVersionId, t]);
+
+  const changeVersion = useCallback(
+    async (versionId: string) => {
+      setSelectedVersionId(versionId);
+
+      if (selectedBook && selectedChapter) {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+          const [verseRows, originalRows, comparisonRows] = await Promise.all([
+            getChapterVerses(selectedChapter.id, versionId),
+            getChapterOriginalVerses(selectedBook.id, selectedChapter.chapterNumber),
+            getChapterComparisonVerses(selectedChapter.id, versionId),
+          ]);
+          setVerses(verseRows);
+          setOriginalVerses(originalRows);
+          setComparisonVerses(comparisonRows);
+          await saveLastReading({
+            bookId: selectedBook.id,
+            chapterId: selectedChapter.id,
+            versionId,
+          });
+        } catch {
+          setError(t('bible.errors.load'));
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    },
+    [selectedBook, selectedChapter, t],
+  );
 
   const toggleVerseFavorite = useCallback(
     async (verse: BibleVerse) => {
@@ -287,9 +411,12 @@ export function BibleScreen() {
     }
   }, [selectedBook, selectedChapter]);
 
+  const selectedVersion = versions.find((version) => version.id === selectedVersionId);
+
   return (
     <Screen subtitle={t('bible.subtitle')} title={t('bible.title')}>
       <BaseCard style={{ gap: theme.spacing.md }}>
+        <AppText variant="heading">{t('bible.search.title')}</AppText>
         <TextInput
           accessibilityLabel={t('bible.search.referenceLabel')}
           autoCapitalize="words"
@@ -299,12 +426,50 @@ export function BibleScreen() {
           returnKeyType="search"
           value={reference}
         />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+          <Button
+            label={t('bible.search.scopes.all')}
+            onPress={() => setSearchScope('all')}
+            variant={searchScope === 'all' ? 'primary' : 'secondary'}
+          />
+          <Button
+            label={t('bible.search.scopes.currentChapter')}
+            onPress={() => setSearchScope('currentChapter')}
+            variant={searchScope === 'currentChapter' ? 'primary' : 'secondary'}
+          />
+        </View>
         <Button
           isLoading={isLoading && Boolean(reference.trim())}
           label={t('bible.search.action')}
           onPress={searchReference}
           variant="secondary"
         />
+        {isSearching ? (
+          <AppText color="textSecondary" variant="caption">
+            {t('bible.search.searching')}
+          </AppText>
+        ) : null}
+        {reference.trim().length >= 2 && searchResults.length ? (
+          <View style={{ gap: theme.spacing.sm }}>
+            <AppText color="textSecondary" variant="caption">
+              {t('bible.search.resultsCount', { count: searchResults.length })}
+            </AppText>
+            {searchResults.map((verse) => (
+              <ListItem
+                description={verse.text}
+                icon={getSearchResultIcon(verse.matchType)}
+                key={verse.id}
+                onPress={() => openSearchResult(verse)}
+                title={`${formatReference(verse)} · ${t(`bible.search.matchTypes.${verse.matchType}`)}`}
+              />
+            ))}
+          </View>
+        ) : null}
+        {reference.trim().length >= 2 && !isSearching && !searchResults.length ? (
+          <AppText color="textSecondary" variant="caption">
+            {t('bible.search.noResults')}
+          </AppText>
+        ) : null}
       </BaseCard>
 
       {error ? (
@@ -387,9 +552,30 @@ export function BibleScreen() {
               {selectedBook.name} {selectedChapter.chapterNumber}
             </AppText>
             <AppText color="textSecondary" variant="caption">
-              {t('bible.versionNotice')}
+              {t('bible.versionNotice', {
+                version: selectedVersion?.abbreviation ?? selectedVersionId,
+              })}
             </AppText>
           </View>
+
+          <BaseCard style={{ gap: theme.spacing.sm }}>
+            <AppText variant="heading">{t('bible.versions.title')}</AppText>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+              {versions.map((version) => (
+                <Button
+                  key={version.id}
+                  label={version.abbreviation}
+                  onPress={() => changeVersion(version.id)}
+                  variant={selectedVersionId === version.id ? 'primary' : 'secondary'}
+                />
+              ))}
+            </View>
+            {selectedVersion ? (
+              <AppText color="textSecondary" variant="caption">
+                {selectedVersion.name}
+              </AppText>
+            ) : null}
+          </BaseCard>
 
           <BaseCard style={{ gap: theme.spacing.sm }}>
             <AppText variant="heading">{t('bible.originalLanguages.title')}</AppText>
@@ -534,6 +720,18 @@ export function BibleScreen() {
 
 function formatReference(verse: BibleVerse) {
   return `${verse.bookName} ${verse.chapterNumber}:${verse.verseNumber}`;
+}
+
+function getSearchResultIcon(matchType: BibleSearchResult['matchType']) {
+  if (matchType === 'book') {
+    return 'book-outline';
+  }
+
+  if (matchType === 'reference') {
+    return 'locate-outline';
+  }
+
+  return 'search-outline';
 }
 
 function OriginalVersePanel({

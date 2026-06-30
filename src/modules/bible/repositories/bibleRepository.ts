@@ -2,8 +2,11 @@ import { getDatabase } from '@/infrastructure/database/database';
 import {
   BibleBook,
   BibleChapter,
+  BibleSearchResult,
+  BibleSearchScope,
   BibleVerse,
   BibleVerseComparison,
+  BibleVersion,
   InterlinearWord,
   OriginalLanguageCode,
   OriginalLanguageVerse,
@@ -44,6 +47,7 @@ type ReadingHistoryRow = {
   book_id: string;
   chapter_id: string;
   verse_id: string | null;
+  version_id: string;
 };
 
 type OriginalVerseRow = {
@@ -71,10 +75,41 @@ type StrongLexiconRow = {
   transliteration: string;
 };
 
+type SearchVerseRow = VerseRow & {
+  match_type: 'book' | 'reference' | 'text';
+};
+
 const defaultVersionId = 'por-blivre';
 const comparisonVersionId = 'web';
 const lastReadingId = 'last-reading';
 const defaultCollectionId = 'default-favorites';
+
+export async function getBibleVersions(): Promise<BibleVersion[]> {
+  const database = await getDatabase();
+  const rows = await database.getAllAsync<{
+    abbreviation: string;
+    description: string;
+    id: string;
+    language: string;
+    name: string;
+  }>(
+    `
+      SELECT id, name, abbreviation, language, description
+      FROM bible_versions
+      WHERE is_offline_available = 1
+      ORDER BY CASE WHEN id = ? THEN 0 ELSE 1 END ASC, language ASC, name ASC;
+    `,
+    [defaultVersionId],
+  );
+
+  return rows.map((row) => ({
+    abbreviation: row.abbreviation,
+    description: row.description,
+    id: row.id,
+    language: row.language,
+    name: row.name,
+  }));
+}
 
 export async function getBibleBooks(): Promise<BibleBook[]> {
   const database = await getDatabase();
@@ -105,7 +140,10 @@ export async function getBibleChapters(bookId: string): Promise<BibleChapter[]> 
   }));
 }
 
-export async function getChapterVerses(chapterId: string): Promise<BibleVerse[]> {
+export async function getChapterVerses(
+  chapterId: string,
+  versionId = defaultVersionId,
+): Promise<BibleVerse[]> {
   const database = await getDatabase();
   const rows = await database.getAllAsync<VerseRow>(
     `
@@ -139,7 +177,7 @@ export async function getChapterVerses(chapterId: string): Promise<BibleVerse[]>
       WHERE verses.chapter_id = ? AND verses.version_id = ?
       ORDER BY verses.verse_number ASC;
     `,
-    [chapterId, defaultVersionId],
+    [chapterId, versionId],
   );
 
   return rows.map(mapVerseRow);
@@ -217,8 +255,12 @@ export async function searchStrongLexicon(query: string): Promise<StrongLexiconE
   return rows.map(mapStrongLexiconRow);
 }
 
-export async function getChapterComparisonVerses(chapterId: string): Promise<BibleVerseComparison[]> {
+export async function getChapterComparisonVerses(
+  chapterId: string,
+  selectedVersionId = defaultVersionId,
+): Promise<BibleVerseComparison[]> {
   const database = await getDatabase();
+  const versionId = selectedVersionId === comparisonVersionId ? defaultVersionId : comparisonVersionId;
   const rows = await database.getAllAsync<ComparisonVerseRow>(
     `
       SELECT
@@ -231,7 +273,7 @@ export async function getChapterComparisonVerses(chapterId: string): Promise<Bib
       WHERE verses.chapter_id = ? AND verses.version_id = ?
       ORDER BY verses.verse_number ASC;
     `,
-    [chapterId, comparisonVersionId],
+    [chapterId, versionId],
   );
 
   return rows.map((row) => ({
@@ -327,14 +369,20 @@ export async function saveLastReading(location: ReadingLocation) {
         verse_id = excluded.verse_id,
         last_read_at = CURRENT_TIMESTAMP;
     `,
-    [lastReadingId, defaultVersionId, location.bookId, location.chapterId, location.verseId ?? null],
+    [
+      lastReadingId,
+      location.versionId ?? defaultVersionId,
+      location.bookId,
+      location.chapterId,
+      location.verseId ?? null,
+    ],
   );
 }
 
 export async function getLastReading(): Promise<ReadingLocation | null> {
   const database = await getDatabase();
   const row = await database.getFirstAsync<ReadingHistoryRow>(
-    'SELECT book_id, chapter_id, verse_id FROM reading_history WHERE id = ? LIMIT 1;',
+    'SELECT version_id, book_id, chapter_id, verse_id FROM reading_history WHERE id = ? LIMIT 1;',
     [lastReadingId],
   );
 
@@ -346,10 +394,11 @@ export async function getLastReading(): Promise<ReadingLocation | null> {
     bookId: row.book_id,
     chapterId: row.chapter_id,
     verseId: row.verse_id ?? undefined,
+    versionId: row.version_id,
   };
 }
 
-export async function findReference(query: string): Promise<BibleVerse | null> {
+export async function findReference(query: string, versionId = defaultVersionId): Promise<BibleVerse | null> {
   const parsed = parseReference(query);
 
   if (!parsed) {
@@ -396,7 +445,7 @@ export async function findReference(query: string): Promise<BibleVerse | null> {
       LIMIT 1;
     `,
     [
-      defaultVersionId,
+      versionId,
       parsed.chapterNumber,
       parsed.verseNumber,
       parsed.book,
@@ -405,6 +454,167 @@ export async function findReference(query: string): Promise<BibleVerse | null> {
   );
 
   return row ? mapVerseRow(row) : null;
+}
+
+export async function searchBible(
+  query: string,
+  options: { chapterId?: string; limit?: number; scope?: BibleSearchScope; versionId?: string } = {},
+): Promise<BibleSearchResult[]> {
+  const normalizedQuery = query.trim().replace(/\s+/g, ' ');
+
+  if (normalizedQuery.length < 2) {
+    return [];
+  }
+
+  const database = await getDatabase();
+  const parsed = parseFlexibleReference(normalizedQuery);
+  const normalizedText = normalizeSearchText(normalizedQuery);
+  const searchText = `%${normalizedText}%`;
+  const rawText = `%${normalizedQuery.toLocaleLowerCase()}%`;
+  const bookText = `${normalizeSearchText(normalizeBookName(normalizedQuery.toLocaleLowerCase()))}%`;
+  const limit = options.limit ?? 24;
+  const versionId = options.versionId ?? defaultVersionId;
+  const chapterFilter =
+    options.scope === 'currentChapter' && options.chapterId ? 'AND verses.chapter_id = ?' : '';
+  const chapterParams =
+    options.scope === 'currentChapter' && options.chapterId ? [options.chapterId] : [];
+  const normalizedBookName = normalizeSql('books.name');
+  const normalizedBookAbbreviation = normalizeSql('books.abbreviation');
+  const normalizedVerseText = normalizeSql('verses.text');
+  const normalizedReferenceText = normalizeSql(
+    "books.name || ' ' || chapters.chapter_number || ':' || verses.verse_number",
+  );
+
+  if (parsed) {
+    const rows = await database.getAllAsync<SearchVerseRow>(
+      `
+        SELECT
+          verses.id,
+          verses.version_id,
+          verses.book_id,
+          books.name AS book_name,
+          books.abbreviation AS book_abbreviation,
+          verses.chapter_id,
+          chapters.chapter_number,
+          verses.verse_number,
+          verses.text,
+          CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite,
+          (
+            SELECT highlights.color
+            FROM highlights
+            WHERE highlights.verse_id = verses.id AND highlights.deleted_at IS NULL
+            ORDER BY highlights.updated_at DESC
+            LIMIT 1
+          ) AS highlight_color,
+          (
+            SELECT COUNT(*)
+            FROM notes
+            WHERE notes.verse_id = verses.id AND notes.deleted_at IS NULL
+          ) AS notes_count,
+          'reference' AS match_type
+        FROM bible_verses verses
+        INNER JOIN bible_books books ON books.id = verses.book_id
+        INNER JOIN bible_chapters chapters ON chapters.id = verses.chapter_id
+        LEFT JOIN favorites ON favorites.verse_id = verses.id AND favorites.deleted_at IS NULL
+        WHERE verses.version_id = ?
+          ${chapterFilter}
+          AND chapters.chapter_number = ?
+          AND (? IS NULL OR verses.verse_number = ?)
+          AND (
+            ${normalizedBookName} LIKE ?
+            OR ${normalizedBookAbbreviation} LIKE ?
+          )
+        ORDER BY books.position ASC, chapters.chapter_number ASC, verses.verse_number ASC
+        LIMIT ?;
+      `,
+      [
+        versionId,
+        ...chapterParams,
+        parsed.chapterNumber,
+        parsed.verseNumber ?? null,
+        parsed.verseNumber ?? null,
+        `${normalizeSearchText(parsed.book)}%`,
+        `${normalizeSearchText(parsed.book)}%`,
+        limit,
+      ],
+    );
+
+    return rows.map(mapSearchVerseRow);
+  }
+
+  const rows = await database.getAllAsync<SearchVerseRow>(
+    `
+      SELECT
+        verses.id,
+        verses.version_id,
+        verses.book_id,
+        books.name AS book_name,
+        books.abbreviation AS book_abbreviation,
+        verses.chapter_id,
+        chapters.chapter_number,
+        verses.verse_number,
+        verses.text,
+        CASE WHEN favorites.id IS NULL THEN 0 ELSE 1 END AS is_favorite,
+        (
+          SELECT highlights.color
+          FROM highlights
+          WHERE highlights.verse_id = verses.id AND highlights.deleted_at IS NULL
+          ORDER BY highlights.updated_at DESC
+          LIMIT 1
+        ) AS highlight_color,
+        (
+          SELECT COUNT(*)
+          FROM notes
+          WHERE notes.verse_id = verses.id AND notes.deleted_at IS NULL
+        ) AS notes_count,
+        CASE
+          WHEN ${normalizedBookName} LIKE ? OR ${normalizedBookAbbreviation} LIKE ? THEN 'book'
+          WHEN ${normalizedReferenceText} LIKE ? THEN 'reference'
+          ELSE 'text'
+        END AS match_type
+      FROM bible_verses verses
+      INNER JOIN bible_books books ON books.id = verses.book_id
+      INNER JOIN bible_chapters chapters ON chapters.id = verses.chapter_id
+      LEFT JOIN favorites ON favorites.verse_id = verses.id AND favorites.deleted_at IS NULL
+      WHERE verses.version_id = ?
+        ${chapterFilter}
+        AND (
+          ${normalizedBookName} LIKE ?
+          OR ${normalizedBookAbbreviation} LIKE ?
+          OR ${normalizedReferenceText} LIKE ?
+          OR ${normalizedVerseText} LIKE ?
+          OR LOWER(verses.text) LIKE ?
+        )
+      ORDER BY
+        CASE
+          WHEN ${normalizedBookName} LIKE ? OR ${normalizedBookAbbreviation} LIKE ? THEN 0
+          WHEN ${normalizedReferenceText} LIKE ? THEN 1
+          ELSE 2
+        END ASC,
+        books.position ASC,
+        chapters.chapter_number ASC,
+        verses.verse_number ASC
+      LIMIT ?;
+    `,
+    [
+      bookText,
+      bookText,
+      rawText,
+      versionId,
+      ...chapterParams,
+      bookText,
+      bookText,
+      rawText,
+      searchText,
+      rawText,
+      bookText,
+      bookText,
+      rawText,
+      limit,
+    ],
+  );
+
+  return rows.map(mapSearchVerseRow);
 }
 
 function mapVerseRow(row: VerseRow): BibleVerse {
@@ -421,6 +631,13 @@ function mapVerseRow(row: VerseRow): BibleVerse {
     text: row.text,
     verseNumber: row.verse_number,
     versionId: row.version_id,
+  };
+}
+
+function mapSearchVerseRow(row: SearchVerseRow): BibleSearchResult {
+  return {
+    ...mapVerseRow(row),
+    matchType: row.match_type,
   };
 }
 
@@ -703,6 +920,55 @@ function parseReference(query: string) {
     chapterNumber: Number(chapterNumber),
     verseNumber: Number(verseNumber),
   };
+}
+
+function parseFlexibleReference(query: string) {
+  const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');
+  const match = normalized.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, book, chapterNumber, verseNumber] = match;
+
+  if (!book || !chapterNumber) {
+    return null;
+  }
+
+  return {
+    book: normalizeBookName(book),
+    chapterNumber: Number(chapterNumber),
+    verseNumber: verseNumber ? Number(verseNumber) : undefined,
+  };
+}
+
+function normalizeSearchText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase();
+}
+
+function normalizeSql(expression: string) {
+  return [
+    ['á', 'a'],
+    ['à', 'a'],
+    ['â', 'a'],
+    ['ã', 'a'],
+    ['é', 'e'],
+    ['ê', 'e'],
+    ['í', 'i'],
+    ['ó', 'o'],
+    ['ô', 'o'],
+    ['õ', 'o'],
+    ['ú', 'u'],
+    ['ü', 'u'],
+    ['ç', 'c'],
+  ].reduce(
+    (current, [accented, plain]) => `REPLACE(${current}, '${accented}', '${plain}')`,
+    `LOWER(${expression})`,
+  );
 }
 
 function normalizeBookName(book: string) {
