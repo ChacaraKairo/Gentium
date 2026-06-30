@@ -47,6 +47,12 @@
     "notesCount_plural": "{{count}} anotações",
     "oldTestament": "Antigo Testamento",
     "share": "Compartilhar versículo",
+    "selection": {
+      "count": "{{count}} versículo selecionado",
+      "count_plural": "{{count}} versículos selecionados",
+      "menu": "☰ Opções",
+      "toggleVerse": "Selecionar {{reference}}"
+    },
     "versionNotice": "{{version}} com busca avançada, original, transliteração, comparação e léxico Strong.",
     "academicTools": {
       "morphology": "Morfologia: {{morphology}}",

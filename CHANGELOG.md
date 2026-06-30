@@ -10,6 +10,7 @@
 - Seleção de idioma adicionada em Mais com preferência persistida.
 - Textos de MVP revisados para leitura mais amigável.
 - Seletor inicial da Bíblia com Português, Inglês, Espanhol em preparação e Original.
+- Leitura bíblica com seleção de versículos por toque e ações agrupadas em menu.
 - Valores fixos de doação e valor livre para escolha do usuário.
 - Ambiente Asaas preparado com `.env` local e `.env.example`.
 - Documentação e validação de release atualizadas para 1.4.0.

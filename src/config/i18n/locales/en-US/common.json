@@ -47,6 +47,12 @@
     "notesCount_plural": "{{count}} notes",
     "oldTestament": "Old Testament",
     "share": "Share verse",
+    "selection": {
+      "count": "{{count}} selected verse",
+      "count_plural": "{{count}} selected verses",
+      "menu": "☰ Options",
+      "toggleVerse": "Select {{reference}}"
+    },
     "versionNotice": "{{version}} with advanced search, original text, transliteration, comparison, and Strong lexicon.",
     "academicTools": {
       "morphology": "Morphology: {{morphology}}",

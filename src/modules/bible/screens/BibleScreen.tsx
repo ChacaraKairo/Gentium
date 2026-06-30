@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Share, View } from 'react-native';
+import { Pressable, Share, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -38,7 +38,7 @@ import {
   createVerseHighlight,
   highlightColors,
 } from '@/modules/notes/repositories/personalRepository';
-import { AppText, BaseCard, Button, IconButton, ListItem, TextInput } from '@/shared/components';
+import { AppText, BaseCard, Button, ListItem, TextInput } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
@@ -68,9 +68,11 @@ export function BibleScreen() {
     [],
   );
   const [isAcademicSearching, setIsAcademicSearching] = useState(false);
-  const [activeNoteVerseId, setActiveNoteVerseId] = useState<string | null>(null);
   const [noteContent, setNoteContent] = useState('');
   const [noteTags, setNoteTags] = useState('');
+  const [selectedVerseIds, setSelectedVerseIds] = useState<string[]>([]);
+  const [isVerseActionMenuOpen, setIsVerseActionMenuOpen] = useState(false);
+  const [isSelectionNoteOpen, setIsSelectionNoteOpen] = useState(false);
   const [selectedAcademicWord, setSelectedAcademicWord] = useState<InterlinearWord | null>(null);
   const [readingMode, setReadingMode] = useState<'comparison' | 'original' | 'translation'>(
     'translation',
@@ -177,6 +179,9 @@ export function BibleScreen() {
         setOriginalVerses([]);
         setComparisonVerses([]);
         setSelectedAcademicWord(null);
+        setSelectedVerseIds([]);
+        setIsVerseActionMenuOpen(false);
+        setIsSelectionNoteOpen(false);
         setChapters(chapterRows);
       } catch {
         setError(t('bible.errors.load'));
@@ -204,6 +209,9 @@ export function BibleScreen() {
         setOriginalVerses(originalRows);
         setComparisonVerses(comparisonRows);
         setSelectedAcademicWord(null);
+        setSelectedVerseIds([]);
+        setIsVerseActionMenuOpen(false);
+        setIsSelectionNoteOpen(false);
         await saveLastReading({ bookId: book.id, chapterId: chapter.id, versionId });
         setHasLastReading(true);
       } catch {
@@ -369,29 +377,35 @@ export function BibleScreen() {
     [],
   );
 
-  const saveVerseNote = useCallback(
-    async (verse: BibleVerse) => {
+  const saveSelectionNote = useCallback(
+    async () => {
       if (!noteContent.trim()) {
         return;
       }
+
+      const selectedVerses = verses.filter((verse) => selectedVerseIds.includes(verse.id));
+      const title = selectedVerses.map(formatReference).join(', ');
+      const [firstVerse] = selectedVerses;
 
       await createStudyNote({
         categoryName: t('notes.defaultCategory'),
         content: noteContent,
         tags: noteTags,
-        title: formatReference(verse),
-        verseId: verse.id,
+        title,
+        verseId: selectedVerses.length === 1 ? firstVerse?.id : undefined,
       });
-      setVerses((current) =>
-        current.map((item) =>
-          item.id === verse.id ? { ...item, notesCount: item.notesCount + 1 } : item,
-        ),
-      );
-      setActiveNoteVerseId(null);
+      if (selectedVerses.length === 1 && firstVerse) {
+        setVerses((current) =>
+          current.map((item) =>
+            item.id === firstVerse.id ? { ...item, notesCount: item.notesCount + 1 } : item,
+          ),
+        );
+      }
+      setIsSelectionNoteOpen(false);
       setNoteContent('');
       setNoteTags('');
     },
-    [noteContent, noteTags, t],
+    [noteContent, noteTags, selectedVerseIds, t, verses],
   );
 
   const markVerse = useCallback(async (verse: BibleVerse, color: string) => {
@@ -405,11 +419,40 @@ export function BibleScreen() {
     );
   }, [t]);
 
-  const shareVerse = useCallback(async (verse: BibleVerse) => {
-    await Share.share({
-      message: `${formatReference(verse)}\n${verse.text}`,
-    });
+  const selectedVerses = verses.filter((verse) => selectedVerseIds.includes(verse.id));
+
+  const toggleVerseSelection = useCallback((verseId: string) => {
+    setSelectedVerseIds((current) =>
+      current.includes(verseId)
+        ? current.filter((selectedVerseId) => selectedVerseId !== verseId)
+        : [...current, verseId],
+    );
   }, []);
+
+  const favoriteSelectedVerses = useCallback(async () => {
+    for (const verse of selectedVerses) {
+      await toggleVerseFavorite(verse);
+    }
+  }, [selectedVerses, toggleVerseFavorite]);
+
+  const markSelectedVerses = useCallback(
+    async (color: string) => {
+      for (const verse of selectedVerses) {
+        await markVerse(verse, color);
+      }
+    },
+    [markVerse, selectedVerses],
+  );
+
+  const shareSelectedVerses = useCallback(async () => {
+    if (!selectedVerses.length) {
+      return;
+    }
+
+    await Share.share({
+      message: selectedVerses.map((verse) => `${formatReference(verse)}\n${verse.text}`).join('\n\n'),
+    });
+  }, [selectedVerses]);
 
   const searchAcademic = useCallback(async () => {
     if (!strongQuery.trim()) {
@@ -508,6 +551,9 @@ export function BibleScreen() {
       setOriginalVerses([]);
       setComparisonVerses([]);
       setSelectedAcademicWord(null);
+      setSelectedVerseIds([]);
+      setIsVerseActionMenuOpen(false);
+      setIsSelectionNoteOpen(false);
       return;
     }
 
@@ -836,8 +882,106 @@ export function BibleScreen() {
             </BaseCard>
           ) : null}
 
+          {selectedVerses.length ? (
+            <BaseCard style={{ gap: theme.spacing.sm }}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  gap: theme.spacing.sm,
+                  justifyContent: 'space-between',
+                }}
+              >
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.selection.count', { count: selectedVerses.length })}
+                </AppText>
+                <Button
+                  label={t('bible.selection.menu')}
+                  onPress={() => setIsVerseActionMenuOpen((current) => !current)}
+                  variant="secondary"
+                />
+              </View>
+              {isVerseActionMenuOpen ? (
+                <View style={{ gap: theme.spacing.sm }}>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+                    <Button
+                      label={t('bible.favorite')}
+                      onPress={favoriteSelectedVerses}
+                      variant="secondary"
+                    />
+                    <Button
+                      label={t('bible.note')}
+                      onPress={() => setIsSelectionNoteOpen((current) => !current)}
+                      variant="secondary"
+                    />
+                    <Button
+                      label={t('bible.share')}
+                      onPress={shareSelectedVerses}
+                      variant="secondary"
+                    />
+                  </View>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+                    {highlightColors.map((color) => (
+                      <Pressable
+                        accessibilityLabel={t('bible.highlightWithColor')}
+                        accessibilityRole="button"
+                        key={color}
+                        onPress={() => markSelectedVerses(color)}
+                        style={({ pressed }) => ({
+                          backgroundColor: color,
+                          borderColor: theme.colors.border,
+                          borderRadius: theme.radius.pill,
+                          borderWidth: 1,
+                          height: 36,
+                          opacity: pressed ? 0.72 : 1,
+                          width: 36,
+                        })}
+                      />
+                    ))}
+                  </View>
+                  {isSelectionNoteOpen ? (
+                    <View style={{ gap: theme.spacing.sm }}>
+                      <TextInput
+                        accessibilityLabel={t('notes.content')}
+                        multiline
+                        onChangeText={setNoteContent}
+                        placeholder={t('notes.contentPlaceholder')}
+                        value={noteContent}
+                      />
+                      <TextInput
+                        accessibilityLabel={t('notes.tags')}
+                        onChangeText={setNoteTags}
+                        placeholder={t('notes.tagsPlaceholder')}
+                        value={noteTags}
+                      />
+                      <Button label={t('notes.save')} onPress={saveSelectionNote} />
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+            </BaseCard>
+          ) : null}
+
           {verses.map((verse) => (
-            <BaseCard key={verse.id} style={{ gap: theme.spacing.md }}>
+            <Pressable
+              accessibilityLabel={t('bible.selection.toggleVerse', { reference: formatReference(verse) })}
+              accessibilityRole="button"
+              key={verse.id}
+              onPress={() => toggleVerseSelection(verse.id)}
+              style={({ pressed }) => {
+                const isSelected = selectedVerseIds.includes(verse.id);
+
+                return {
+                  backgroundColor: isSelected ? theme.colors.muted : theme.colors.surface,
+                  borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                  borderRadius: theme.radius.md,
+                  borderWidth: 1,
+                  gap: theme.spacing.md,
+                  opacity: pressed ? 0.82 : 1,
+                  padding: theme.spacing.md,
+                };
+              }}
+            >
               <AppText color="primary" variant="caption">
                 {formatReference(verse)}
               </AppText>
@@ -866,58 +1010,12 @@ export function BibleScreen() {
                   )}
                 />
               ) : null}
-              <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
-                <IconButton
-                  icon={verse.isFavorite ? 'heart' : 'heart-outline'}
-                  label={t('bible.favorite')}
-                  onPress={() => toggleVerseFavorite(verse)}
-                />
-                <IconButton
-                  icon="document-text-outline"
-                  label={t('bible.note')}
-                  onPress={() => setActiveNoteVerseId(activeNoteVerseId === verse.id ? null : verse.id)}
-                />
-                <IconButton
-                  icon="share-social-outline"
-                  label={t('bible.share')}
-                  onPress={() => shareVerse(verse)}
-                />
-              </View>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
-                {highlightColors.map((color) => (
-                  <IconButton
-                    icon="color-wand-outline"
-                    key={color}
-                    label={t('bible.highlightWithColor')}
-                    onPress={() => markVerse(verse, color)}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </View>
               {verse.notesCount ? (
                 <AppText color="textSecondary" variant="caption">
                   {t('bible.notesCount', { count: verse.notesCount })}
                 </AppText>
               ) : null}
-              {activeNoteVerseId === verse.id ? (
-                <View style={{ gap: theme.spacing.sm }}>
-                  <TextInput
-                    accessibilityLabel={t('notes.content')}
-                    multiline
-                    onChangeText={setNoteContent}
-                    placeholder={t('notes.contentPlaceholder')}
-                    value={noteContent}
-                  />
-                  <TextInput
-                    accessibilityLabel={t('notes.tags')}
-                    onChangeText={setNoteTags}
-                    placeholder={t('notes.tagsPlaceholder')}
-                    value={noteTags}
-                  />
-                  <Button label={t('notes.save')} onPress={() => saveVerseNote(verse)} />
-                </View>
-              ) : null}
-            </BaseCard>
+            </Pressable>
           ))}
         </View>
       ) : null}
