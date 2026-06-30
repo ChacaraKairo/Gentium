@@ -120,8 +120,11 @@
     },
     "libraryDescription": "Cursos iniciais para estudar a Bíblia de forma progressiva e offline.",
     "libraryTitle": "Biblioteca de estudos",
+    "nextLesson": "Próxima lição: {{lesson}} em {{course}} · {{progress}}%",
     "progress": "{{completed}} de {{total}} lições concluídas",
-    "startCourse": "Iniciar curso"
+    "startCourse": "Iniciar curso",
+    "statsSummary": "{{completedLessons}} de {{lessons}} lições · {{completedCourses}} de {{courses}} cursos · {{active}} ativos · {{progress}}%",
+    "statsTitle": "Estatísticas de estudo"
   },
   "readingPlans": {
     "title": "Planos",
@@ -225,7 +228,7 @@
         "strongLexicon": "{{count}} verbetes Strong",
         "studyLessons": "{{count}} lições de estudo"
       },
-      "title": "Versão v1.2.0"
+      "title": "Versão v1.3.0"
     },
     "localBackup": {
       "action": "Exportar backup JSON",
@@ -239,7 +242,7 @@
     "language": "Idioma",
     "languageDescription": "Português do Brasil está ativo nesta fundação.",
     "about": "Sobre o Gentium",
-    "aboutDescription": "Versão 1.2.0, expansão acadêmica com Strong e busca em idiomas originais.",
+    "aboutDescription": "Versão 1.3.0, expansão de estudos com novos cursos, progresso e integração bíblica.",
     "bibleLicense": "Licença da Bíblia",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases."
   }

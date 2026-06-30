@@ -134,6 +134,112 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "course-acts-and-church",
+              "title": "Atos e a Igreja Primitiva",
+              "description": "Uma introdução à expansão do evangelho, ao testemunho apostólico e à formação das primeiras comunidades cristãs.",
+              "level": "intermediate",
+              "estimatedMinutes": 38,
+              "position": 2,
+              "modules": [
+                {
+                  "id": "module-spirit-and-mission",
+                  "title": "Espírito e Missão",
+                  "description": "Como Atos apresenta a igreja em movimento pelo poder do Espírito Santo.",
+                  "position": 1,
+                  "lessons": [
+                    {
+                      "id": "lesson-pentecost-and-witness",
+                      "title": "Pentecostes e testemunho",
+                      "summary": "A missão cristã nasce da ação do Espírito e se expressa em testemunho público.",
+                      "content": "Atos mostra a promessa de Jesus se cumprindo quando o Espírito capacita os discípulos. A igreja não cresce por estratégia isolada, mas pela presença de Deus que forma coragem, comunhão e proclamação.",
+                      "estimatedMinutes": 10,
+                      "position": 1,
+                      "references": ["Atos 1:8", "Atos 2:1-4"]
+                    },
+                    {
+                      "id": "lesson-community-practices",
+                      "title": "Práticas da comunidade",
+                      "summary": "Doutrina, comunhão, partir do pão e oração moldam a vida da igreja.",
+                      "content": "A igreja primitiva aparece como comunidade ensinada pela palavra apostólica, comprometida com oração, generosidade e mesa compartilhada. Essas práticas formam uma espiritualidade pública e concreta.",
+                      "estimatedMinutes": 9,
+                      "position": 2,
+                      "references": ["Atos 2:42-47", "Atos 4:32-35"]
+                    },
+                    {
+                      "id": "lesson-gospel-to-nations",
+                      "title": "O evangelho entre as nações",
+                      "summary": "Atos acompanha a passagem do testemunho local para uma missão multiétnica.",
+                      "content": "O avanço até gentios, cidades e culturas diferentes revela que o evangelho não pertence a um só grupo. A missão exige discernimento bíblico, coragem pastoral e fidelidade a Cristo.",
+                      "estimatedMinutes": 11,
+                      "position": 3,
+                      "references": ["Atos 10:34-35", "Atos 13:47"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "old-testament",
+      "title": "Antigo Testamento",
+      "description": "Cursos para compreender aliança, sabedoria, profetas e esperança messiânica.",
+      "position": 3,
+      "categories": [
+        {
+          "id": "old-testament-foundations",
+          "title": "Lei e Sabedoria",
+          "description": "Fundamentos narrativos, poéticos e sapienciais do Antigo Testamento.",
+          "position": 1,
+          "courses": [
+            {
+              "id": "course-pentateuch-overview",
+              "title": "Panorama do Pentateuco",
+              "description": "Uma leitura inicial de criação, queda, aliança, êxodo e formação do povo de Deus.",
+              "level": "beginner",
+              "estimatedMinutes": 45,
+              "position": 1,
+              "modules": [
+                {
+                  "id": "module-covenant-story",
+                  "title": "História da Aliança",
+                  "description": "Os primeiros livros da Bíblia como fundamento teológico da história bíblica.",
+                  "position": 1,
+                  "lessons": [
+                    {
+                      "id": "lesson-creation-and-fall",
+                      "title": "Criação e queda",
+                      "summary": "Gênesis apresenta Deus como criador bom e explica a ruptura causada pelo pecado.",
+                      "content": "A criação estabelece dignidade, ordem e propósito. A queda mostra como a desobediência distorce relações com Deus, com o próximo e com a criação. O restante da Bíblia responde a essa ruptura com promessa e redenção.",
+                      "estimatedMinutes": 10,
+                      "position": 1,
+                      "references": ["Gênesis 1:26-28", "Gênesis 3:15"]
+                    },
+                    {
+                      "id": "lesson-abrahamic-promise",
+                      "title": "A promessa a Abraão",
+                      "summary": "A aliança com Abraão organiza temas de terra, descendência e bênção para as nações.",
+                      "content": "Deus chama Abraão e promete abençoar todas as famílias da terra. Essa promessa guia a história de Israel e prepara a leitura cristã da missão e do Messias.",
+                      "estimatedMinutes": 9,
+                      "position": 2,
+                      "references": ["Gênesis 12:1-3", "Gálatas 3:8"]
+                    },
+                    {
+                      "id": "lesson-exodus-and-law",
+                      "title": "Êxodo e lei",
+                      "summary": "A libertação do Egito revela redenção, presença divina e formação de um povo santo.",
+                      "content": "O êxodo não é apenas fuga da opressão; é ato redentor que conduz o povo à adoração e à aliança. A lei organiza a vida diante de Deus e do próximo.",
+                      "estimatedMinutes": 11,
+                      "position": 3,
+                      "references": ["Êxodo 12:13", "Êxodo 20:1-3"]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

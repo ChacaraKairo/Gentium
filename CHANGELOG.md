@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0 — Expansão de estudos
+
+- Biblioteca de estudos ampliada com novas áreas, cursos e lições.
+- Novo curso sobre Atos e a Igreja Primitiva.
+- Nova área de Antigo Testamento com panorama do Pentateuco.
+- Estatísticas aprimoradas de progresso educacional.
+- Continuação rápida para a próxima lição.
+- Integração das referências de lição com a aba Bíblia.
+
 ## 1.2.0 — Expansão acadêmica
 
 - Busca acadêmica unificada para Strong e idiomas originais.

@@ -120,8 +120,11 @@
     },
     "libraryDescription": "Initial courses for studying the Bible progressively and offline.",
     "libraryTitle": "Studies library",
+    "nextLesson": "Next lesson: {{lesson}} in {{course}} · {{progress}}%",
     "progress": "{{completed}} of {{total}} lessons completed",
-    "startCourse": "Start course"
+    "startCourse": "Start course",
+    "statsSummary": "{{completedLessons}} of {{lessons}} lessons · {{completedCourses}} of {{courses}} courses · {{active}} active · {{progress}}%",
+    "statsTitle": "Study stats"
   },
   "readingPlans": {
     "title": "Plans",
@@ -225,7 +228,7 @@
         "strongLexicon": "{{count}} Strong entries",
         "studyLessons": "{{count}} study lessons"
       },
-      "title": "Version v1.2.0"
+      "title": "Version v1.3.0"
     },
     "localBackup": {
       "action": "Export JSON backup",
@@ -239,7 +242,7 @@
     "language": "Language",
     "languageDescription": "Brazilian Portuguese is active in this foundation.",
     "about": "About Gentium",
-    "aboutDescription": "Version 1.2.0, academic expansion with Strong and original-language search.",
+    "aboutDescription": "Version 1.3.0, studies expansion with new courses, progress, and Bible integration.",
     "bibleLicense": "Bible license",
     "bibleLicenseDescription": "PorBLivre: Creative Commons Attribution 3.0 Brazil. Source: scrollmapper/bible_databases."
   }

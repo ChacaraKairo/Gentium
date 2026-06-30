@@ -5,7 +5,7 @@ import { StudiesLibrarySeed } from './seeds/types';
 
 const studiesLibrary = studiesLibrarySeed as StudiesLibrarySeed;
 const studiesPackageMetadataKey = 'studies_seed_package';
-const studiesPackageVersion = 'Gentium-studies-v0.6.0-2026-06-29';
+const studiesPackageVersion = 'Gentium-studies-v1.3.0-2026-06-30';
 
 export async function seedStudiesLibrary(database: SQLiteDatabase) {
   const metadata = await database.getFirstAsync<{ value: string }>(

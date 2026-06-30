@@ -4,9 +4,11 @@ import {
   StudyCategory,
   StudyCourse,
   StudyCourseDetail,
+  StudyDashboardStats,
   StudyLesson,
   StudyLevel,
   StudyModule,
+  StudyResume,
 } from '@/modules/studies/types';
 
 type StudyAreaRow = {
@@ -52,6 +54,105 @@ type StudyLessonRow = {
   summary: string;
   title: string;
 };
+
+type StudyStatsRow = {
+  active_courses: number;
+  completed_courses: number;
+  completed_lessons: number;
+  total_courses: number;
+  total_lessons: number;
+};
+
+type StudyResumeRow = {
+  completed_lessons: number;
+  course_id: string;
+  course_title: string;
+  lesson_count: number;
+  lesson_id: string;
+  lesson_title: string;
+};
+
+export async function getStudyDashboardStats(): Promise<StudyDashboardStats> {
+  const database = await getDatabase();
+  const stats = await database.getFirstAsync<StudyStatsRow>(`
+    SELECT
+      COUNT(DISTINCT courses.id) AS total_courses,
+      COUNT(DISTINCT lessons.id) AS total_lessons,
+      COUNT(DISTINCT lesson_progress.lesson_id) AS completed_lessons,
+      COUNT(DISTINCT course_progress.course_id) AS active_courses,
+      COUNT(DISTINCT CASE WHEN course_progress.completed_at IS NOT NULL THEN courses.id END)
+        AS completed_courses
+    FROM study_courses courses
+    LEFT JOIN study_modules modules ON modules.course_id = courses.id
+    LEFT JOIN study_lessons lessons ON lessons.module_id = modules.id
+    LEFT JOIN study_lesson_progress lesson_progress ON lesson_progress.lesson_id = lessons.id
+    LEFT JOIN study_course_progress course_progress ON course_progress.course_id = courses.id;
+  `);
+  const nextLesson = await getNextStudyLesson();
+  const totalLessons = stats?.total_lessons ?? 0;
+  const completedLessons = stats?.completed_lessons ?? 0;
+
+  return {
+    activeCourses: stats?.active_courses ?? 0,
+    completedCourses: stats?.completed_courses ?? 0,
+    completedLessons,
+    nextLesson,
+    progressPercent: getProgressPercent(completedLessons, totalLessons),
+    totalCourses: stats?.total_courses ?? 0,
+    totalLessons,
+  };
+}
+
+export async function getNextStudyLesson(): Promise<StudyResume | undefined> {
+  const database = await getDatabase();
+  const row = await database.getFirstAsync<StudyResumeRow>(`
+    SELECT
+      courses.id AS course_id,
+      courses.title AS course_title,
+      lessons.id AS lesson_id,
+      lessons.title AS lesson_title,
+      COUNT(DISTINCT all_lessons.id) AS lesson_count,
+      COUNT(DISTINCT completed.lesson_id) AS completed_lessons
+    FROM study_courses courses
+    LEFT JOIN study_course_progress course_progress ON course_progress.course_id = courses.id
+    INNER JOIN study_modules modules ON modules.course_id = courses.id
+    INNER JOIN study_lessons lessons ON lessons.module_id = modules.id
+    LEFT JOIN study_lesson_progress lesson_progress ON lesson_progress.lesson_id = lessons.id
+    LEFT JOIN study_modules all_modules ON all_modules.course_id = courses.id
+    LEFT JOIN study_lessons all_lessons ON all_lessons.module_id = all_modules.id
+    LEFT JOIN study_lesson_progress completed ON completed.lesson_id = all_lessons.id
+    WHERE lesson_progress.lesson_id IS NULL
+    GROUP BY courses.id, lessons.id
+    ORDER BY
+      CASE WHEN course_progress.course_id IS NULL THEN 1 ELSE 0 END ASC,
+      course_progress.last_activity_at DESC,
+      courses.position ASC,
+      modules.position ASC,
+      lessons.position ASC
+    LIMIT 1;
+  `);
+
+  if (!row) {
+    return undefined;
+  }
+
+  return {
+    courseId: row.course_id,
+    courseTitle: row.course_title,
+    lessonId: row.lesson_id,
+    lessonTitle: row.lesson_title,
+    progressPercent: getProgressPercent(row.completed_lessons, row.lesson_count),
+  };
+}
+
+export async function getStudyLesson(courseId: string, lessonId: string): Promise<StudyLesson | null> {
+  const detail = await getStudyCourseDetail(courseId);
+
+  return (
+    detail?.modules.flatMap((module) => module.lessons).find((lesson) => lesson.id === lessonId) ??
+    null
+  );
+}
 
 export async function getStudyAreas(): Promise<StudyArea[]> {
   const database = await getDatabase();

@@ -57,3 +57,21 @@ export type StudyLesson = {
 export type StudyCourseDetail = StudyCourse & {
   modules: StudyModule[];
 };
+
+export type StudyResume = {
+  courseId: string;
+  courseTitle: string;
+  lessonId: string;
+  lessonTitle: string;
+  progressPercent: number;
+};
+
+export type StudyDashboardStats = {
+  activeCourses: number;
+  completedCourses: number;
+  completedLessons: number;
+  nextLesson?: StudyResume;
+  progressPercent: number;
+  totalCourses: number;
+  totalLessons: number;
+};

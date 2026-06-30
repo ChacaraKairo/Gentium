@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Share, View } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -31,6 +32,7 @@ import {
   OriginalLanguageVerse,
   StrongLexiconEntry,
 } from '@/modules/bible/types';
+import { MainTabParamList } from '@/navigation/types';
 import {
   createStudyNote,
   createVerseHighlight,
@@ -42,6 +44,7 @@ import { useThemeTokens } from '@/theme/useThemeTokens';
 
 export function BibleScreen() {
   const { t } = useTranslation();
+  const route = useRoute<RouteProp<MainTabParamList, 'Bible'>>();
   const theme = useThemeTokens();
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [chapters, setChapters] = useState<BibleChapter[]>([]);
@@ -102,6 +105,14 @@ export function BibleScreen() {
   useEffect(() => {
     loadBooks();
   }, [loadBooks]);
+
+  useEffect(() => {
+    const initialReference = route.params?.initialReference;
+
+    if (initialReference) {
+      setReference(initialReference);
+    }
+  }, [route.params?.initialReference]);
 
   useEffect(() => {
     const query = reference.trim();

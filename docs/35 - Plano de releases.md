@@ -218,10 +218,12 @@ Expandir a experiência bíblica.
 
 ### Funcionalidades
 
-- Comentários Bíblicos
-- Dicionário Bíblico
-- Mapas
-- Cronologias
+- Mais estudos
+- Mais cursos
+- Melhor progresso
+- Revisões
+- Melhor integração entre estudos e Bíblia
+- Estatísticas aprimoradas
 
 ---
 

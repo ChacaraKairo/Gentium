@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -8,6 +9,7 @@ import {
   getStudyCategories,
   getStudyCourseDetail,
   getStudyCourses,
+  getStudyDashboardStats,
   startStudyCourse,
 } from '@/modules/studies/repositories/studiesRepository';
 import {
@@ -15,18 +17,22 @@ import {
   StudyCategory,
   StudyCourse,
   StudyCourseDetail,
+  StudyDashboardStats,
   StudyLesson,
 } from '@/modules/studies/types';
+import { MainTabParamList } from '@/navigation/types';
 import { AppText, BaseCard, Button, ListItem } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 export function StudiesScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation<NavigationProp<MainTabParamList>>();
   const theme = useThemeTokens();
   const [areas, setAreas] = useState<StudyArea[]>([]);
   const [categories, setCategories] = useState<StudyCategory[]>([]);
   const [courses, setCourses] = useState<StudyCourse[]>([]);
+  const [stats, setStats] = useState<StudyDashboardStats | null>(null);
   const [selectedArea, setSelectedArea] = useState<StudyArea | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<StudyCategory | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<StudyCourseDetail | null>(null);
@@ -39,7 +45,12 @@ export function StudiesScreen() {
     setError(null);
 
     try {
-      setAreas(await getStudyAreas());
+      const [areaRows, dashboardStats] = await Promise.all([
+        getStudyAreas(),
+        getStudyDashboardStats(),
+      ]);
+      setAreas(areaRows);
+      setStats(dashboardStats);
     } catch {
       setError(t('studies.errors.load'));
     } finally {
@@ -116,7 +127,33 @@ export function StudiesScreen() {
 
     await startStudyCourse(selectedCourse.id);
     await openCourse(selectedCourse.id);
+    setStats(await getStudyDashboardStats());
   }, [openCourse, selectedCourse]);
+
+  const continueStudy = useCallback(async () => {
+    if (!stats?.nextLesson) {
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const detail = await getStudyCourseDetail(stats.nextLesson.courseId);
+      const lesson = detail?.modules
+        .flatMap((module) => module.lessons)
+        .find((item) => item.id === stats.nextLesson?.lessonId);
+
+      setSelectedArea(null);
+      setSelectedCategory(null);
+      setSelectedCourse(detail);
+      setSelectedLesson(lesson ?? null);
+    } catch {
+      setError(t('studies.errors.load'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [stats?.nextLesson, t]);
 
   const completeLesson = useCallback(async () => {
     if (!selectedCourse || !selectedLesson) {
@@ -130,7 +167,15 @@ export function StudiesScreen() {
       .find((item) => item.id === selectedLesson.id);
     setSelectedCourse(detail);
     setSelectedLesson(lesson ?? null);
+    setStats(await getStudyDashboardStats());
   }, [selectedCourse, selectedLesson]);
+
+  const openBibleReference = useCallback(
+    (initialReference: string) => {
+      navigation.navigate('Bible', { initialReference });
+    },
+    [navigation],
+  );
 
   const goBack = useCallback(() => {
     if (selectedLesson) {
@@ -159,7 +204,9 @@ export function StudiesScreen() {
 
   return (
     <Screen subtitle={t('studies.subtitle')} title={title ?? t('studies.title')}>
-      {selectedArea ? <Button label={t('common.back')} onPress={goBack} variant="ghost" /> : null}
+      {selectedArea || selectedCourse || selectedLesson ? (
+        <Button label={t('common.back')} onPress={goBack} variant="ghost" />
+      ) : null}
 
       {error ? (
         <BaseCard>
@@ -179,6 +226,33 @@ export function StudiesScreen() {
             <AppText variant="heading">{t('studies.libraryTitle')}</AppText>
             <AppText color="textSecondary">{t('studies.libraryDescription')}</AppText>
           </BaseCard>
+          {stats ? (
+            <BaseCard style={{ gap: theme.spacing.sm }}>
+              <AppText variant="heading">{t('studies.statsTitle')}</AppText>
+              <AppText color="textSecondary">
+                {t('studies.statsSummary', {
+                  active: stats.activeCourses,
+                  completedCourses: stats.completedCourses,
+                  completedLessons: stats.completedLessons,
+                  courses: stats.totalCourses,
+                  lessons: stats.totalLessons,
+                  progress: stats.progressPercent,
+                })}
+              </AppText>
+              {stats.nextLesson ? (
+                <View style={{ gap: theme.spacing.xs }}>
+                  <AppText color="textSecondary" variant="caption">
+                    {t('studies.nextLesson', {
+                      course: stats.nextLesson.courseTitle,
+                      lesson: stats.nextLesson.lessonTitle,
+                      progress: stats.nextLesson.progressPercent,
+                    })}
+                  </AppText>
+                  <Button label={t('studies.continueCourse')} onPress={continueStudy} />
+                </View>
+              ) : null}
+            </BaseCard>
+          ) : null}
           {areas.map((area) => (
             <ListItem
               description={t('studies.areaSummary', {
@@ -281,7 +355,12 @@ export function StudiesScreen() {
           {selectedLesson.references.length ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
               {selectedLesson.references.map((reference) => (
-                <Button key={reference} label={reference} onPress={() => {}} variant="secondary" />
+                <Button
+                  key={reference}
+                  label={reference}
+                  onPress={() => openBibleReference(reference)}
+                  variant="secondary"
+                />
               ))}
             </View>
           ) : null}
