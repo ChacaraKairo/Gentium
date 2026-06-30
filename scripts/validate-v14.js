@@ -68,6 +68,10 @@ for (const key of [
   'donations.checkoutNotConfigured',
   'settings.donations',
   'settings.donationsDescription',
+  'settings.language',
+  'settings.languageDescription',
+  'settings.languages.pt-BR',
+  'settings.languages.en-US',
   'settings.betaDiagnostics.title',
   'settings.aboutDescription',
 ]) {

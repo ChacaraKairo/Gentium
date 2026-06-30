@@ -7,6 +7,10 @@ import {
   BetaDiagnosticItem,
   getBetaDiagnostics,
 } from '@/modules/settings/repositories/betaDiagnosticsRepository';
+import {
+  getSavedLanguage,
+  saveLanguage,
+} from '@/modules/settings/repositories/languageRepository';
 import { createLocalBackupText } from '@/modules/settings/repositories/localBackupRepository';
 import { MainTabParamList } from '@/navigation/types';
 import { AppText, BaseCard, Button, ListItem } from '@/shared/components';
@@ -14,19 +18,26 @@ import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 export function SettingsScreen() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const navigation = useNavigation<NavigationProp<MainTabParamList>>();
   const theme = useThemeTokens();
   const [diagnostics, setDiagnostics] = useState<BetaDiagnosticItem[]>([]);
   const [diagnosticsError, setDiagnosticsError] = useState(false);
   const [backupError, setBackupError] = useState(false);
   const [isExportingBackup, setIsExportingBackup] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
 
   useEffect(() => {
     getBetaDiagnostics()
       .then(setDiagnostics)
       .catch(() => setDiagnosticsError(true));
+
+    getSavedLanguage().then(setSelectedLanguage).catch(() => setSelectedLanguage('pt-BR'));
   }, []);
+
+  async function changeLanguage(language: 'en-US' | 'pt-BR') {
+    setSelectedLanguage(await saveLanguage(language));
+  }
 
   async function exportBackup() {
     setIsExportingBackup(true);
@@ -85,11 +96,26 @@ export function SettingsScreen() {
         icon="contrast-outline"
         title={t('settings.appearance')}
       />
-      <ListItem
-        description={t('settings.languageDescription')}
-        icon="language-outline"
-        title={t('settings.language')}
-      />
+      <BaseCard style={{ gap: theme.spacing.sm }}>
+        <AppText variant="heading">{t('settings.language')}</AppText>
+        <AppText color="textSecondary">
+          {t('settings.languageDescription', {
+            language: t(`settings.languages.${selectedLanguage}`),
+          })}
+        </AppText>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+          <Button
+            label={t('settings.languages.pt-BR')}
+            onPress={() => changeLanguage('pt-BR')}
+            variant={selectedLanguage === 'pt-BR' ? 'primary' : 'secondary'}
+          />
+          <Button
+            label={t('settings.languages.en-US')}
+            onPress={() => changeLanguage('en-US')}
+            variant={selectedLanguage === 'en-US' ? 'primary' : 'secondary'}
+          />
+        </View>
+      </BaseCard>
       <ListItem
         description={t('settings.aboutDescription')}
         icon="information-circle-outline"

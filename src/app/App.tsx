@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppProviders } from './providers/AppProviders';
 import { initializeAppDatabase } from '@/infrastructure/database/database';
+import { applySavedLanguage } from '@/modules/settings/repositories/languageRepository';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { useStartupStore } from '@/app/startup/startupStore';
 import { AppText, BaseCard, Button } from '@/shared/components';
@@ -17,7 +18,10 @@ function AppBootstrap() {
   const theme = useThemeTokens();
 
   useEffect(() => {
-    initialize(initializeAppDatabase);
+    initialize(async () => {
+      await initializeAppDatabase();
+      await applySavedLanguage();
+    });
   }, [initialize]);
 
   if (!isReady) {
@@ -50,7 +54,15 @@ function AppBootstrap() {
             Gentium
           </AppText>
           <AppText color="textSecondary">{error}</AppText>
-          <Button label={t('common.retry')} onPress={() => initialize(initializeAppDatabase)} />
+          <Button
+            label={t('common.retry')}
+            onPress={() =>
+              initialize(async () => {
+                await initializeAppDatabase();
+                await applySavedLanguage();
+              })
+            }
+          />
         </BaseCard>
       </View>
     );

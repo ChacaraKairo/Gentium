@@ -6,6 +6,9 @@
 - Tela de doações voluntárias em Mais.
 - Atalho de doações na página inicial.
 - Atalhos iniciais para versões bíblicas e Escrituras nos idiomas originais.
+- Português do Brasil definido como idioma padrão do app.
+- Seleção de idioma adicionada em Mais com preferência persistida.
+- Textos de MVP revisados para leitura mais amigável.
 - Valores fixos de doação e valor livre para escolha do usuário.
 - Ambiente Asaas preparado com `.env` local e `.env.example`.
 - Documentação e validação de release atualizadas para 1.4.0.

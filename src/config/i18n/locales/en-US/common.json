@@ -26,8 +26,8 @@
     "donationsAction": "Make a donation",
     "donationsDescription": "Contribute voluntarily with a fixed or custom amount to support Gentium's continuity.",
     "donationsTitle": "Support the project",
-    "foundation": "Foundation v0.1.0",
-    "foundationDescription": "Theme, navigation, SQLite, internationalization, and the initial UI Kit are ready.",
+    "foundation": "Offline MVP",
+    "foundationDescription": "Bible, studies, plans, notes, advanced library, backup, and voluntary donations are ready for use.",
     "originalScripturesAction": "Open original Scriptures"
   },
   "bible": {
@@ -239,10 +239,10 @@
   },
   "settings": {
     "title": "More",
-    "subtitle": "Initial settings and app information.",
+    "subtitle": "Preferences, backup, language, support, and app information.",
     "betaDiagnostics": {
-      "description": "Local checklist for validating offline packages before the closed beta.",
-      "error": "Could not load beta diagnostics.",
+      "description": "Local checklist for validating MVP offline packages.",
+      "error": "Could not load MVP diagnostics.",
       "items": {
         "advancedResources": "{{count}} Bible commentaries in the advanced package",
         "bibleBooks": "{{count}} Bible books loaded",
@@ -266,7 +266,11 @@
     "donations": "Donations",
     "donationsDescription": "Voluntarily support Gentium's continuity.",
     "language": "Language",
-    "languageDescription": "Brazilian Portuguese is active in this foundation.",
+    "languageDescription": "Active language: {{language}}. Gentium defaults to Brazilian Portuguese.",
+    "languages": {
+      "en-US": "English",
+      "pt-BR": "Brazilian Portuguese"
+    },
     "about": "About Gentium",
     "aboutDescription": "Version 1.4.0 MVP, reviewed offline platform with voluntary donations prepared.",
     "bibleLicense": "Bible license",
