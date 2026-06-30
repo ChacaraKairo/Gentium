@@ -518,6 +518,8 @@ export function BibleScreen() {
   }, [selectedBook, selectedChapter]);
 
   const selectedVersion = versions.find((version) => version.id === selectedVersionId);
+  const portugueseVersion = versions.find((version) => version.language === 'pt-BR');
+  const englishVersion = versions.find((version) => version.language === 'en-US');
 
   return (
     <Screen subtitle={t('bible.subtitle')} title={t('bible.title')}>
@@ -586,6 +588,63 @@ export function BibleScreen() {
 
       {!selectedBook && hasLastReading ? (
         <Button label={t('bible.continueReading')} onPress={continueReading} />
+      ) : null}
+
+      {!selectedBook ? (
+        <BaseCard style={{ gap: theme.spacing.md }}>
+          <View style={{ gap: theme.spacing.xs }}>
+            <AppText variant="heading">{t('bible.versionPicker.title')}</AppText>
+            <AppText color="textSecondary">{t('bible.versionPicker.description')}</AppText>
+          </View>
+          <View style={{ gap: theme.spacing.sm }}>
+            <ListItem
+              description={t('bible.versionPicker.portugueseDescription', {
+                version: portugueseVersion?.abbreviation ?? 'PorBLivre',
+              })}
+              icon="book-outline"
+              onPress={() => {
+                if (portugueseVersion) {
+                  setSelectedVersionId(portugueseVersion.id);
+                }
+                setReadingMode('translation');
+              }}
+              title={t('bible.versionPicker.portuguese')}
+            />
+            <ListItem
+              description={t('bible.versionPicker.englishDescription', {
+                version: englishVersion?.abbreviation ?? 'WEB',
+              })}
+              icon="language-outline"
+              onPress={() => {
+                if (englishVersion) {
+                  setSelectedVersionId(englishVersion.id);
+                }
+                setReadingMode('translation');
+              }}
+              title={t('bible.versionPicker.english')}
+            />
+            <ListItem
+              description={t('bible.versionPicker.spanishDescription')}
+              disabled
+              icon="language-outline"
+              title={t('bible.versionPicker.spanish')}
+            />
+            <ListItem
+              description={t('bible.versionPicker.originalDescription')}
+              icon="school-outline"
+              onPress={() => setReadingMode('original')}
+              title={t('bible.versionPicker.original')}
+            />
+          </View>
+          <AppText color="textSecondary" variant="caption">
+            {t('bible.versionPicker.selected', {
+              mode:
+                readingMode === 'original'
+                  ? t('bible.versionPicker.original')
+                  : selectedVersion?.name ?? selectedVersionId,
+            })}
+          </AppText>
+        </BaseCard>
       ) : null}
 
       {!selectedBook && favoriteVerses.length ? (

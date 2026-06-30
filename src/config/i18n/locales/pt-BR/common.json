@@ -103,6 +103,19 @@
     },
     "versions": {
       "title": "Tradução"
+    },
+    "versionPicker": {
+      "description": "Escolha como deseja começar a leitura antes de abrir um livro.",
+      "english": "Inglês",
+      "englishDescription": "{{version}} offline em inglês.",
+      "original": "Original",
+      "originalDescription": "Hebraico, aramaico e grego com transliteração e interlinear inicial.",
+      "portuguese": "Português",
+      "portugueseDescription": "{{version}} offline em português.",
+      "selected": "Seleção atual: {{mode}}",
+      "spanish": "Espanhol",
+      "spanishDescription": "Versão em espanhol em preparação para pacote offline futuro.",
+      "title": "Versões bíblicas"
     }
   },
   "donations": {
