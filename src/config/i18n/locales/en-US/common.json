@@ -53,7 +53,7 @@
       "menu": "☰ Options",
       "toggleVerse": "Select {{reference}}"
     },
-    "versionNotice": "{{version}} with advanced search, original text, transliteration, comparison, and Strong lexicon.",
+    "versionNotice": "{{version}} with advanced search, original text, transliteration, and Strong lexicon.",
     "academicTools": {
       "morphology": "Morphology: {{morphology}}",
       "noStrongMatch": "There is no Strong link for this form in the local lexicon yet.",
@@ -69,9 +69,6 @@
       "strongTitle": "Strong lexicon",
       "title": "Academic tools",
       "wordPanelTitle": "Original word"
-    },
-    "comparison": {
-      "versionLabel": "{{version}} comparison"
     },
     "errors": {
       "load": "Could not load the offline Bible.",
@@ -105,7 +102,6 @@
       "unavailable": "Original text is not available for this verse."
     },
     "readingModes": {
-      "comparison": "Compare",
       "original": "Original",
       "translation": "Translation"
     },

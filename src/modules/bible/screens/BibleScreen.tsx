@@ -8,7 +8,6 @@ import {
   getBibleBooks,
   getBibleChapters,
   getBibleVersions,
-  getChapterComparisonVerses,
   getChapterOriginalVerses,
   getChapterVerses,
   getFavoriteVerses,
@@ -25,7 +24,6 @@ import {
   BibleSearchResult,
   BibleSearchScope,
   BibleVerse,
-  BibleVerseComparison,
   BibleVersion,
   InterlinearWord,
   OriginalLanguageSearchResult,
@@ -43,7 +41,7 @@ import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 export function BibleScreen() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const route = useRoute<RouteProp<MainTabParamList, 'Bible'>>();
   const theme = useThemeTokens();
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -51,7 +49,6 @@ export function BibleScreen() {
   const [versions, setVersions] = useState<BibleVersion[]>([]);
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [originalVerses, setOriginalVerses] = useState<OriginalLanguageVerse[]>([]);
-  const [comparisonVerses, setComparisonVerses] = useState<BibleVerseComparison[]>([]);
   const [favoriteVerses, setFavoriteVerses] = useState<BibleVerse[]>([]);
   const [selectedBook, setSelectedBook] = useState<BibleBook | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<BibleChapter | null>(null);
@@ -74,9 +71,7 @@ export function BibleScreen() {
   const [isVerseActionMenuOpen, setIsVerseActionMenuOpen] = useState(false);
   const [isSelectionNoteOpen, setIsSelectionNoteOpen] = useState(false);
   const [selectedAcademicWord, setSelectedAcademicWord] = useState<InterlinearWord | null>(null);
-  const [readingMode, setReadingMode] = useState<'comparison' | 'original' | 'translation'>(
-    'translation',
-  );
+  const [readingMode, setReadingMode] = useState<'original' | 'translation'>('translation');
   const [selectedVersionId, setSelectedVersionId] = useState('por-blivre');
 
   const loadBooks = useCallback(async () => {
@@ -94,6 +89,12 @@ export function BibleScreen() {
       setVersions(versionRows);
       if (lastReading?.versionId) {
         setSelectedVersionId(lastReading.versionId);
+      } else {
+        const preferredVersion = getPreferredTranslationVersion(versionRows, i18n.language);
+
+        if (preferredVersion) {
+          setSelectedVersionId(preferredVersion.id);
+        }
       }
       setFavoriteVerses(favoriteRows);
       setHasLastReading(Boolean(lastReading));
@@ -102,7 +103,7 @@ export function BibleScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [t]);
+  }, [i18n.language, t]);
 
   useEffect(() => {
     loadBooks();
@@ -177,7 +178,6 @@ export function BibleScreen() {
         setSelectedChapter(null);
         setVerses([]);
         setOriginalVerses([]);
-        setComparisonVerses([]);
         setSelectedAcademicWord(null);
         setSelectedVerseIds([]);
         setIsVerseActionMenuOpen(false);
@@ -198,16 +198,14 @@ export function BibleScreen() {
       setError(null);
 
       try {
-        const [verseRows, originalRows, comparisonRows] = await Promise.all([
+        const [verseRows, originalRows] = await Promise.all([
           getChapterVerses(chapter.id, versionId),
           getChapterOriginalVerses(book.id, chapter.chapterNumber),
-          getChapterComparisonVerses(chapter.id, versionId),
         ]);
         setSelectedBook(book);
         setSelectedChapter(chapter);
         setVerses(verseRows);
         setOriginalVerses(originalRows);
-        setComparisonVerses(comparisonRows);
         setSelectedAcademicWord(null);
         setSelectedVerseIds([]);
         setIsVerseActionMenuOpen(false);
@@ -343,14 +341,12 @@ export function BibleScreen() {
         setError(null);
 
         try {
-          const [verseRows, originalRows, comparisonRows] = await Promise.all([
+          const [verseRows, originalRows] = await Promise.all([
             getChapterVerses(selectedChapter.id, versionId),
             getChapterOriginalVerses(selectedBook.id, selectedChapter.chapterNumber),
-            getChapterComparisonVerses(selectedChapter.id, versionId),
           ]);
           setVerses(verseRows);
           setOriginalVerses(originalRows);
-          setComparisonVerses(comparisonRows);
           await saveLastReading({
             bookId: selectedBook.id,
             chapterId: selectedChapter.id,
@@ -365,6 +361,15 @@ export function BibleScreen() {
     },
     [selectedBook, selectedChapter, t],
   );
+
+  const selectTranslationMode = useCallback(async () => {
+    const preferredVersion = getPreferredTranslationVersion(versions, i18n.language);
+    setReadingMode('translation');
+
+    if (preferredVersion && preferredVersion.id !== selectedVersionId) {
+      await changeVersion(preferredVersion.id);
+    }
+  }, [changeVersion, i18n.language, selectedVersionId, versions]);
 
   const toggleVerseFavorite = useCallback(
     async (verse: BibleVerse) => {
@@ -549,7 +554,6 @@ export function BibleScreen() {
       setSelectedChapter(null);
       setVerses([]);
       setOriginalVerses([]);
-      setComparisonVerses([]);
       setSelectedAcademicWord(null);
       setSelectedVerseIds([]);
       setIsVerseActionMenuOpen(false);
@@ -818,18 +822,13 @@ export function BibleScreen() {
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
               <Button
                 label={t('bible.readingModes.translation')}
-                onPress={() => setReadingMode('translation')}
+                onPress={selectTranslationMode}
                 variant={readingMode === 'translation' ? 'primary' : 'secondary'}
               />
               <Button
                 label={t('bible.readingModes.original')}
                 onPress={() => setReadingMode('original')}
                 variant={readingMode === 'original' ? 'primary' : 'secondary'}
-              />
-              <Button
-                label={t('bible.readingModes.comparison')}
-                onPress={() => setReadingMode('comparison')}
-                variant={readingMode === 'comparison' ? 'primary' : 'secondary'}
               />
             </View>
             <AppText color="textSecondary" variant="caption">
@@ -1021,18 +1020,11 @@ export function BibleScreen() {
                   }}
                 />
               ) : null}
-              <AppText>{verse.text}</AppText>
-              {readingMode !== 'translation' ? (
+              {readingMode === 'translation' ? <AppText>{verse.text}</AppText> : null}
+              {readingMode === 'original' ? (
                 <OriginalVersePanel
                   originalVerse={originalVerses.find((item) => item.verseNumber === verse.verseNumber)}
                   onSelectWord={setSelectedAcademicWord}
-                />
-              ) : null}
-              {readingMode === 'comparison' ? (
-                <ComparisonVersePanel
-                  comparisonVerse={comparisonVerses.find(
-                    (item) => item.verseNumber === verse.verseNumber,
-                  )}
                 />
               ) : null}
               {verse.notesCount ? (
@@ -1070,6 +1062,16 @@ function getVersionPickerStyle(isSelected: boolean, theme: ReturnType<typeof use
     borderColor: isSelected ? theme.colors.primary : theme.colors.border,
     opacity: pressed ? 0.72 : 1,
   });
+}
+
+function getPreferredTranslationVersion(versions: BibleVersion[], language: string) {
+  const preferredLanguage = language === 'en-US' ? 'en-US' : 'pt-BR';
+
+  return (
+    versions.find((version) => version.language === preferredLanguage) ??
+    versions.find((version) => version.language === 'pt-BR') ??
+    versions[0]
+  );
 }
 
 function OriginalVersePanel({
@@ -1182,24 +1184,6 @@ function StrongEntryPanel({ entry }: { entry: StrongLexiconEntry }) {
         </AppText>
       ) : null}
       <AppText color="textSecondary">{entry.definition}</AppText>
-    </View>
-  );
-}
-
-function ComparisonVersePanel({ comparisonVerse }: { comparisonVerse?: BibleVerseComparison }) {
-  const { t } = useTranslation();
-  const theme = useThemeTokens();
-
-  if (!comparisonVerse) {
-    return null;
-  }
-
-  return (
-    <View style={{ gap: theme.spacing.xs }}>
-      <AppText color="primary" variant="caption">
-        {t('bible.comparison.versionLabel', { version: comparisonVerse.versionAbbreviation })}
-      </AppText>
-      <AppText color="textSecondary">{comparisonVerse.text}</AppText>
     </View>
   );
 }

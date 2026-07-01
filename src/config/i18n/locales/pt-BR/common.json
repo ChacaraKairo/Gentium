@@ -53,7 +53,7 @@
       "menu": "☰ Opções",
       "toggleVerse": "Selecionar {{reference}}"
     },
-    "versionNotice": "{{version}} com busca avançada, original, transliteração, comparação e léxico Strong.",
+    "versionNotice": "{{version}} com busca avançada, original, transliteração e léxico Strong.",
     "academicTools": {
       "morphology": "Morfologia: {{morphology}}",
       "noStrongMatch": "Ainda não há vínculo Strong para esta forma no léxico local.",
@@ -69,9 +69,6 @@
       "strongTitle": "Léxico Strong",
       "title": "Ferramentas acadêmicas",
       "wordPanelTitle": "Palavra original"
-    },
-    "comparison": {
-      "versionLabel": "Comparação {{version}}"
     },
     "errors": {
       "load": "Não foi possível carregar a Bíblia offline.",
@@ -105,7 +102,6 @@
       "unavailable": "Texto original não disponível para este versículo."
     },
     "readingModes": {
-      "comparison": "Comparar",
       "original": "Original",
       "translation": "Tradução"
     },
