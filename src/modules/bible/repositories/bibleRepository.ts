@@ -221,16 +221,20 @@ export async function getChapterOriginalVerses(
     }))),
   );
 
-  return rows.map((row) => ({
-    interlinearWords: createInterlinearWords(row.text, row.language, lexiconByWord),
-    language: row.language,
-    languageName: getOriginalLanguageName(row.language),
-    text: row.text,
-    transliteration: transliterateOriginalText(row.text, row.language),
-    verseNumber: row.verse_number,
-    versionAbbreviation: row.version_abbreviation,
-    versionId: row.version_id,
-  }));
+  return rows.map((row) => {
+    const interlinearWords = createInterlinearWords(row.text, row.language, lexiconByWord);
+
+    return {
+      interlinearWords,
+      language: row.language,
+      languageName: getOriginalLanguageName(row.language),
+      text: row.text,
+      transliteration: getValidatedVerseTransliteration(interlinearWords),
+      verseNumber: row.verse_number,
+      versionAbbreviation: row.version_abbreviation,
+      versionId: row.version_id,
+    };
+  });
 }
 
 export async function searchStrongLexicon(query: string): Promise<StrongLexiconEntry[]> {
@@ -303,7 +307,7 @@ export async function searchOriginalLanguageOccurrences(
     language: row.language,
     languageName: getOriginalLanguageName(row.language),
     text: row.text,
-    transliteration: transliterateOriginalText(row.text, row.language),
+    transliteration: '',
     verseNumber: row.verse_number,
     versionAbbreviation: row.version_abbreviation,
   }));
@@ -707,14 +711,6 @@ function getOriginalLanguageName(language: OriginalLanguageCode) {
   return 'Hebraico bíblico';
 }
 
-function transliterateOriginalText(text: string, language: OriginalLanguageCode) {
-  if (language === 'grc') {
-    return transliterateGreek(text);
-  }
-
-  return transliterateHebrew(text);
-}
-
 async function getLexiconByOriginalWords(
   words: { language: 'grc' | 'he'; normalized: string }[],
 ): Promise<Map<string, StrongLexiconEntry>> {
@@ -778,9 +774,17 @@ function createInterlinearWords(
       original: word,
       position: index + 1,
       strong,
-      transliteration: strong?.transliteration || transliterateOriginalText(word, language),
+      transliteration: strong?.transliteration ?? '',
     };
   });
+}
+
+function getValidatedVerseTransliteration(words: InterlinearWord[]) {
+  if (!words.length || words.some((word) => !word.transliteration)) {
+    return '';
+  }
+
+  return words.map((word) => word.transliteration).join(' ');
 }
 
 function tokenizeOriginalText(text: string) {
@@ -825,135 +829,6 @@ function mapStrongLexiconRow(row: StrongLexiconRow): StrongLexiconEntry {
     transliteration: row.transliteration,
   };
 }
-
-function transliterateHebrew(text: string) {
-  const normalized = text.normalize('NFD');
-  let output = '';
-
-  for (const character of normalized) {
-    if (isHebrewMark(character)) {
-      continue;
-    }
-
-    output += hebrewTransliteration[character] ?? character;
-  }
-
-  return cleanTransliteration(output);
-}
-
-function transliterateGreek(text: string) {
-  const normalized = text.normalize('NFD');
-  let output = '';
-
-  for (const character of normalized) {
-    if (isCombiningMark(character)) {
-      continue;
-    }
-
-    output += greekTransliteration[character] ?? character;
-  }
-
-  return cleanTransliteration(output);
-}
-
-function isHebrewMark(character: string) {
-  const code = character.charCodeAt(0);
-  return (code >= 0x0591 && code <= 0x05bd) || code === 0x05bf || (code >= 0x05c1 && code <= 0x05c7);
-}
-
-function isCombiningMark(character: string) {
-  const code = character.charCodeAt(0);
-  return code >= 0x0300 && code <= 0x036f;
-}
-
-function cleanTransliteration(value: string) {
-  return value.replace(/\s+/g, ' ').trim();
-}
-
-const hebrewTransliteration: Record<string, string> = {
-  'א': "'",
-  'ב': 'b',
-  'ג': 'g',
-  'ד': 'd',
-  'ה': 'h',
-  'ו': 'w',
-  'ז': 'z',
-  'ח': 'ch',
-  'ט': 't',
-  'י': 'y',
-  'ך': 'k',
-  'כ': 'k',
-  'ל': 'l',
-  'ם': 'm',
-  'מ': 'm',
-  'ן': 'n',
-  'נ': 'n',
-  'ס': 's',
-  'ע': "'",
-  'ף': 'p',
-  'פ': 'p',
-  'ץ': 'ts',
-  'צ': 'ts',
-  'ק': 'q',
-  'ר': 'r',
-  'ש': 'sh',
-  'ת': 't',
-  '׃': '',
-  '׀': '',
-  '־': '-',
-};
-
-const greekTransliteration: Record<string, string> = {
-  'Α': 'A',
-  'α': 'a',
-  'Β': 'B',
-  'β': 'b',
-  'Γ': 'G',
-  'γ': 'g',
-  'Δ': 'D',
-  'δ': 'd',
-  'Ε': 'E',
-  'ε': 'e',
-  'Ζ': 'Z',
-  'ζ': 'z',
-  'Η': 'E',
-  'η': 'e',
-  'Θ': 'Th',
-  'θ': 'th',
-  'Ι': 'I',
-  'ι': 'i',
-  'Κ': 'K',
-  'κ': 'k',
-  'Λ': 'L',
-  'λ': 'l',
-  'Μ': 'M',
-  'μ': 'm',
-  'Ν': 'N',
-  'ν': 'n',
-  'Ξ': 'X',
-  'ξ': 'x',
-  'Ο': 'O',
-  'ο': 'o',
-  'Π': 'P',
-  'π': 'p',
-  'Ρ': 'R',
-  'ρ': 'r',
-  'Σ': 'S',
-  'σ': 's',
-  'ς': 's',
-  'Τ': 'T',
-  'τ': 't',
-  'Υ': 'Y',
-  'υ': 'y',
-  'Φ': 'Ph',
-  'φ': 'ph',
-  'Χ': 'Ch',
-  'χ': 'ch',
-  'Ψ': 'Ps',
-  'ψ': 'ps',
-  'Ω': 'O',
-  'ω': 'o',
-};
 
 function parseReference(query: string) {
   const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');

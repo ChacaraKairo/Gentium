@@ -12,6 +12,8 @@
 - Seletor inicial da Bíblia com Português, Inglês, Espanhol em preparação e Original.
 - Leitura bíblica com seleção de versículos por toque e ações agrupadas em menu.
 - Modo original separado em Escritura original e pronúncia em caracteres latinos.
+- Idiomas originais com modos Apenas Original, Original + Transliteração, Original + Pronúncia, Original + Nome Tradicional e Todas simultaneamente.
+- Transliteração automática removida: o app só exibe transliteração acadêmica, pronúncia simplificada e nome tradicional quando houver dado validado pelo léxico local ou tabela curada.
 - Modo Comparar removido; Tradução passa a seguir o idioma configurado do app.
 - Valores fixos de doação e valor livre para escolha do usuário.
 - Ambiente Asaas preparado com `.env` local e `.env.example`.

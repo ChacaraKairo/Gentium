@@ -40,6 +40,16 @@ import { AppText, BaseCard, Button, ListItem, TextInput } from '@/shared/compone
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
+type OriginalDisplayMode = 'all' | 'original' | 'pronunciation' | 'traditionalName' | 'transliteration';
+
+const originalDisplayModeOptions: { key: OriginalDisplayMode; labelKey: string }[] = [
+  { key: 'original', labelKey: 'bible.originalLanguages.displayModes.original' },
+  { key: 'transliteration', labelKey: 'bible.originalLanguages.displayModes.transliteration' },
+  { key: 'pronunciation', labelKey: 'bible.originalLanguages.displayModes.pronunciation' },
+  { key: 'traditionalName', labelKey: 'bible.originalLanguages.displayModes.traditionalName' },
+  { key: 'all', labelKey: 'bible.originalLanguages.displayModes.all' },
+];
+
 export function BibleScreen() {
   const { i18n, t } = useTranslation();
   const route = useRoute<RouteProp<MainTabParamList, 'Bible'>>();
@@ -72,6 +82,7 @@ export function BibleScreen() {
   const [isSelectionNoteOpen, setIsSelectionNoteOpen] = useState(false);
   const [selectedAcademicWord, setSelectedAcademicWord] = useState<InterlinearWord | null>(null);
   const [readingMode, setReadingMode] = useState<'original' | 'translation'>('translation');
+  const [originalDisplayMode, setOriginalDisplayMode] = useState<OriginalDisplayMode>('all');
   const [selectedVersionId, setSelectedVersionId] = useState('por-blivre');
 
   const loadBooks = useCallback(async () => {
@@ -834,6 +845,26 @@ export function BibleScreen() {
             <AppText color="textSecondary" variant="caption">
               {t('bible.originalLanguages.description')}
             </AppText>
+            {readingMode === 'original' ? (
+              <View style={{ gap: theme.spacing.xs }}>
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.originalLanguages.displayModes.title')}
+                </AppText>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+                  {originalDisplayModeOptions.map((option) => (
+                    <Button
+                      key={option.key}
+                      label={t(option.labelKey)}
+                      onPress={() => setOriginalDisplayMode(option.key)}
+                      variant={originalDisplayMode === option.key ? 'primary' : 'secondary'}
+                    />
+                  ))}
+                </View>
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.originalLanguages.validatedOnlyNotice')}
+                </AppText>
+              </View>
+            ) : null}
           </BaseCard>
 
           <BaseCard style={{ gap: theme.spacing.sm }}>
@@ -1023,6 +1054,7 @@ export function BibleScreen() {
               {readingMode === 'translation' ? <AppText>{verse.text}</AppText> : null}
               {readingMode === 'original' ? (
                 <OriginalVersePanel
+                  displayMode={originalDisplayMode}
                   originalVerse={originalVerses.find((item) => item.verseNumber === verse.verseNumber)}
                   onSelectWord={setSelectedAcademicWord}
                 />
@@ -1075,9 +1107,11 @@ function getPreferredTranslationVersion(versions: BibleVersion[], language: stri
 }
 
 function OriginalVersePanel({
+  displayMode,
   onSelectWord,
   originalVerse,
 }: {
+  displayMode: OriginalDisplayMode;
   onSelectWord: (word: InterlinearWord) => void;
   originalVerse?: OriginalLanguageVerse;
 }) {
@@ -1093,6 +1127,14 @@ function OriginalVersePanel({
       </View>
     );
   }
+
+  const transliterationText =
+    originalVerse.transliteration || formatValidatedTransliteration(originalVerse.interlinearWords);
+  const pronunciationText = formatCuratedWordValues(originalVerse.interlinearWords, curatedPronunciations);
+  const traditionalNameText = formatCuratedWordValues(originalVerse.interlinearWords, curatedTraditionalNames);
+  const showTransliteration = displayMode === 'all' || displayMode === 'transliteration';
+  const showPronunciation = displayMode === 'all' || displayMode === 'pronunciation';
+  const showTraditionalName = displayMode === 'all' || displayMode === 'traditionalName';
 
   return (
     <View style={{ gap: theme.spacing.sm }}>
@@ -1116,19 +1158,24 @@ function OriginalVersePanel({
         </AppText>
         <AppText>{originalVerse.text}</AppText>
       </View>
-      <View
-        style={{
-          backgroundColor: theme.colors.muted,
-          borderRadius: theme.radius.sm,
-          gap: theme.spacing.xs,
-          padding: theme.spacing.sm,
-        }}
-      >
-        <AppText color="textSecondary" variant="caption">
-          {t('bible.originalLanguages.pronunciationLabel')}
-        </AppText>
-        <AppText>{originalVerse.transliteration}</AppText>
-      </View>
+      {showTransliteration ? (
+        <OriginalLanguageInfoBlock
+          label={t('bible.originalLanguages.transliterationLabel')}
+          text={transliterationText || t('bible.originalLanguages.transliterationUnavailable')}
+        />
+      ) : null}
+      {showPronunciation ? (
+        <OriginalLanguageInfoBlock
+          label={t('bible.originalLanguages.pronunciationLabel')}
+          text={pronunciationText || t('bible.originalLanguages.pronunciationUnavailable')}
+        />
+      ) : null}
+      {showTraditionalName ? (
+        <OriginalLanguageInfoBlock
+          label={t('bible.originalLanguages.traditionalNameLabel')}
+          text={traditionalNameText || t('bible.originalLanguages.traditionalNameUnavailable')}
+        />
+      ) : null}
       {originalVerse.interlinearWords.length ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
           {originalVerse.interlinearWords.map((word) => (
@@ -1145,14 +1192,39 @@ function OriginalVersePanel({
   );
 }
 
+function OriginalLanguageInfoBlock({ label, text }: { label: string; text: string }) {
+  const theme = useThemeTokens();
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.colors.muted,
+        borderRadius: theme.radius.sm,
+        gap: theme.spacing.xs,
+        padding: theme.spacing.sm,
+      }}
+    >
+      <AppText color="textSecondary" variant="caption">
+        {label}
+      </AppText>
+      <AppText>{text}</AppText>
+    </View>
+  );
+}
+
 function SelectedWordPanel({ word }: { word: InterlinearWord }) {
   const { t } = useTranslation();
 
   return (
     <View>
       <AppText color="primary" variant="caption">
-        {word.original} · {word.transliteration}
+        {word.transliteration ? `${word.original} · ${word.transliteration}` : word.original}
       </AppText>
+      {!word.transliteration ? (
+        <AppText color="textSecondary" variant="caption">
+          {t('bible.originalLanguages.transliterationUnavailable')}
+        </AppText>
+      ) : null}
       {word.strong ? (
         <StrongEntryPanel entry={word.strong} />
       ) : (
@@ -1163,6 +1235,77 @@ function SelectedWordPanel({ word }: { word: InterlinearWord }) {
     </View>
   );
 }
+
+function formatValidatedTransliteration(words: InterlinearWord[]) {
+  const validatedWords = words.filter((word) => word.transliteration);
+
+  return validatedWords.map((word) => `${word.original} -> ${word.transliteration}`).join(' · ');
+}
+
+function formatCuratedWordValues(words: InterlinearWord[], dictionary: Record<string, string>) {
+  return words
+    .map((word) => {
+      const value = getCuratedWordValue(word, dictionary);
+
+      return value ? `${word.original} -> ${value}` : '';
+    })
+    .filter(Boolean)
+    .join(' · ');
+}
+
+function getCuratedWordValue(word: InterlinearWord, dictionary: Record<string, string>) {
+  const keys = [word.original, word.transliteration, word.strong?.rootWord]
+    .filter((value): value is string => Boolean(value))
+    .map(normalizeCuratedKey);
+
+  for (const key of keys) {
+    const value = dictionary[key];
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return '';
+}
+
+function normalizeCuratedKey(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C7]/g, '')
+    .replace(/[׃׀־.,;:!?()[\]{}"']/g, '')
+    .trim()
+    .toLocaleLowerCase();
+}
+
+const curatedPronunciations: Record<string, string> = {
+  yhwh: 'Iavé',
+  יהוה: 'Iavé',
+  yeshua: 'Iêshua',
+  ישוע: 'Iêshua',
+  mosheh: 'Moshê',
+  משה: 'Moshê',
+  bereshit: 'Bereshít',
+  בראשית: 'Bereshít',
+  iesous: 'Iêsoús',
+  ιησους: 'Iêsoús',
+  logos: 'Lógos',
+  λογος: 'Lógos',
+  agape: 'Agapê',
+  αγαπη: 'Agapê',
+};
+
+const curatedTraditionalNames: Record<string, string> = {
+  yeshua: 'Jesus',
+  ישוע: 'Jesus',
+  iesous: 'Jesus',
+  ιησους: 'Jesus',
+  mosheh: 'Moisés',
+  משה: 'Moisés',
+  david: 'Davi',
+  דוד: 'Davi',
+};
 
 function StrongEntryPanel({ entry }: { entry: StrongLexiconEntry }) {
   const { t } = useTranslation();

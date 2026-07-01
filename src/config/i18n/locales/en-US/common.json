@@ -94,11 +94,25 @@
       "title": "Advanced search"
     },
     "originalLanguages": {
-      "description": "WLC for biblical Hebrew/Aramaic, Textus Receptus for Koine Greek, and local transliteration.",
+      "description": "WLC for biblical Hebrew/Aramaic and Textus Receptus for Koine Greek, with transliteration validated by the local lexicon or curated table.",
+      "displayModes": {
+        "all": "All at once",
+        "original": "Original only",
+        "pronunciation": "Original + Pronunciation",
+        "title": "Display form",
+        "traditionalName": "Original + Traditional Name",
+        "transliteration": "Original + Transliteration"
+      },
       "originalLabel": "{{language}} · {{version}}",
-      "pronunciationLabel": "Pronunciation in Latin characters",
+      "pronunciationLabel": "Simplified pronunciation",
+      "pronunciationUnavailable": "Simplified pronunciation is unavailable without curated validation.",
       "scriptLabel": "Scripture in the original",
+      "traditionalNameLabel": "Traditional name in Portuguese",
+      "traditionalNameUnavailable": "Traditional Portuguese name is unavailable for this passage.",
       "title": "Original languages",
+      "transliterationLabel": "Academic transliteration",
+      "transliterationUnavailable": "Validated academic transliteration is unavailable for this passage.",
+      "validatedOnlyNotice": "Only data validated by the local lexicon or curated table is shown.",
       "unavailable": "Original text is not available for this verse."
     },
     "readingModes": {

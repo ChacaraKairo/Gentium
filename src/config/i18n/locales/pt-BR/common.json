@@ -94,11 +94,25 @@
       "title": "Busca avançada"
     },
     "originalLanguages": {
-      "description": "WLC para hebraico/aramaico bíblico, Textus Receptus para grego koiné e transliteração local.",
+      "description": "WLC para hebraico/aramaico bíblico e Textus Receptus para grego koiné, com transliteração validada pelo léxico local ou tabela curada.",
+      "displayModes": {
+        "all": "Todas simultaneamente",
+        "original": "Apenas Original",
+        "pronunciation": "Original + Pronúncia",
+        "title": "Forma de visualização",
+        "traditionalName": "Original + Nome Tradicional",
+        "transliteration": "Original + Transliteração"
+      },
       "originalLabel": "{{language}} · {{version}}",
-      "pronunciationLabel": "Pronúncia em caracteres latinos",
+      "pronunciationLabel": "Pronúncia simplificada",
+      "pronunciationUnavailable": "Pronúncia simplificada indisponível sem validação curada.",
       "scriptLabel": "Escritura no original",
+      "traditionalNameLabel": "Nome tradicional em português",
+      "traditionalNameUnavailable": "Nome tradicional em português indisponível para este trecho.",
       "title": "Idiomas originais",
+      "transliterationLabel": "Transliteração acadêmica",
+      "transliterationUnavailable": "Transliteração acadêmica validada indisponível para este trecho.",
+      "validatedOnlyNotice": "Exibimos apenas dados validados pelo léxico local ou por tabela curada.",
       "unavailable": "Texto original não disponível para este versículo."
     },
     "readingModes": {
