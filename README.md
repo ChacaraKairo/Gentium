@@ -1,175 +1,67 @@
 # Gentium
 
-> Uma plataforma moderna para leitura, estudo e aprendizado das Escrituras.
+Gentium e um app mobile offline-first para leitura, estudo e organizacao pessoal das Escrituras.
 
----
+## MVP 1.4.0
 
-## Sobre
+- Biblia offline com busca avancada, favoritos, anotacoes e marcadores.
+- Estudos, planos de leitura e biblioteca avancada offline.
+- Idiomas originais com texto original, transliteracao academica validada, pronuncia simplificada curada e nomes tradicionais quando disponiveis.
+- Doacoes voluntarias com valores fixos e valor livre via checkout Asaas configuravel.
+- Portugues do Brasil como idioma padrao, com alternancia de idioma no app.
 
-Gentium é um aplicativo desenvolvido em React Native cujo objetivo é oferecer uma plataforma completa para estudo da Bíblia.
+## Requisitos
 
-Mais do que um leitor bíblico, o Gentium reúne ferramentas para estudo profundo das Escrituras, incluindo:
+- Node.js compativel com Expo SDK 54.
+- npm.
+- Conta Expo/EAS para gerar APK e AAB assinados.
 
-- Bíblia Offline
-- Idiomas Originais
-- Texto Interlinear
-- Strong
-- Léxicos
-- Estudos Bíblicos
-- Planos de Leitura
-- Anotações
-- Marcações
-- Favoritos
-- Gamificação
-- Inteligência Artificial
-- Sincronização
-- Plataforma Offline First
+## Ambiente
 
-O projeto foi concebido para crescer continuamente, tornando-se uma plataforma de referência para estudantes, professores, líderes e qualquer pessoa interessada em aprofundar seu conhecimento bíblico.
+Copie `.env.example` para `.env` e preencha as variaveis publicas usadas pelo app.
 
----
+As chaves privadas do Asaas devem ficar em backend seguro. Nao coloque `ASAAS_API_KEY` nem tokens privados no app mobile publicado.
 
-# Objetivos
+## Comandos
 
-- Facilitar o estudo das Escrituras.
-- Centralizar recursos bíblicos em um único aplicativo.
-- Oferecer uma experiência rápida e totalmente offline.
-- Respeitar diferentes tradições cristãs reconhecidas.
-- Disponibilizar ferramentas acadêmicas acessíveis.
-- Construir uma plataforma sustentável baseada em apoio voluntário.
-
----
-
-# Funcionalidades
-
-- Bíblia Offline
-- Diversas traduções
-- Hebraico Bíblico
-- Grego Koiné
-- Aramaico
-- Transliteração
-- Texto Interlinear
-- Strong
-- Léxicos
-- Pesquisa Avançada
-- Estudos
-- Cursos
-- Planos de Leitura
-- Anotações
-- Marcações
-- Favoritos
-- IA integrada
-- Sincronização
-- Gamificação
-- Doações
-
----
-
-# Tecnologias
-
-## Mobile
-
-- React Native
-- Expo
-- TypeScript
-
-## Backend
-
-- NestJS
-- PostgreSQL
-- Prisma
-
-## IA
-
-- Gateway próprio
-- OpenAI
-- Google Gemini
-- Outros provedores futuramente
-
----
-
-# Documentação
-
-Toda a documentação encontra-se em:
-
-```
-docs/
+```bash
+npm install
+npm start
+npm test
+npm run validate:production
 ```
 
-ou diretamente em
+## Android
 
-```
-docs/README.md
-```
+APK para teste interno:
 
----
-
-# Filosofia
-
-O Gentium foi construído sobre cinco pilares:
-
-- Bíblia em primeiro lugar.
-- Offline First.
-- Simplicidade.
-- Acessibilidade.
-- Escalabilidade.
-
----
-
-# Roadmap
-
-As fases do projeto incluem:
-
-- Fundação
-- Bíblia Offline
-- Estudos
-- Planos de Leitura
-- Sincronização
-- IA
-- Plataforma Web
-- Desktop
-- Ecossistema Gentium
-
-Mais detalhes em:
-
-```
-docs/
+```bash
+npm run build:android:apk
 ```
 
----
+AAB para Play Store:
 
-# Contribuição
-
-Contribuições são bem-vindas.
-
-Leia:
-
-```
-docs/31-contribuicao.md
+```bash
+npm run build:android:playstore
 ```
 
-antes de abrir um Pull Request.
+Envio para Play Console via EAS Submit:
 
----
-
-# Licença
-
-O código do projeto utiliza a licença Apache 2.0.
-
-Os conteúdos oficiais do Gentium permanecem protegidos por direitos autorais.
-
-Consulte:
-
-```
-docs/32-licenca.md
+```bash
+npm run submit:android:playstore
 ```
 
----
+Mais detalhes em `docs/playstore/android.md`.
 
-# Contato
+## Qualidade de release
 
-Projeto desenvolvido por
+Antes de publicar:
 
-**Kairo Chácar**
+- Rode `npm run validate:production`.
+- Teste o APK em aparelho real.
+- Confira Biblia, estudos, notas, planos, doacoes e troca de idioma.
+- Confira a politica de privacidade e a declaracao de dados no Play Console.
 
-# Gentium
+## Documentacao
+
+A documentacao completa fica em `docs/`.

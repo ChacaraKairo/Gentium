@@ -58,6 +58,7 @@ export function RootNavigator() {
         name="Donations"
         options={{
           tabBarButton: () => null,
+          tabBarItemStyle: { display: 'none' },
           title: t('tabs.donations'),
         }}
       />

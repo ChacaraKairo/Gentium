@@ -1,5 +1,6 @@
 node_modules/
 .expo/
+.gradle/
 .idea/
 dist/
 build/
@@ -10,3 +11,9 @@ yarn-error.log*
 .env
 .env.*
 !.env.example
+credentials.json
+*.jks
+*.p12
+android/.gradle/
+android/local.properties
+android/app/release.keystore
