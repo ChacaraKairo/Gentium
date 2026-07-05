@@ -36,6 +36,7 @@ import {
   createVerseHighlight,
   highlightColors,
 } from '@/modules/notes/repositories/personalRepository';
+import { useContentSeedStore } from '@/app/startup/contentSeedStore';
 import { AppText, BaseCard, Button, ListItem, TextInput } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
@@ -68,6 +69,7 @@ const originalDisplayModeOptions: {
 export function BibleScreen() {
   const { i18n, t } = useTranslation();
   const route = useRoute<RouteProp<MainTabParamList, 'Bible'>>();
+  const contentSeedStatus = useContentSeedStore((state) => state.status);
   const theme = useThemeTokens();
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [chapters, setChapters] = useState<BibleChapter[]>([]);
@@ -132,6 +134,12 @@ export function BibleScreen() {
   useEffect(() => {
     loadBooks();
   }, [loadBooks]);
+
+  useEffect(() => {
+    if (contentSeedStatus === 'done' && !books.length && !selectedBook) {
+      loadBooks();
+    }
+  }, [books.length, contentSeedStatus, loadBooks, selectedBook]);
 
   useEffect(() => {
     const initialReference = route.params?.initialReference;

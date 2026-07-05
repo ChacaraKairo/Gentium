@@ -12,6 +12,7 @@ yarn-error.log*
 .env.*
 !.env.example
 credentials.json
+expo.txt
 *.jks
 *.p12
 android/.gradle/
