@@ -16,11 +16,12 @@
     "submit:android:playstore": "eas submit --platform android --profile production"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.3",
+    "@expo/vector-icons": "15.0.3",
     "@react-navigation/bottom-tabs": "^7.18.3",
     "@react-navigation/native": "^7.3.4",
     "expo": "~54.0.8",
     "expo-dev-client": "~6.0.21",
+    "expo-font": "14.0.12",
     "expo-localization": "~17.0.9",
     "expo-sqlite": "~16.0.10",
     "i18next": "^25.7.3",
@@ -36,5 +37,8 @@
     "babel-plugin-module-resolver": "^5.0.3",
     "babel-preset-expo": "~54.0.11",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "expo-font": "14.0.12"
   }
 }
