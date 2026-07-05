@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Share, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   findReference,
@@ -70,6 +72,7 @@ export function BibleScreen() {
   const { i18n, t } = useTranslation();
   const route = useRoute<RouteProp<MainTabParamList, 'Bible'>>();
   const contentSeedStatus = useContentSeedStore((state) => state.status);
+  const insets = useSafeAreaInsets();
   const theme = useThemeTokens();
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [chapters, setChapters] = useState<BibleChapter[]>([]);
@@ -600,522 +603,554 @@ export function BibleScreen() {
   const isOriginalSelected = readingMode === 'original';
 
   return (
-    <Screen subtitle={t('bible.subtitle')} title={t('bible.title')}>
-      <BaseCard style={{ gap: theme.spacing.md }}>
-        <AppText variant="heading">{t('bible.search.title')}</AppText>
-        <TextInput
-          accessibilityLabel={t('bible.search.referenceLabel')}
-          autoCapitalize="words"
-          onChangeText={setReference}
-          onSubmitEditing={searchReference}
-          placeholder={t('bible.search.placeholder')}
-          returnKeyType="search"
-          value={reference}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: theme.spacing.sm,
-          }}
-        >
-          <Button
-            label={t('bible.search.scopes.all')}
-            onPress={() => setSearchScope('all')}
-            variant={searchScope === 'all' ? 'primary' : 'secondary'}
+    <View style={{ flex: 1 }}>
+      <Screen subtitle={t('bible.subtitle')} title={t('bible.title')}>
+        <BaseCard style={{ gap: theme.spacing.md }}>
+          <AppText variant="heading">{t('bible.search.title')}</AppText>
+          <TextInput
+            accessibilityLabel={t('bible.search.referenceLabel')}
+            autoCapitalize="words"
+            onChangeText={setReference}
+            onSubmitEditing={searchReference}
+            placeholder={t('bible.search.placeholder')}
+            returnKeyType="search"
+            value={reference}
           />
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: theme.spacing.sm,
+            }}
+          >
+            <Button
+              label={t('bible.search.scopes.all')}
+              onPress={() => setSearchScope('all')}
+              variant={searchScope === 'all' ? 'primary' : 'secondary'}
+            />
+            <Button
+              label={t('bible.search.scopes.currentChapter')}
+              onPress={() => setSearchScope('currentChapter')}
+              variant={searchScope === 'currentChapter' ? 'primary' : 'secondary'}
+            />
+          </View>
           <Button
-            label={t('bible.search.scopes.currentChapter')}
-            onPress={() => setSearchScope('currentChapter')}
-            variant={searchScope === 'currentChapter' ? 'primary' : 'secondary'}
+            isLoading={isLoading && Boolean(reference.trim())}
+            label={t('bible.search.action')}
+            onPress={searchReference}
+            variant="secondary"
           />
-        </View>
-        <Button
-          isLoading={isLoading && Boolean(reference.trim())}
-          label={t('bible.search.action')}
-          onPress={searchReference}
-          variant="secondary"
-        />
-        {isSearching ? (
-          <AppText color="textSecondary" variant="caption">
-            {t('bible.search.searching')}
-          </AppText>
-        ) : null}
-        {reference.trim().length >= 2 && searchResults.length ? (
-          <View style={{ gap: theme.spacing.sm }}>
+          {isSearching ? (
             <AppText color="textSecondary" variant="caption">
-              {t('bible.search.resultsCount', { count: searchResults.length })}
+              {t('bible.search.searching')}
             </AppText>
-            {searchResults.map((verse) => (
-              <ListItem
-                description={verse.text}
-                icon={getSearchResultIcon(verse.matchType)}
-                key={verse.id}
-                onPress={() => openSearchResult(verse)}
-                title={`${formatReference(verse)} · ${t(`bible.search.matchTypes.${verse.matchType}`)}`}
-              />
-            ))}
-          </View>
-        ) : null}
-        {reference.trim().length >= 2 && !isSearching && !searchResults.length ? (
-          <AppText color="textSecondary" variant="caption">
-            {t('bible.search.noResults')}
-          </AppText>
-        ) : null}
-      </BaseCard>
-
-      {error ? (
-        <BaseCard>
-          <AppText color="danger">{error}</AppText>
-        </BaseCard>
-      ) : null}
-
-      {!selectedBook && hasLastReading ? <Button label={t('bible.continueReading')} onPress={continueReading} /> : null}
-
-      {!selectedBook ? (
-        <BaseCard style={{ gap: theme.spacing.md }}>
-          <View style={{ gap: theme.spacing.xs }}>
-            <AppText variant="heading">{t('bible.versionPicker.title')}</AppText>
-            <AppText color="textSecondary">{t('bible.versionPicker.description')}</AppText>
-          </View>
-          <View style={{ gap: theme.spacing.sm }}>
-            <ListItem
-              description={t('bible.versionPicker.portugueseDescription', {
-                version: portugueseVersion?.abbreviation ?? 'PorBLivre',
-              })}
-              icon="book-outline"
-              onPress={() => {
-                if (portugueseVersion) {
-                  setSelectedVersionId(portugueseVersion.id);
-                }
-                setReadingMode('translation');
-              }}
-              style={getVersionPickerStyle(isPortugueseSelected, theme)}
-              title={
-                isPortugueseSelected
-                  ? t('bible.versionPicker.selectedOption', {
-                      option: t('bible.versionPicker.portuguese'),
-                    })
-                  : t('bible.versionPicker.portuguese')
-              }
-            />
-            <ListItem
-              description={t('bible.versionPicker.englishDescription', {
-                version: englishVersion?.abbreviation ?? 'WEB',
-              })}
-              icon="language-outline"
-              onPress={() => {
-                if (englishVersion) {
-                  setSelectedVersionId(englishVersion.id);
-                }
-                setReadingMode('translation');
-              }}
-              style={getVersionPickerStyle(isEnglishSelected, theme)}
-              title={
-                isEnglishSelected
-                  ? t('bible.versionPicker.selectedOption', {
-                      option: t('bible.versionPicker.english'),
-                    })
-                  : t('bible.versionPicker.english')
-              }
-            />
-            <ListItem
-              description={t('bible.versionPicker.spanishDescription')}
-              disabled
-              icon="language-outline"
-              title={t('bible.versionPicker.spanish')}
-            />
-            <ListItem
-              description={t('bible.versionPicker.originalDescription')}
-              icon="school-outline"
-              onPress={() => setReadingMode('original')}
-              style={getVersionPickerStyle(isOriginalSelected, theme)}
-              title={
-                isOriginalSelected
-                  ? t('bible.versionPicker.selectedOption', {
-                      option: t('bible.versionPicker.original'),
-                    })
-                  : t('bible.versionPicker.original')
-              }
-            />
-          </View>
-          <AppText color="textSecondary" variant="caption">
-            {t('bible.versionPicker.selected', {
-              mode:
-                readingMode === 'original'
-                  ? t('bible.versionPicker.original')
-                  : (selectedVersion?.name ?? selectedVersionId),
-            })}
-          </AppText>
-        </BaseCard>
-      ) : null}
-
-      {!selectedBook && favoriteVerses.length ? (
-        <BaseCard style={{ gap: theme.spacing.md }}>
-          <AppText variant="heading">{t('bible.favoritesTitle')}</AppText>
-          {favoriteVerses.map((verse) => (
-            <ListItem
-              description={verse.text}
-              icon="heart-outline"
-              key={verse.id}
-              onPress={async () => {
-                const book = books.find((item) => item.id === verse.bookId);
-
-                if (!book) {
-                  return;
-                }
-
-                const chapterRows = await getBibleChapters(book.id);
-                const chapter = chapterRows.find((item) => item.id === verse.chapterId);
-
-                if (chapter) {
-                  setChapters(chapterRows);
-                  await openChapter(book, chapter);
-                }
-              }}
-              title={formatReference(verse)}
-            />
-          ))}
-        </BaseCard>
-      ) : null}
-
-      {selectedBook ? <Button label={t('common.back')} onPress={goBack} variant="ghost" /> : null}
-
-      {isLoading && !verses.length ? (
-        <BaseCard>
-          <AppText color="textSecondary">{t('common.loading')}</AppText>
-        </BaseCard>
-      ) : null}
-
-      {!isLoading && !selectedBook && !books.length ? (
-        <BaseCard style={{ gap: theme.spacing.md }}>
-          <AppText variant="heading">{t('bible.emptyTitle')}</AppText>
-          <AppText color="textSecondary">{t('bible.emptyDescription')}</AppText>
-          <Button label={t('common.retry')} onPress={loadBooks} variant="secondary" />
-        </BaseCard>
-      ) : null}
-
-      {!isLoading && !selectedBook
-        ? books.map((book) => (
-            <ListItem
-              description={book.testament === 'old' ? t('bible.oldTestament') : t('bible.newTestament')}
-              icon="book-outline"
-              key={book.id}
-              onPress={() => openBook(book)}
-              title={book.name}
-            />
-          ))
-        : null}
-
-      {selectedBook && !selectedChapter
-        ? chapters.map((chapter) => (
-            <ListItem
-              description={selectedBook.name}
-              icon="reader-outline"
-              key={chapter.id}
-              onPress={() => openChapter(selectedBook, chapter)}
-              title={t('bible.chapter', { chapter: chapter.chapterNumber })}
-            />
-          ))
-        : null}
-
-      {selectedBook && selectedChapter && verses.length ? (
-        <View style={{ gap: theme.spacing.md }}>
-          <View style={{ gap: theme.spacing.xs }}>
-            <AppText variant="heading">
-              {selectedBook.name} {selectedChapter.chapterNumber}
-            </AppText>
-            <AppText color="textSecondary" variant="caption">
-              {t('bible.versionNotice', {
-                version: selectedVersion?.abbreviation ?? selectedVersionId,
-              })}
-            </AppText>
-          </View>
-
-          <BaseCard style={{ gap: theme.spacing.sm }}>
-            <AppText variant="heading">{t('bible.versions.title')}</AppText>
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: theme.spacing.sm,
-              }}
-            >
-              {versions.map((version) => (
-                <Button
-                  key={version.id}
-                  label={version.abbreviation}
-                  onPress={() => changeVersion(version.id)}
-                  variant={selectedVersionId === version.id ? 'primary' : 'secondary'}
+          ) : null}
+          {reference.trim().length >= 2 && searchResults.length ? (
+            <View style={{ gap: theme.spacing.sm }}>
+              <AppText color="textSecondary" variant="caption">
+                {t('bible.search.resultsCount', { count: searchResults.length })}
+              </AppText>
+              {searchResults.map((verse) => (
+                <ListItem
+                  description={verse.text}
+                  icon={getSearchResultIcon(verse.matchType)}
+                  key={verse.id}
+                  onPress={() => openSearchResult(verse)}
+                  title={`${formatReference(verse)} · ${t(`bible.search.matchTypes.${verse.matchType}`)}`}
                 />
               ))}
             </View>
-            {selectedVersion ? (
-              <AppText color="textSecondary" variant="caption">
-                {selectedVersion.name}
-              </AppText>
-            ) : null}
-          </BaseCard>
+          ) : null}
+          {reference.trim().length >= 2 && !isSearching && !searchResults.length ? (
+            <AppText color="textSecondary" variant="caption">
+              {t('bible.search.noResults')}
+            </AppText>
+          ) : null}
+        </BaseCard>
 
-          <BaseCard style={{ gap: theme.spacing.sm }}>
-            <AppText variant="heading">{t('bible.originalLanguages.title')}</AppText>
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: theme.spacing.sm,
-              }}
-            >
-              <Button
-                label={t('bible.readingModes.translation')}
-                onPress={selectTranslationMode}
-                variant={readingMode === 'translation' ? 'primary' : 'secondary'}
+        {error ? (
+          <BaseCard>
+            <AppText color="danger">{error}</AppText>
+          </BaseCard>
+        ) : null}
+
+        {!selectedBook && hasLastReading ? (
+          <Button label={t('bible.continueReading')} onPress={continueReading} />
+        ) : null}
+
+        {!selectedBook ? (
+          <BaseCard style={{ gap: theme.spacing.md }}>
+            <View style={{ gap: theme.spacing.xs }}>
+              <AppText variant="heading">{t('bible.versionPicker.title')}</AppText>
+              <AppText color="textSecondary">{t('bible.versionPicker.description')}</AppText>
+            </View>
+            <View style={{ gap: theme.spacing.sm }}>
+              <ListItem
+                description={t('bible.versionPicker.portugueseDescription', {
+                  version: portugueseVersion?.abbreviation ?? 'PorBLivre',
+                })}
+                icon="book-outline"
+                onPress={() => {
+                  if (portugueseVersion) {
+                    setSelectedVersionId(portugueseVersion.id);
+                  }
+                  setReadingMode('translation');
+                }}
+                style={getVersionPickerStyle(isPortugueseSelected, theme)}
+                title={
+                  isPortugueseSelected
+                    ? t('bible.versionPicker.selectedOption', {
+                        option: t('bible.versionPicker.portuguese'),
+                      })
+                    : t('bible.versionPicker.portuguese')
+                }
               />
-              <Button
-                label={t('bible.readingModes.original')}
+              <ListItem
+                description={t('bible.versionPicker.englishDescription', {
+                  version: englishVersion?.abbreviation ?? 'WEB',
+                })}
+                icon="language-outline"
+                onPress={() => {
+                  if (englishVersion) {
+                    setSelectedVersionId(englishVersion.id);
+                  }
+                  setReadingMode('translation');
+                }}
+                style={getVersionPickerStyle(isEnglishSelected, theme)}
+                title={
+                  isEnglishSelected
+                    ? t('bible.versionPicker.selectedOption', {
+                        option: t('bible.versionPicker.english'),
+                      })
+                    : t('bible.versionPicker.english')
+                }
+              />
+              <ListItem
+                description={t('bible.versionPicker.spanishDescription')}
+                disabled
+                icon="language-outline"
+                title={t('bible.versionPicker.spanish')}
+              />
+              <ListItem
+                description={t('bible.versionPicker.originalDescription')}
+                icon="school-outline"
                 onPress={() => setReadingMode('original')}
-                variant={readingMode === 'original' ? 'primary' : 'secondary'}
+                style={getVersionPickerStyle(isOriginalSelected, theme)}
+                title={
+                  isOriginalSelected
+                    ? t('bible.versionPicker.selectedOption', {
+                        option: t('bible.versionPicker.original'),
+                      })
+                    : t('bible.versionPicker.original')
+                }
               />
             </View>
             <AppText color="textSecondary" variant="caption">
-              {t('bible.originalLanguages.description')}
+              {t('bible.versionPicker.selected', {
+                mode:
+                  readingMode === 'original'
+                    ? t('bible.versionPicker.original')
+                    : (selectedVersion?.name ?? selectedVersionId),
+              })}
             </AppText>
-            {readingMode === 'original' ? (
-              <View style={{ gap: theme.spacing.xs }}>
+          </BaseCard>
+        ) : null}
+
+        {!selectedBook && favoriteVerses.length ? (
+          <BaseCard style={{ gap: theme.spacing.md }}>
+            <AppText variant="heading">{t('bible.favoritesTitle')}</AppText>
+            {favoriteVerses.map((verse) => (
+              <ListItem
+                description={verse.text}
+                icon="heart-outline"
+                key={verse.id}
+                onPress={async () => {
+                  const book = books.find((item) => item.id === verse.bookId);
+
+                  if (!book) {
+                    return;
+                  }
+
+                  const chapterRows = await getBibleChapters(book.id);
+                  const chapter = chapterRows.find((item) => item.id === verse.chapterId);
+
+                  if (chapter) {
+                    setChapters(chapterRows);
+                    await openChapter(book, chapter);
+                  }
+                }}
+                title={formatReference(verse)}
+              />
+            ))}
+          </BaseCard>
+        ) : null}
+
+        {selectedBook ? <Button label={t('common.back')} onPress={goBack} variant="ghost" /> : null}
+
+        {isLoading && !verses.length ? (
+          <BaseCard>
+            <AppText color="textSecondary">{t('common.loading')}</AppText>
+          </BaseCard>
+        ) : null}
+
+        {!isLoading && !selectedBook && !books.length ? (
+          <BaseCard style={{ gap: theme.spacing.md }}>
+            <AppText variant="heading">{t('bible.emptyTitle')}</AppText>
+            <AppText color="textSecondary">{t('bible.emptyDescription')}</AppText>
+            <Button label={t('common.retry')} onPress={loadBooks} variant="secondary" />
+          </BaseCard>
+        ) : null}
+
+        {!isLoading && !selectedBook
+          ? books.map((book) => (
+              <ListItem
+                description={book.testament === 'old' ? t('bible.oldTestament') : t('bible.newTestament')}
+                icon="book-outline"
+                key={book.id}
+                onPress={() => openBook(book)}
+                title={book.name}
+              />
+            ))
+          : null}
+
+        {selectedBook && !selectedChapter
+          ? chapters.map((chapter) => (
+              <ListItem
+                description={selectedBook.name}
+                icon="reader-outline"
+                key={chapter.id}
+                onPress={() => openChapter(selectedBook, chapter)}
+                title={t('bible.chapter', { chapter: chapter.chapterNumber })}
+              />
+            ))
+          : null}
+
+        {selectedBook && selectedChapter && verses.length ? (
+          <View style={{ gap: theme.spacing.md }}>
+            <View style={{ gap: theme.spacing.xs }}>
+              <AppText variant="heading">
+                {selectedBook.name} {selectedChapter.chapterNumber}
+              </AppText>
+              <AppText color="textSecondary" variant="caption">
+                {t('bible.versionNotice', {
+                  version: selectedVersion?.abbreviation ?? selectedVersionId,
+                })}
+              </AppText>
+            </View>
+
+            <BaseCard style={{ gap: theme.spacing.sm }}>
+              <AppText variant="heading">{t('bible.versions.title')}</AppText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: theme.spacing.sm,
+                }}
+              >
+                {versions.map((version) => (
+                  <Button
+                    key={version.id}
+                    label={version.abbreviation}
+                    onPress={() => changeVersion(version.id)}
+                    variant={selectedVersionId === version.id ? 'primary' : 'secondary'}
+                  />
+                ))}
+              </View>
+              {selectedVersion ? (
                 <AppText color="textSecondary" variant="caption">
-                  {t('bible.originalLanguages.displayModes.title')}
+                  {selectedVersion.name}
                 </AppText>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    gap: theme.spacing.sm,
-                  }}
-                >
-                  {originalDisplayModeOptions.map((option) => (
-                    <Button
-                      key={option.key}
-                      label={t(option.labelKey)}
-                      onPress={() => setOriginalDisplayMode(option.key)}
-                      variant={originalDisplayMode === option.key ? 'primary' : 'secondary'}
+              ) : null}
+            </BaseCard>
+
+            <BaseCard style={{ gap: theme.spacing.sm }}>
+              <AppText variant="heading">{t('bible.originalLanguages.title')}</AppText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: theme.spacing.sm,
+                }}
+              >
+                <Button
+                  label={t('bible.readingModes.translation')}
+                  onPress={selectTranslationMode}
+                  variant={readingMode === 'translation' ? 'primary' : 'secondary'}
+                />
+                <Button
+                  label={t('bible.readingModes.original')}
+                  onPress={() => setReadingMode('original')}
+                  variant={readingMode === 'original' ? 'primary' : 'secondary'}
+                />
+              </View>
+              <AppText color="textSecondary" variant="caption">
+                {t('bible.originalLanguages.description')}
+              </AppText>
+              {readingMode === 'original' ? (
+                <View style={{ gap: theme.spacing.xs }}>
+                  <AppText color="textSecondary" variant="caption">
+                    {t('bible.originalLanguages.displayModes.title')}
+                  </AppText>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: theme.spacing.sm,
+                    }}
+                  >
+                    {originalDisplayModeOptions.map((option) => (
+                      <Button
+                        key={option.key}
+                        label={t(option.labelKey)}
+                        onPress={() => setOriginalDisplayMode(option.key)}
+                        variant={originalDisplayMode === option.key ? 'primary' : 'secondary'}
+                      />
+                    ))}
+                  </View>
+                  <AppText color="textSecondary" variant="caption">
+                    {t('bible.originalLanguages.validatedOnlyNotice')}
+                  </AppText>
+                </View>
+              ) : null}
+            </BaseCard>
+
+            <BaseCard style={{ gap: theme.spacing.sm }}>
+              <AppText variant="heading">{t('bible.academicTools.title')}</AppText>
+              <TextInput
+                accessibilityLabel={t('bible.academicTools.searchLabel')}
+                autoCapitalize="characters"
+                onChangeText={setStrongQuery}
+                onSubmitEditing={searchAcademic}
+                placeholder={t('bible.academicTools.searchPlaceholder')}
+                returnKeyType="search"
+                value={strongQuery}
+              />
+              <Button
+                isLoading={isAcademicSearching}
+                label={t('bible.academicTools.searchAction')}
+                onPress={searchAcademic}
+                variant="secondary"
+              />
+              {isAcademicSearching ? (
+                <AppText color="textSecondary" variant="caption">
+                  {t('bible.academicTools.searching')}
+                </AppText>
+              ) : null}
+              {strongResults.length ? (
+                <View style={{ gap: theme.spacing.sm }}>
+                  <AppText color="textSecondary" variant="caption">
+                    {t('bible.academicTools.strongTitle')}
+                  </AppText>
+                  {strongResults.map((entry) => (
+                    <StrongEntryPanel entry={entry} key={entry.number} />
+                  ))}
+                </View>
+              ) : null}
+              {originalSearchResults.length ? (
+                <View style={{ gap: theme.spacing.sm }}>
+                  <AppText color="textSecondary" variant="caption">
+                    {t('bible.academicTools.occurrencesTitle', {
+                      count: originalSearchResults.length,
+                    })}
+                  </AppText>
+                  {originalSearchResults.map((occurrence) => (
+                    <ListItem
+                      description={occurrence.transliteration || occurrence.text}
+                      icon="language-outline"
+                      key={`${occurrence.bookId}-${occurrence.chapterNumber}-${occurrence.verseNumber}-${occurrence.versionAbbreviation}`}
+                      onPress={() => openOriginalOccurrence(occurrence)}
+                      title={t('bible.academicTools.occurrenceLabel', {
+                        language: occurrence.languageName,
+                        reference: `${occurrence.bookName} ${occurrence.chapterNumber}:${occurrence.verseNumber}`,
+                      })}
                     />
                   ))}
                 </View>
+              ) : null}
+              {strongQuery.trim().length >= 2 &&
+              !isAcademicSearching &&
+              !strongResults.length &&
+              !originalSearchResults.length ? (
                 <AppText color="textSecondary" variant="caption">
-                  {t('bible.originalLanguages.validatedOnlyNotice')}
+                  {t('bible.academicTools.noResults')}
                 </AppText>
-              </View>
-            ) : null}
-          </BaseCard>
+              ) : null}
+            </BaseCard>
 
-          <BaseCard style={{ gap: theme.spacing.sm }}>
-            <AppText variant="heading">{t('bible.academicTools.title')}</AppText>
-            <TextInput
-              accessibilityLabel={t('bible.academicTools.searchLabel')}
-              autoCapitalize="characters"
-              onChangeText={setStrongQuery}
-              onSubmitEditing={searchAcademic}
-              placeholder={t('bible.academicTools.searchPlaceholder')}
-              returnKeyType="search"
-              value={strongQuery}
-            />
-            <Button
-              isLoading={isAcademicSearching}
-              label={t('bible.academicTools.searchAction')}
-              onPress={searchAcademic}
-              variant="secondary"
-            />
-            {isAcademicSearching ? (
+            {selectedAcademicWord ? (
+              <BaseCard style={{ gap: theme.spacing.sm }}>
+                <AppText variant="heading">{t('bible.academicTools.wordPanelTitle')}</AppText>
+                <SelectedWordPanel word={selectedAcademicWord} />
+              </BaseCard>
+            ) : null}
+
+            {verses.map((verse) => (
+              <Pressable
+                accessibilityLabel={t('bible.selection.toggleVerse', {
+                  reference: formatReference(verse),
+                })}
+                accessibilityRole="button"
+                key={verse.id}
+                onPress={() => toggleVerseSelection(verse.id)}
+                style={({ pressed }) => {
+                  const isSelected = selectedVerseIds.includes(verse.id);
+
+                  return {
+                    backgroundColor: isSelected ? theme.colors.muted : theme.colors.surface,
+                    borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                    borderRadius: theme.radius.md,
+                    borderWidth: 1,
+                    gap: theme.spacing.md,
+                    opacity: pressed ? 0.82 : 1,
+                    padding: theme.spacing.md,
+                  };
+                }}
+              >
+                <AppText color="primary" variant="caption">
+                  {formatReference(verse)}
+                </AppText>
+                {verse.highlightColor ? (
+                  <View
+                    accessibilityLabel={t('bible.highlighted')}
+                    style={{
+                      backgroundColor: verse.highlightColor,
+                      borderRadius: theme.radius.pill,
+                      height: theme.spacing.xs,
+                      width: theme.spacing.xxl,
+                    }}
+                  />
+                ) : null}
+                {readingMode === 'translation' ? <AppText>{verse.text}</AppText> : null}
+                {readingMode === 'original' ? (
+                  <OriginalVersePanel
+                    displayMode={originalDisplayMode}
+                    originalVerse={originalVerses.find((item) => item.verseNumber === verse.verseNumber)}
+                    onSelectWord={setSelectedAcademicWord}
+                  />
+                ) : null}
+                {verse.notesCount ? (
+                  <AppText color="textSecondary" variant="caption">
+                    {t('bible.notesCount', { count: verse.notesCount })}
+                  </AppText>
+                ) : null}
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+      </Screen>
+
+      {selectedVerses.length ? (
+        <View
+          pointerEvents="box-none"
+          style={{
+            bottom: Math.max(insets.bottom, theme.spacing.md) + 72,
+            left: theme.spacing.md,
+            position: 'absolute',
+            right: theme.spacing.md,
+          }}
+        >
+          {isVerseActionMenuOpen ? (
+            <BaseCard
+              style={{
+                alignSelf: 'stretch',
+                gap: theme.spacing.sm,
+                marginBottom: theme.spacing.sm,
+              }}
+            >
               <AppText color="textSecondary" variant="caption">
-                {t('bible.academicTools.searching')}
+                {t('bible.selection.count', { count: selectedVerses.length })}
               </AppText>
-            ) : null}
-            {strongResults.length ? (
-              <View style={{ gap: theme.spacing.sm }}>
-                <AppText color="textSecondary" variant="caption">
-                  {t('bible.academicTools.strongTitle')}
-                </AppText>
-                {strongResults.map((entry) => (
-                  <StrongEntryPanel entry={entry} key={entry.number} />
-                ))}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: theme.spacing.sm,
+                }}
+              >
+                <Button label={t('bible.favorite')} onPress={favoriteSelectedVerses} variant="secondary" />
+                <Button
+                  label={t('bible.note')}
+                  onPress={() => setIsSelectionNoteOpen((current) => !current)}
+                  variant="secondary"
+                />
+                <Button label={t('bible.share')} onPress={shareSelectedVerses} variant="secondary" />
               </View>
-            ) : null}
-            {originalSearchResults.length ? (
-              <View style={{ gap: theme.spacing.sm }}>
-                <AppText color="textSecondary" variant="caption">
-                  {t('bible.academicTools.occurrencesTitle', {
-                    count: originalSearchResults.length,
-                  })}
-                </AppText>
-                {originalSearchResults.map((occurrence) => (
-                  <ListItem
-                    description={occurrence.transliteration || occurrence.text}
-                    icon="language-outline"
-                    key={`${occurrence.bookId}-${occurrence.chapterNumber}-${occurrence.verseNumber}-${occurrence.versionAbbreviation}`}
-                    onPress={() => openOriginalOccurrence(occurrence)}
-                    title={t('bible.academicTools.occurrenceLabel', {
-                      language: occurrence.languageName,
-                      reference: `${occurrence.bookName} ${occurrence.chapterNumber}:${occurrence.verseNumber}`,
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: theme.spacing.sm,
+                }}
+              >
+                {highlightColors.map((color) => (
+                  <Pressable
+                    accessibilityLabel={t('bible.highlightWithColor')}
+                    accessibilityRole="button"
+                    key={color}
+                    onPress={() => markSelectedVerses(color)}
+                    style={({ pressed }) => ({
+                      backgroundColor: color,
+                      borderColor: theme.colors.border,
+                      borderRadius: theme.radius.pill,
+                      borderWidth: 1,
+                      height: 36,
+                      opacity: pressed ? 0.72 : 1,
+                      width: 36,
                     })}
                   />
                 ))}
               </View>
-            ) : null}
-            {strongQuery.trim().length >= 2 &&
-            !isAcademicSearching &&
-            !strongResults.length &&
-            !originalSearchResults.length ? (
-              <AppText color="textSecondary" variant="caption">
-                {t('bible.academicTools.noResults')}
-              </AppText>
-            ) : null}
-          </BaseCard>
-
-          {selectedAcademicWord ? (
-            <BaseCard style={{ gap: theme.spacing.sm }}>
-              <AppText variant="heading">{t('bible.academicTools.wordPanelTitle')}</AppText>
-              <SelectedWordPanel word={selectedAcademicWord} />
-            </BaseCard>
-          ) : null}
-
-          {selectedVerses.length ? (
-            <BaseCard style={{ gap: theme.spacing.sm }}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  gap: theme.spacing.sm,
-                  justifyContent: 'space-between',
-                }}
-              >
-                <AppText color="textSecondary" variant="caption">
-                  {t('bible.selection.count', { count: selectedVerses.length })}
-                </AppText>
-                <Button
-                  label={t('bible.selection.menu')}
-                  onPress={() => setIsVerseActionMenuOpen((current) => !current)}
-                  variant="secondary"
-                />
-              </View>
-              {isVerseActionMenuOpen ? (
+              {isSelectionNoteOpen ? (
                 <View style={{ gap: theme.spacing.sm }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      flexWrap: 'wrap',
-                      gap: theme.spacing.sm,
-                    }}
-                  >
-                    <Button label={t('bible.favorite')} onPress={favoriteSelectedVerses} variant="secondary" />
-                    <Button
-                      label={t('bible.note')}
-                      onPress={() => setIsSelectionNoteOpen((current) => !current)}
-                      variant="secondary"
-                    />
-                    <Button label={t('bible.share')} onPress={shareSelectedVerses} variant="secondary" />
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      flexWrap: 'wrap',
-                      gap: theme.spacing.sm,
-                    }}
-                  >
-                    {highlightColors.map((color) => (
-                      <Pressable
-                        accessibilityLabel={t('bible.highlightWithColor')}
-                        accessibilityRole="button"
-                        key={color}
-                        onPress={() => markSelectedVerses(color)}
-                        style={({ pressed }) => ({
-                          backgroundColor: color,
-                          borderColor: theme.colors.border,
-                          borderRadius: theme.radius.pill,
-                          borderWidth: 1,
-                          height: 36,
-                          opacity: pressed ? 0.72 : 1,
-                          width: 36,
-                        })}
-                      />
-                    ))}
-                  </View>
-                  {isSelectionNoteOpen ? (
-                    <View style={{ gap: theme.spacing.sm }}>
-                      <TextInput
-                        accessibilityLabel={t('notes.content')}
-                        multiline
-                        onChangeText={setNoteContent}
-                        placeholder={t('notes.contentPlaceholder')}
-                        value={noteContent}
-                      />
-                      <TextInput
-                        accessibilityLabel={t('notes.tags')}
-                        onChangeText={setNoteTags}
-                        placeholder={t('notes.tagsPlaceholder')}
-                        value={noteTags}
-                      />
-                      <Button label={t('notes.save')} onPress={saveSelectionNote} />
-                    </View>
-                  ) : null}
+                  <TextInput
+                    accessibilityLabel={t('notes.content')}
+                    multiline
+                    onChangeText={setNoteContent}
+                    placeholder={t('notes.contentPlaceholder')}
+                    value={noteContent}
+                  />
+                  <TextInput
+                    accessibilityLabel={t('notes.tags')}
+                    onChangeText={setNoteTags}
+                    placeholder={t('notes.tagsPlaceholder')}
+                    value={noteTags}
+                  />
+                  <Button label={t('notes.save')} onPress={saveSelectionNote} />
                 </View>
               ) : null}
             </BaseCard>
           ) : null}
 
-          {verses.map((verse) => (
-            <Pressable
-              accessibilityLabel={t('bible.selection.toggleVerse', {
-                reference: formatReference(verse),
-              })}
-              accessibilityRole="button"
-              key={verse.id}
-              onPress={() => toggleVerseSelection(verse.id)}
-              style={({ pressed }) => {
-                const isSelected = selectedVerseIds.includes(verse.id);
-
-                return {
-                  backgroundColor: isSelected ? theme.colors.muted : theme.colors.surface,
-                  borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-                  borderRadius: theme.radius.md,
-                  borderWidth: 1,
-                  gap: theme.spacing.md,
-                  opacity: pressed ? 0.82 : 1,
-                  padding: theme.spacing.md,
-                };
-              }}
-            >
-              <AppText color="primary" variant="caption">
-                {formatReference(verse)}
-              </AppText>
-              {verse.highlightColor ? (
-                <View
-                  accessibilityLabel={t('bible.highlighted')}
-                  style={{
-                    backgroundColor: verse.highlightColor,
-                    borderRadius: theme.radius.pill,
-                    height: theme.spacing.xs,
-                    width: theme.spacing.xxl,
-                  }}
-                />
-              ) : null}
-              {readingMode === 'translation' ? <AppText>{verse.text}</AppText> : null}
-              {readingMode === 'original' ? (
-                <OriginalVersePanel
-                  displayMode={originalDisplayMode}
-                  originalVerse={originalVerses.find((item) => item.verseNumber === verse.verseNumber)}
-                  onSelectWord={setSelectedAcademicWord}
-                />
-              ) : null}
-              {verse.notesCount ? (
-                <AppText color="textSecondary" variant="caption">
-                  {t('bible.notesCount', { count: verse.notesCount })}
-                </AppText>
-              ) : null}
-            </Pressable>
-          ))}
+          <Pressable
+            accessibilityLabel={t('bible.selection.menu')}
+            accessibilityRole="button"
+            onPress={() => setIsVerseActionMenuOpen((current) => !current)}
+            style={({ pressed }) => ({
+              alignItems: 'center',
+              alignSelf: 'flex-end',
+              backgroundColor: theme.colors.primary,
+              borderRadius: theme.radius.pill,
+              elevation: 6,
+              flexDirection: 'row',
+              gap: theme.spacing.xs,
+              minHeight: 56,
+              minWidth: 56,
+              opacity: pressed ? 0.82 : 1,
+              paddingHorizontal: theme.spacing.md,
+              shadowColor: '#000000',
+              shadowOffset: { height: 2, width: 0 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+            })}
+          >
+            <Ionicons color={theme.colors.surface} name="menu-outline" size={26} />
+            <AppText style={{ color: theme.colors.surface }} variant="caption">
+              {selectedVerses.length}
+            </AppText>
+          </Pressable>
         </View>
       ) : null}
-    </Screen>
+    </View>
   );
 }
 
