@@ -42,11 +42,26 @@ import { useThemeTokens } from '@/theme/useThemeTokens';
 
 type OriginalDisplayMode = 'all' | 'original' | 'pronunciation' | 'traditionalName' | 'transliteration';
 
-const originalDisplayModeOptions: { key: OriginalDisplayMode; labelKey: string }[] = [
-  { key: 'original', labelKey: 'bible.originalLanguages.displayModes.original' },
-  { key: 'transliteration', labelKey: 'bible.originalLanguages.displayModes.transliteration' },
-  { key: 'pronunciation', labelKey: 'bible.originalLanguages.displayModes.pronunciation' },
-  { key: 'traditionalName', labelKey: 'bible.originalLanguages.displayModes.traditionalName' },
+const originalDisplayModeOptions: {
+  key: OriginalDisplayMode;
+  labelKey: string;
+}[] = [
+  {
+    key: 'original',
+    labelKey: 'bible.originalLanguages.displayModes.original',
+  },
+  {
+    key: 'transliteration',
+    labelKey: 'bible.originalLanguages.displayModes.transliteration',
+  },
+  {
+    key: 'pronunciation',
+    labelKey: 'bible.originalLanguages.displayModes.pronunciation',
+  },
+  {
+    key: 'traditionalName',
+    labelKey: 'bible.originalLanguages.displayModes.traditionalName',
+  },
   { key: 'all', labelKey: 'bible.originalLanguages.displayModes.all' },
 ];
 
@@ -71,9 +86,7 @@ export function BibleScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const [strongQuery, setStrongQuery] = useState('');
   const [strongResults, setStrongResults] = useState<StrongLexiconEntry[]>([]);
-  const [originalSearchResults, setOriginalSearchResults] = useState<OriginalLanguageSearchResult[]>(
-    [],
-  );
+  const [originalSearchResults, setOriginalSearchResults] = useState<OriginalLanguageSearchResult[]>([]);
   const [isAcademicSearching, setIsAcademicSearching] = useState(false);
   const [noteContent, setNoteContent] = useState('');
   const [noteTags, setNoteTags] = useState('');
@@ -221,7 +234,11 @@ export function BibleScreen() {
         setSelectedVerseIds([]);
         setIsVerseActionMenuOpen(false);
         setIsSelectionNoteOpen(false);
-        await saveLastReading({ bookId: book.id, chapterId: chapter.id, versionId });
+        await saveLastReading({
+          bookId: book.id,
+          chapterId: chapter.id,
+          versionId,
+        });
         setHasLastReading(true);
       } catch {
         setError(t('bible.errors.load'));
@@ -382,58 +399,49 @@ export function BibleScreen() {
     }
   }, [changeVersion, i18n.language, selectedVersionId, versions]);
 
-  const toggleVerseFavorite = useCallback(
-    async (verse: BibleVerse) => {
-      const isFavorite = await toggleFavorite(verse.id);
-      setVerses((current) =>
-        current.map((item) => (item.id === verse.id ? { ...item, isFavorite } : item)),
-      );
-      setFavoriteVerses(await getFavoriteVerses());
-    },
-    [],
-  );
+  const toggleVerseFavorite = useCallback(async (verse: BibleVerse) => {
+    const isFavorite = await toggleFavorite(verse.id);
+    setVerses((current) => current.map((item) => (item.id === verse.id ? { ...item, isFavorite } : item)));
+    setFavoriteVerses(await getFavoriteVerses());
+  }, []);
 
-  const saveSelectionNote = useCallback(
-    async () => {
-      if (!noteContent.trim()) {
-        return;
-      }
+  const saveSelectionNote = useCallback(async () => {
+    if (!noteContent.trim()) {
+      return;
+    }
 
-      const selectedVerses = verses.filter((verse) => selectedVerseIds.includes(verse.id));
-      const title = selectedVerses.map(formatReference).join(', ');
-      const [firstVerse] = selectedVerses;
+    const selectedVerses = verses.filter((verse) => selectedVerseIds.includes(verse.id));
+    const title = selectedVerses.map(formatReference).join(', ');
+    const [firstVerse] = selectedVerses;
 
-      await createStudyNote({
-        categoryName: t('notes.defaultCategory'),
-        content: noteContent,
-        tags: noteTags,
-        title,
-        verseId: selectedVerses.length === 1 ? firstVerse?.id : undefined,
-      });
-      if (selectedVerses.length === 1 && firstVerse) {
-        setVerses((current) =>
-          current.map((item) =>
-            item.id === firstVerse.id ? { ...item, notesCount: item.notesCount + 1 } : item,
-          ),
-        );
-      }
-      setIsSelectionNoteOpen(false);
-      setNoteContent('');
-      setNoteTags('');
-    },
-    [noteContent, noteTags, selectedVerseIds, t, verses],
-  );
-
-  const markVerse = useCallback(async (verse: BibleVerse, color: string) => {
-    await createVerseHighlight({
-      categoryName: t('notes.highlightCategory'),
-      color,
-      verseId: verse.id,
+    await createStudyNote({
+      categoryName: t('notes.defaultCategory'),
+      content: noteContent,
+      tags: noteTags,
+      title,
+      verseId: selectedVerses.length === 1 ? firstVerse?.id : undefined,
     });
-    setVerses((current) =>
-      current.map((item) => (item.id === verse.id ? { ...item, highlightColor: color } : item)),
-    );
-  }, [t]);
+    if (selectedVerses.length === 1 && firstVerse) {
+      setVerses((current) =>
+        current.map((item) => (item.id === firstVerse.id ? { ...item, notesCount: item.notesCount + 1 } : item)),
+      );
+    }
+    setIsSelectionNoteOpen(false);
+    setNoteContent('');
+    setNoteTags('');
+  }, [noteContent, noteTags, selectedVerseIds, t, verses]);
+
+  const markVerse = useCallback(
+    async (verse: BibleVerse, color: string) => {
+      await createVerseHighlight({
+        categoryName: t('notes.highlightCategory'),
+        color,
+        verseId: verse.id,
+      });
+      setVerses((current) => current.map((item) => (item.id === verse.id ? { ...item, highlightColor: color } : item)));
+    },
+    [t],
+  );
 
   const selectedVerses = verses.filter((verse) => selectedVerseIds.includes(verse.id));
 
@@ -544,9 +552,7 @@ export function BibleScreen() {
       }
 
       const chapterRows = await getBibleChapters(book.id);
-      const chapter = chapterRows.find(
-        (item) => item.chapterNumber === occurrence.chapterNumber,
-      );
+      const chapter = chapterRows.find((item) => item.chapterNumber === occurrence.chapterNumber);
 
       if (!chapter) {
         setError(t('bible.errors.referenceNotFound'));
@@ -581,8 +587,7 @@ export function BibleScreen() {
   const selectedVersion = versions.find((version) => version.id === selectedVersionId);
   const portugueseVersion = versions.find((version) => version.language === 'pt-BR');
   const englishVersion = versions.find((version) => version.language === 'en-US');
-  const isPortugueseSelected =
-    readingMode === 'translation' && selectedVersionId === portugueseVersion?.id;
+  const isPortugueseSelected = readingMode === 'translation' && selectedVersionId === portugueseVersion?.id;
   const isEnglishSelected = readingMode === 'translation' && selectedVersionId === englishVersion?.id;
   const isOriginalSelected = readingMode === 'original';
 
@@ -599,7 +604,13 @@ export function BibleScreen() {
           returnKeyType="search"
           value={reference}
         />
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: theme.spacing.sm,
+          }}
+        >
           <Button
             label={t('bible.search.scopes.all')}
             onPress={() => setSearchScope('all')}
@@ -651,9 +662,7 @@ export function BibleScreen() {
         </BaseCard>
       ) : null}
 
-      {!selectedBook && hasLastReading ? (
-        <Button label={t('bible.continueReading')} onPress={continueReading} />
-      ) : null}
+      {!selectedBook && hasLastReading ? <Button label={t('bible.continueReading')} onPress={continueReading} /> : null}
 
       {!selectedBook ? (
         <BaseCard style={{ gap: theme.spacing.md }}>
@@ -727,7 +736,7 @@ export function BibleScreen() {
               mode:
                 readingMode === 'original'
                   ? t('bible.versionPicker.original')
-                  : selectedVersion?.name ?? selectedVersionId,
+                  : (selectedVersion?.name ?? selectedVersionId),
             })}
           </AppText>
         </BaseCard>
@@ -762,13 +771,19 @@ export function BibleScreen() {
         </BaseCard>
       ) : null}
 
-      {selectedBook ? (
-        <Button label={t('common.back')} onPress={goBack} variant="ghost" />
-      ) : null}
+      {selectedBook ? <Button label={t('common.back')} onPress={goBack} variant="ghost" /> : null}
 
       {isLoading && !verses.length ? (
         <BaseCard>
           <AppText color="textSecondary">{t('common.loading')}</AppText>
+        </BaseCard>
+      ) : null}
+
+      {!isLoading && !selectedBook && !books.length ? (
+        <BaseCard style={{ gap: theme.spacing.md }}>
+          <AppText variant="heading">{t('bible.emptyTitle')}</AppText>
+          <AppText color="textSecondary">{t('bible.emptyDescription')}</AppText>
+          <Button label={t('common.retry')} onPress={loadBooks} variant="secondary" />
         </BaseCard>
       ) : null}
 
@@ -811,7 +826,13 @@ export function BibleScreen() {
 
           <BaseCard style={{ gap: theme.spacing.sm }}>
             <AppText variant="heading">{t('bible.versions.title')}</AppText>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: theme.spacing.sm,
+              }}
+            >
               {versions.map((version) => (
                 <Button
                   key={version.id}
@@ -830,7 +851,13 @@ export function BibleScreen() {
 
           <BaseCard style={{ gap: theme.spacing.sm }}>
             <AppText variant="heading">{t('bible.originalLanguages.title')}</AppText>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: theme.spacing.sm,
+              }}
+            >
               <Button
                 label={t('bible.readingModes.translation')}
                 onPress={selectTranslationMode}
@@ -850,7 +877,13 @@ export function BibleScreen() {
                 <AppText color="textSecondary" variant="caption">
                   {t('bible.originalLanguages.displayModes.title')}
                 </AppText>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    gap: theme.spacing.sm,
+                  }}
+                >
                   {originalDisplayModeOptions.map((option) => (
                     <Button
                       key={option.key}
@@ -958,24 +991,28 @@ export function BibleScreen() {
               </View>
               {isVerseActionMenuOpen ? (
                 <View style={{ gap: theme.spacing.sm }}>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
-                    <Button
-                      label={t('bible.favorite')}
-                      onPress={favoriteSelectedVerses}
-                      variant="secondary"
-                    />
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: theme.spacing.sm,
+                    }}
+                  >
+                    <Button label={t('bible.favorite')} onPress={favoriteSelectedVerses} variant="secondary" />
                     <Button
                       label={t('bible.note')}
                       onPress={() => setIsSelectionNoteOpen((current) => !current)}
                       variant="secondary"
                     />
-                    <Button
-                      label={t('bible.share')}
-                      onPress={shareSelectedVerses}
-                      variant="secondary"
-                    />
+                    <Button label={t('bible.share')} onPress={shareSelectedVerses} variant="secondary" />
                   </View>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: theme.spacing.sm,
+                    }}
+                  >
                     {highlightColors.map((color) => (
                       <Pressable
                         accessibilityLabel={t('bible.highlightWithColor')}
@@ -1019,7 +1056,9 @@ export function BibleScreen() {
 
           {verses.map((verse) => (
             <Pressable
-              accessibilityLabel={t('bible.selection.toggleVerse', { reference: formatReference(verse) })}
+              accessibilityLabel={t('bible.selection.toggleVerse', {
+                reference: formatReference(verse),
+              })}
               accessibilityRole="button"
               key={verse.id}
               onPress={() => toggleVerseSelection(verse.id)}
@@ -1177,7 +1216,13 @@ function OriginalVersePanel({
         />
       ) : null}
       {originalVerse.interlinearWords.length ? (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: theme.spacing.sm,
+          }}
+        >
           {originalVerse.interlinearWords.map((word) => (
             <Button
               key={word.id}
@@ -1318,12 +1363,16 @@ function StrongEntryPanel({ entry }: { entry: StrongLexiconEntry }) {
       </AppText>
       {entry.pronunciation ? (
         <AppText color="textSecondary" variant="caption">
-          {t('bible.academicTools.pronunciation', { pronunciation: entry.pronunciation })}
+          {t('bible.academicTools.pronunciation', {
+            pronunciation: entry.pronunciation,
+          })}
         </AppText>
       ) : null}
       {entry.morphology ? (
         <AppText color="textSecondary" variant="caption">
-          {t('bible.academicTools.morphology', { morphology: entry.morphology })}
+          {t('bible.academicTools.morphology', {
+            morphology: entry.morphology,
+          })}
         </AppText>
       ) : null}
       <AppText color="textSecondary">{entry.definition}</AppText>

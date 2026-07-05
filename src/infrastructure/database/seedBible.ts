@@ -83,8 +83,18 @@ const books: SeedBookMetadata[] = [
   { abbreviation: 'Ef', id: 'eph', name: 'Efésios', testament: 'new' },
   { abbreviation: 'Fp', id: 'php', name: 'Filipenses', testament: 'new' },
   { abbreviation: 'Cl', id: 'col', name: 'Colossenses', testament: 'new' },
-  { abbreviation: '1Ts', id: '1th', name: '1 Tessalonicenses', testament: 'new' },
-  { abbreviation: '2Ts', id: '2th', name: '2 Tessalonicenses', testament: 'new' },
+  {
+    abbreviation: '1Ts',
+    id: '1th',
+    name: '1 Tessalonicenses',
+    testament: 'new',
+  },
+  {
+    abbreviation: '2Ts',
+    id: '2th',
+    name: '2 Tessalonicenses',
+    testament: 'new',
+  },
   { abbreviation: '1Tm', id: '1ti', name: '1 Timóteo', testament: 'new' },
   { abbreviation: '2Tm', id: '2ti', name: '2 Timóteo', testament: 'new' },
   { abbreviation: 'Tt', id: 'tit', name: 'Tito', testament: 'new' },
@@ -109,10 +119,9 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
     'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
     [comparisonPackageMetadataKey],
   );
-  const originalLanguageMetadata = await database.getFirstAsync<{ value: string }>(
-    'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
-    [originalLanguagePackageMetadataKey],
-  );
+  const originalLanguageMetadata = await database.getFirstAsync<{
+    value: string;
+  }>('SELECT value FROM app_metadata WHERE key = ? LIMIT 1;', [originalLanguagePackageMetadataKey]);
   const strongLexiconMetadata = await database.getFirstAsync<{ value: string }>(
     'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
     [strongLexiconPackageMetadataKey],
@@ -127,127 +136,140 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
     return;
   }
 
-  await database.withTransactionAsync(async () => {
-    if (bibleMetadata?.value !== porBLivrePackageVersion) {
-      await database.runAsync(
+  if (bibleMetadata?.value !== porBLivrePackageVersion) {
+    await database.withTransactionAsync(async () => {
+      const upsertBook = await database.prepareAsync(
         `
-          INSERT INTO bible_versions
-            (id, name, abbreviation, language, description, copyright, is_offline_available)
-          VALUES (?, ?, ?, ?, ?, ?, 1)
+          INSERT INTO bible_books (id, name, abbreviation, testament, position)
+          VALUES (?, ?, ?, ?, ?)
           ON CONFLICT(id) DO UPDATE SET
             name = excluded.name,
             abbreviation = excluded.abbreviation,
-            language = excluded.language,
-            description = excluded.description,
-            copyright = excluded.copyright,
-            is_offline_available = excluded.is_offline_available,
+            testament = excluded.testament,
+            position = excluded.position,
             updated_at = CURRENT_TIMESTAMP;
         `,
-        [
-          'por-blivre',
-          'Bíblia Livre',
-          'PorBLivre',
-          'pt-BR',
-          'Bíblia Livre importada do projeto scrollmapper/bible_databases.',
-          'Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases.',
-        ],
+      );
+      const upsertChapter = await database.prepareAsync(
+        `
+          INSERT INTO bible_chapters (id, book_id, chapter_number)
+          VALUES (?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET
+            book_id = excluded.book_id,
+            chapter_number = excluded.chapter_number,
+            updated_at = CURRENT_TIMESTAMP;
+        `,
+      );
+      const upsertVerse = await database.prepareAsync(
+        `
+          INSERT INTO bible_verses
+            (id, version_id, book_id, chapter_id, verse_number, text)
+          VALUES (?, ?, ?, ?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET
+            version_id = excluded.version_id,
+            book_id = excluded.book_id,
+            chapter_id = excluded.chapter_id,
+            verse_number = excluded.verse_number,
+            text = excluded.text,
+            updated_at = CURRENT_TIMESTAMP;
+        `,
       );
 
-      for (const [index, metadata] of books.entries()) {
-        const sourceBook = porBLivre.books[index];
-
-        if (!sourceBook) {
-          continue;
-        }
-
+      try {
         await database.runAsync(
           `
-            INSERT INTO bible_books (id, name, abbreviation, testament, position)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO bible_versions
+              (id, name, abbreviation, language, description, copyright, is_offline_available)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
             ON CONFLICT(id) DO UPDATE SET
               name = excluded.name,
               abbreviation = excluded.abbreviation,
-              testament = excluded.testament,
-              position = excluded.position,
+              language = excluded.language,
+              description = excluded.description,
+              copyright = excluded.copyright,
+              is_offline_available = excluded.is_offline_available,
               updated_at = CURRENT_TIMESTAMP;
           `,
-          [metadata.id, metadata.name, metadata.abbreviation, metadata.testament, index + 1],
+          [
+            'por-blivre',
+            'Bíblia Livre',
+            'PorBLivre',
+            'pt-BR',
+            'Bíblia Livre importada do projeto scrollmapper/bible_databases.',
+            'Creative Commons Attribution 3.0 Brazil. Fonte: scrollmapper/bible_databases.',
+          ],
         );
 
-        for (const chapter of sourceBook.chapters) {
-          const chapterId = `${metadata.id}-${chapter.chapter}`;
-          await database.runAsync(
-            `
-              INSERT INTO bible_chapters (id, book_id, chapter_number)
-              VALUES (?, ?, ?)
-              ON CONFLICT(id) DO UPDATE SET
-                book_id = excluded.book_id,
-                chapter_number = excluded.chapter_number,
-                updated_at = CURRENT_TIMESTAMP;
-            `,
-            [chapterId, metadata.id, chapter.chapter],
-          );
+        for (const [index, metadata] of books.entries()) {
+          const sourceBook = porBLivre.books[index];
 
-          for (const verse of chapter.verses) {
-            await database.runAsync(
-              `
-                INSERT INTO bible_verses
-                  (id, version_id, book_id, chapter_id, verse_number, text)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET
-                  version_id = excluded.version_id,
-                  book_id = excluded.book_id,
-                  chapter_id = excluded.chapter_id,
-                  verse_number = excluded.verse_number,
-                  text = excluded.text,
-                  updated_at = CURRENT_TIMESTAMP;
-              `,
-              [
+          if (!sourceBook) {
+            continue;
+          }
+
+          await upsertBook.executeAsync([
+            metadata.id,
+            metadata.name,
+            metadata.abbreviation,
+            metadata.testament,
+            index + 1,
+          ]);
+
+          for (const chapter of sourceBook.chapters) {
+            const chapterId = `${metadata.id}-${chapter.chapter}`;
+            await upsertChapter.executeAsync([chapterId, metadata.id, chapter.chapter]);
+
+            for (const verse of chapter.verses) {
+              await upsertVerse.executeAsync([
                 `por-blivre-${metadata.id}-${chapter.chapter}-${verse.verse}`,
                 'por-blivre',
                 metadata.id,
                 chapterId,
                 verse.verse,
                 verse.text,
-              ],
-            );
+              ]);
+            }
           }
         }
+
+        await setMetadata(database, biblePackageMetadataKey, porBLivrePackageVersion);
+      } finally {
+        await upsertBook.finalizeAsync();
+        await upsertChapter.finalizeAsync();
+        await upsertVerse.finalizeAsync();
       }
+    });
+  }
 
-      await database.runAsync(
-        `
-          INSERT INTO app_metadata (key, value)
-          VALUES (?, ?)
-          ON CONFLICT(key) DO UPDATE SET
-            value = excluded.value,
-            updated_at = CURRENT_TIMESTAMP;
-        `,
-        [biblePackageMetadataKey, porBLivrePackageVersion],
-      );
-    }
-
-    if (comparisonMetadata?.value !== comparisonPackageVersion) {
+  if (comparisonMetadata?.value !== comparisonPackageVersion) {
+    await database.withTransactionAsync(async () => {
       await seedComparisonVersions(database);
       await setMetadata(database, comparisonPackageMetadataKey, comparisonPackageVersion);
-    }
+    });
+  }
 
-    if (originalLanguageMetadata?.value !== originalLanguagePackageVersion) {
+  if (originalLanguageMetadata?.value !== originalLanguagePackageVersion) {
+    await database.withTransactionAsync(async () => {
       await seedOriginalLanguages(database);
       await setMetadata(database, originalLanguagePackageMetadataKey, originalLanguagePackageVersion);
-    }
+    });
+  }
 
-    if (strongLexiconMetadata?.value !== strongLexiconPackageVersion) {
+  if (strongLexiconMetadata?.value !== strongLexiconPackageVersion) {
+    await database.withTransactionAsync(async () => {
       await seedStrongLexicon(database);
       await setMetadata(database, strongLexiconPackageMetadataKey, strongLexiconPackageVersion);
-    }
-  });
+    });
+  }
 }
 
 async function seedComparisonVersions(database: SQLiteDatabase) {
-  for (const version of comparisonVersions.versions) {
-    await database.runAsync(
-      `
+  const upsertVerse = await database.prepareAsync(bibleVerseUpsertSql);
+
+  try {
+    for (const version of comparisonVersions.versions) {
+      await database.runAsync(
+        `
         INSERT INTO bible_versions
           (id, name, abbreviation, language, description, copyright, is_offline_available)
         VALUES (?, ?, ?, ?, ?, ?, 1)
@@ -260,26 +282,46 @@ async function seedComparisonVersions(database: SQLiteDatabase) {
           is_offline_available = excluded.is_offline_available,
           updated_at = CURRENT_TIMESTAMP;
       `,
-      [
-        version.id,
-        version.name,
-        version.abbreviation,
-        version.language,
-        version.description,
-        'Fonte: Bible SuperSearch Bible Downloads.',
-      ],
-    );
-  }
+        [
+          version.id,
+          version.name,
+          version.abbreviation,
+          version.language,
+          version.description,
+          'Fonte: Bible SuperSearch Bible Downloads.',
+        ],
+      );
+    }
 
-  for (const verse of comparisonVersions.verses) {
-    await seedBibleVerse(database, verse.versionId, verse.bookId, verse.chapter, verse.verse, verse.text);
+    for (const verse of comparisonVersions.verses) {
+      await seedBibleVerse(upsertVerse, verse.versionId, verse.bookId, verse.chapter, verse.verse, verse.text);
+    }
+  } finally {
+    await upsertVerse.finalizeAsync();
   }
 }
 
 async function seedOriginalLanguages(database: SQLiteDatabase) {
-  for (const version of originalLanguages.versions) {
-    await database.runAsync(
-      `
+  const upsertVerse = await database.prepareAsync(
+    `
+      INSERT INTO original_language_verses
+        (id, version_id, language, book_id, chapter_number, verse_number, text)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        version_id = excluded.version_id,
+        language = excluded.language,
+        book_id = excluded.book_id,
+        chapter_number = excluded.chapter_number,
+        verse_number = excluded.verse_number,
+        text = excluded.text,
+        updated_at = CURRENT_TIMESTAMP;
+    `,
+  );
+
+  try {
+    for (const version of originalLanguages.versions) {
+      await database.runAsync(
+        `
         INSERT INTO original_language_versions
           (id, name, abbreviation, language, description)
         VALUES (?, ?, ?, ?, ?)
@@ -290,26 +332,12 @@ async function seedOriginalLanguages(database: SQLiteDatabase) {
           description = excluded.description,
           updated_at = CURRENT_TIMESTAMP;
       `,
-      [version.id, version.name, version.abbreviation, version.language, version.description],
-    );
-  }
+        [version.id, version.name, version.abbreviation, version.language, version.description],
+      );
+    }
 
-  for (const verse of originalLanguages.verses) {
-    await database.runAsync(
-      `
-        INSERT INTO original_language_verses
-          (id, version_id, language, book_id, chapter_number, verse_number, text)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET
-          version_id = excluded.version_id,
-          language = excluded.language,
-          book_id = excluded.book_id,
-          chapter_number = excluded.chapter_number,
-          verse_number = excluded.verse_number,
-          text = excluded.text,
-          updated_at = CURRENT_TIMESTAMP;
-      `,
-      [
+    for (const verse of originalLanguages.verses) {
+      await upsertVerse.executeAsync([
         `${verse.versionId}-${verse.bookId}-${verse.chapter}-${verse.verse}`,
         verse.versionId,
         verse.language,
@@ -317,15 +345,16 @@ async function seedOriginalLanguages(database: SQLiteDatabase) {
         verse.chapter,
         verse.verse,
         verse.text,
-      ],
-    );
+      ]);
+    }
+  } finally {
+    await upsertVerse.finalizeAsync();
   }
 }
 
 async function seedStrongLexicon(database: SQLiteDatabase) {
-  for (const entry of strongLexicon.entries) {
-    await database.runAsync(
-      `
+  const upsertEntry = await database.prepareAsync(
+    `
         INSERT INTO strong_lexicon
           (
             number,
@@ -348,7 +377,11 @@ async function seedStrongLexicon(database: SQLiteDatabase) {
           definition = excluded.definition,
           updated_at = CURRENT_TIMESTAMP;
       `,
-      [
+  );
+
+  try {
+    for (const entry of strongLexicon.entries) {
+      await upsertEntry.executeAsync([
         entry.number,
         entry.language,
         entry.rootWord,
@@ -357,13 +390,15 @@ async function seedStrongLexicon(database: SQLiteDatabase) {
         entry.pronunciation || null,
         entry.morphology || null,
         entry.definition,
-      ],
-    );
+      ]);
+    }
+  } finally {
+    await upsertEntry.finalizeAsync();
   }
 }
 
 async function seedBibleVerse(
-  database: SQLiteDatabase,
+  statement: Awaited<ReturnType<SQLiteDatabase['prepareAsync']>>,
   versionId: string,
   bookId: string,
   chapterNumber: number,
@@ -372,22 +407,28 @@ async function seedBibleVerse(
 ) {
   const chapterId = `${bookId}-${chapterNumber}`;
 
-  await database.runAsync(
-    `
-      INSERT INTO bible_verses
-        (id, version_id, book_id, chapter_id, verse_number, text)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        version_id = excluded.version_id,
-        book_id = excluded.book_id,
-        chapter_id = excluded.chapter_id,
-        verse_number = excluded.verse_number,
-        text = excluded.text,
-        updated_at = CURRENT_TIMESTAMP;
-    `,
-    [`${versionId}-${bookId}-${chapterNumber}-${verseNumber}`, versionId, bookId, chapterId, verseNumber, text],
-  );
+  await statement.executeAsync([
+    `${versionId}-${bookId}-${chapterNumber}-${verseNumber}`,
+    versionId,
+    bookId,
+    chapterId,
+    verseNumber,
+    text,
+  ]);
 }
+
+const bibleVerseUpsertSql = `
+  INSERT INTO bible_verses
+    (id, version_id, book_id, chapter_id, verse_number, text)
+  VALUES (?, ?, ?, ?, ?, ?)
+  ON CONFLICT(id) DO UPDATE SET
+    version_id = excluded.version_id,
+    book_id = excluded.book_id,
+    chapter_id = excluded.chapter_id,
+    verse_number = excluded.verse_number,
+    text = excluded.text,
+    updated_at = CURRENT_TIMESTAMP;
+`;
 
 async function setMetadata(database: SQLiteDatabase, key: string, value: string) {
   await database.runAsync(

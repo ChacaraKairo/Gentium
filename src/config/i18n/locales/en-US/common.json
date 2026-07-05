@@ -33,8 +33,8 @@
   "bible": {
     "title": "Bible",
     "subtitle": "Offline reading with original languages, Strong, and initial interlinear.",
-    "emptyTitle": "Bible library in preparation",
-    "emptyDescription": "Books, chapters, and verses arrive in v0.2.0.",
+    "emptyTitle": "Preparing offline Bible",
+    "emptyDescription": "The first installation is still organizing books and verses. Wait a moment and try again.",
     "chapter": "Chapter {{chapter}}",
     "continueReading": "Continue latest reading",
     "favorite": "Favorite verse",

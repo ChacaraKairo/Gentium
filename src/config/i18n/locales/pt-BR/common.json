@@ -33,8 +33,8 @@
   "bible": {
     "title": "Bíblia",
     "subtitle": "Leitura offline com idiomas originais, Strong e interlinear inicial.",
-    "emptyTitle": "Biblioteca bíblica em preparação",
-    "emptyDescription": "A lista de livros, capítulos e versículos entra na v0.2.0.",
+    "emptyTitle": "Preparando Bíblia offline",
+    "emptyDescription": "A primeira instalação ainda está organizando os livros e versículos. Aguarde um instante e tente novamente.",
     "chapter": "Capítulo {{chapter}}",
     "continueReading": "Continuar última leitura",
     "favorite": "Favoritar versículo",

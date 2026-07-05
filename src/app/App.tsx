@@ -1,11 +1,11 @@
 import './startup/i18n';
 
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, InteractionManager, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppProviders } from './providers/AppProviders';
-import { initializeAppDatabase } from '@/infrastructure/database/database';
+import { initializeAppDatabase, seedAppContentInBackground } from '@/infrastructure/database/database';
 import { applySavedLanguage } from '@/modules/settings/repositories/languageRepository';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { useStartupStore } from '@/app/startup/startupStore';
@@ -23,6 +23,20 @@ function AppBootstrap() {
       await applySavedLanguage();
     });
   }, [initialize]);
+
+  useEffect(() => {
+    if (!isReady || error) {
+      return undefined;
+    }
+
+    const task = InteractionManager.runAfterInteractions(() => {
+      seedAppContentInBackground();
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [error, isReady]);
 
   if (!isReady) {
     return (
