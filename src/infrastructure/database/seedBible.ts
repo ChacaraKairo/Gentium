@@ -1,5 +1,6 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 
+import type { AppContentSeedPhase, AppContentSeedProgress } from './database';
 import comparisonVersionsSeed from './seeds/comparisonVersions.json';
 import originalLanguagesSeed from './seeds/originalLanguages.json';
 import porBLivreSeed from './seeds/PorBLivre.json';
@@ -17,6 +18,8 @@ type SeedBookMetadata = {
   name: string;
   testament: 'old' | 'new';
 };
+
+type SeedProgressReporter = (phase: AppContentSeedPhase, increment?: number, force?: boolean) => void;
 
 const porBLivre = porBLivreSeed as BibleSeed;
 const comparisonVersions = comparisonVersionsSeed as BibleVersionPackageSeed;
@@ -110,7 +113,10 @@ const books: SeedBookMetadata[] = [
   { abbreviation: 'Ap', id: 'rev', name: 'Apocalipse', testament: 'new' },
 ];
 
-export async function seedBiblePackage(database: SQLiteDatabase) {
+export async function seedBiblePackage(
+  database: SQLiteDatabase,
+  onProgress?: (progress: AppContentSeedProgress) => void,
+) {
   const bibleMetadata = await database.getFirstAsync<{ value: string }>(
     'SELECT value FROM app_metadata WHERE key = ? LIMIT 1;',
     [biblePackageMetadataKey],
@@ -136,7 +142,17 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
     return;
   }
 
+  const total = countPendingSeedItems({
+    needsBible: bibleMetadata?.value !== porBLivrePackageVersion,
+    needsComparison: comparisonMetadata?.value !== comparisonPackageVersion,
+    needsOriginalLanguage: originalLanguageMetadata?.value !== originalLanguagePackageVersion,
+    needsStrongLexicon: strongLexiconMetadata?.value !== strongLexiconPackageVersion,
+  });
+  const reportProgress = createProgressReporter(total, onProgress);
+
   if (bibleMetadata?.value !== porBLivrePackageVersion) {
+    reportProgress('bible', 0, true);
+
     await database.withTransactionAsync(async () => {
       const upsertBook = await database.prepareAsync(
         `
@@ -214,10 +230,12 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
             metadata.testament,
             index + 1,
           ]);
+          reportProgress('bible');
 
           for (const chapter of sourceBook.chapters) {
             const chapterId = `${metadata.id}-${chapter.chapter}`;
             await upsertChapter.executeAsync([chapterId, metadata.id, chapter.chapter]);
+            reportProgress('bible');
 
             for (const verse of chapter.verses) {
               await upsertVerse.executeAsync([
@@ -228,11 +246,13 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
                 verse.verse,
                 verse.text,
               ]);
+              reportProgress('bible');
             }
           }
         }
 
         await setMetadata(database, biblePackageMetadataKey, porBLivrePackageVersion);
+        reportProgress('bible', 1, true);
       } finally {
         await upsertBook.finalizeAsync();
         await upsertChapter.finalizeAsync();
@@ -242,28 +262,39 @@ export async function seedBiblePackage(database: SQLiteDatabase) {
   }
 
   if (comparisonMetadata?.value !== comparisonPackageVersion) {
+    reportProgress('comparison', 0, true);
+
     await database.withTransactionAsync(async () => {
-      await seedComparisonVersions(database);
+      await seedComparisonVersions(database, reportProgress);
       await setMetadata(database, comparisonPackageMetadataKey, comparisonPackageVersion);
+      reportProgress('comparison', 1, true);
     });
   }
 
   if (originalLanguageMetadata?.value !== originalLanguagePackageVersion) {
+    reportProgress('original', 0, true);
+
     await database.withTransactionAsync(async () => {
-      await seedOriginalLanguages(database);
+      await seedOriginalLanguages(database, reportProgress);
       await setMetadata(database, originalLanguagePackageMetadataKey, originalLanguagePackageVersion);
+      reportProgress('original', 1, true);
     });
   }
 
   if (strongLexiconMetadata?.value !== strongLexiconPackageVersion) {
+    reportProgress('lexicon', 0, true);
+
     await database.withTransactionAsync(async () => {
-      await seedStrongLexicon(database);
+      await seedStrongLexicon(database, reportProgress);
       await setMetadata(database, strongLexiconPackageMetadataKey, strongLexiconPackageVersion);
+      reportProgress('lexicon', 1, true);
     });
   }
+
+  reportProgress('done', 0, true);
 }
 
-async function seedComparisonVersions(database: SQLiteDatabase) {
+async function seedComparisonVersions(database: SQLiteDatabase, reportProgress: SeedProgressReporter) {
   const upsertVerse = await database.prepareAsync(bibleVerseUpsertSql);
 
   try {
@@ -291,17 +322,19 @@ async function seedComparisonVersions(database: SQLiteDatabase) {
           'Fonte: Bible SuperSearch Bible Downloads.',
         ],
       );
+      reportProgress('comparison');
     }
 
     for (const verse of comparisonVersions.verses) {
       await seedBibleVerse(upsertVerse, verse.versionId, verse.bookId, verse.chapter, verse.verse, verse.text);
+      reportProgress('comparison');
     }
   } finally {
     await upsertVerse.finalizeAsync();
   }
 }
 
-async function seedOriginalLanguages(database: SQLiteDatabase) {
+async function seedOriginalLanguages(database: SQLiteDatabase, reportProgress: SeedProgressReporter) {
   const upsertVerse = await database.prepareAsync(
     `
       INSERT INTO original_language_verses
@@ -334,6 +367,7 @@ async function seedOriginalLanguages(database: SQLiteDatabase) {
       `,
         [version.id, version.name, version.abbreviation, version.language, version.description],
       );
+      reportProgress('original');
     }
 
     for (const verse of originalLanguages.verses) {
@@ -346,13 +380,14 @@ async function seedOriginalLanguages(database: SQLiteDatabase) {
         verse.verse,
         verse.text,
       ]);
+      reportProgress('original');
     }
   } finally {
     await upsertVerse.finalizeAsync();
   }
 }
 
-async function seedStrongLexicon(database: SQLiteDatabase) {
+async function seedStrongLexicon(database: SQLiteDatabase, reportProgress: SeedProgressReporter) {
   const upsertEntry = await database.prepareAsync(
     `
         INSERT INTO strong_lexicon
@@ -391,6 +426,7 @@ async function seedStrongLexicon(database: SQLiteDatabase) {
         entry.morphology || null,
         entry.definition,
       ]);
+      reportProgress('lexicon');
     }
   } finally {
     await upsertEntry.finalizeAsync();
@@ -429,6 +465,77 @@ const bibleVerseUpsertSql = `
     text = excluded.text,
     updated_at = CURRENT_TIMESTAMP;
 `;
+
+function countPendingSeedItems({
+  needsBible,
+  needsComparison,
+  needsOriginalLanguage,
+  needsStrongLexicon,
+}: {
+  needsBible: boolean;
+  needsComparison: boolean;
+  needsOriginalLanguage: boolean;
+  needsStrongLexicon: boolean;
+}) {
+  let total = 0;
+
+  if (needsBible) {
+    total += books.reduce((count, metadata, index) => {
+      const sourceBook = porBLivre.books[index];
+
+      if (!sourceBook) {
+        return count;
+      }
+
+      const chapterCount = sourceBook.chapters.length;
+      const verseCount = sourceBook.chapters.reduce((sum, chapter) => sum + chapter.verses.length, 0);
+
+      return count + 1 + chapterCount + verseCount;
+    }, 1);
+  }
+
+  if (needsComparison) {
+    total += comparisonVersions.versions.length + comparisonVersions.verses.length + 1;
+  }
+
+  if (needsOriginalLanguage) {
+    total += originalLanguages.versions.length + originalLanguages.verses.length + 1;
+  }
+
+  if (needsStrongLexicon) {
+    total += strongLexicon.entries.length + 1;
+  }
+
+  return Math.max(total, 1);
+}
+
+function createProgressReporter(
+  total: number,
+  onProgress?: (progress: AppContentSeedProgress) => void,
+): SeedProgressReporter {
+  let completed = 0;
+  let lastReportedCompleted = -1;
+  let lastReportedPhase: AppContentSeedPhase | null = null;
+
+  return (phase, increment = 1, force = false) => {
+    completed = Math.min(total, completed + increment);
+
+    if (!onProgress) {
+      return;
+    }
+
+    const crossedChunk = completed - lastReportedCompleted >= 250;
+    const changedPhase = phase !== lastReportedPhase;
+
+    if (!force && !crossedChunk && !changedPhase) {
+      return;
+    }
+
+    lastReportedCompleted = completed;
+    lastReportedPhase = phase;
+    onProgress({ completed, phase, total });
+  };
+}
 
 async function setMetadata(database: SQLiteDatabase, key: string, value: string) {
   await database.runAsync(

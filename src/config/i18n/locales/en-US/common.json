@@ -4,6 +4,22 @@
     "loading": "Loading...",
     "retry": "Try again"
   },
+  "contentSeed": {
+    "errorDescription": "Could not finish offline preparation.",
+    "errorStatus": "Attention",
+    "errorTitle": "Preparation interrupted",
+    "percent": "{{percent}}%",
+    "progressLabel": "Offline preparation at {{percent}}%",
+    "title": "Preparing offline content",
+    "phases": {
+      "bible": "Organizing Portuguese books and verses.",
+      "comparison": "Adding comparison version.",
+      "done": "Offline content is ready.",
+      "lexicon": "Indexing Strong lexicon.",
+      "original": "Preparing original languages.",
+      "preparing": "Starting local library."
+    }
+  },
   "tabs": {
     "home": "Home",
     "bible": "Bible",

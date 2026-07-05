@@ -4,6 +4,22 @@
     "loading": "Carregando...",
     "retry": "Tentar novamente"
   },
+  "contentSeed": {
+    "errorDescription": "Não foi possível concluir a preparação offline.",
+    "errorStatus": "Atenção",
+    "errorTitle": "Preparação interrompida",
+    "percent": "{{percent}}%",
+    "progressLabel": "Preparação offline em {{percent}}%",
+    "title": "Preparando conteúdo offline",
+    "phases": {
+      "bible": "Organizando livros e versículos em português.",
+      "comparison": "Adicionando versão de comparação.",
+      "done": "Conteúdo offline pronto.",
+      "lexicon": "Indexando léxico Strong.",
+      "original": "Preparando idiomas originais.",
+      "preparing": "Iniciando biblioteca local."
+    }
+  },
   "tabs": {
     "home": "Início",
     "bible": "Bíblia",
