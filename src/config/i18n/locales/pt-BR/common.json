@@ -158,12 +158,21 @@
     "amountTitle": "Escolha um valor",
     "checkoutError": "Não foi possível abrir o checkout de doação.",
     "checkoutNotConfigured": "O checkout Asaas ainda não foi configurado no ambiente.",
-    "checkoutSummary": "Você será direcionado para pagar R$ {{amount}} via {{paymentMethod}}.",
+    "checkoutSummary": "Você será direcionado para pagar R$ {{amount}} via {{paymentMethod}} como {{frequency}}.",
     "checkoutTitle": "Concluir doação",
     "customAmountLabel": "Valor livre da doação",
     "customAmountPlaceholder": "Outro valor em reais",
     "description": "As doações são voluntárias e ajudam a manter o desenvolvimento, os pacotes offline e a melhoria contínua do Gentium.",
     "fixedAmount": "R$ {{amount}}",
+    "frequencies": {
+      "recurring": "doação contínua",
+      "single": "doação única"
+    },
+    "frequencyDescriptions": {
+      "recurring": "Apoio mensal recorrente. Você será direcionado para uma assinatura segura.",
+      "single": "Contribuição avulsa, feita uma única vez."
+    },
+    "frequencyTitle": "Tipo de apoio",
     "heading": "Apoio voluntário",
     "paymentMethodDescription": "A página de pagamento segura será aberta fora do app para concluir a doação.",
     "paymentMethodTitle": "Forma de pagamento",
@@ -174,7 +183,7 @@
       "pix": "Pix"
     },
     "selectedAmount": "Valor selecionado: R$ {{amount}}",
-    "shareMessage": "Quero apoiar o Gentium com R$ {{amount}} via {{paymentMethod}}. Configure o checkout Asaas para concluir esta doação.",
+    "shareMessage": "Quero apoiar o Gentium com R$ {{amount}} via {{paymentMethod}} como {{frequency}}. Configure o checkout Asaas para concluir esta doação.",
     "shareTitle": "Apoiar o Gentium",
     "subtitle": "Contribua de forma voluntária para a continuidade do projeto.",
     "title": "Doações"

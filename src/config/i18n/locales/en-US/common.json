@@ -158,12 +158,21 @@
     "amountTitle": "Choose an amount",
     "checkoutError": "Could not open the donation checkout.",
     "checkoutNotConfigured": "The Asaas checkout is not configured in the environment yet.",
-    "checkoutSummary": "You will be redirected to pay R$ {{amount}} via {{paymentMethod}}.",
+    "checkoutSummary": "You will be redirected to pay R$ {{amount}} via {{paymentMethod}} as a {{frequency}}.",
     "checkoutTitle": "Complete donation",
     "customAmountLabel": "Custom donation amount",
     "customAmountPlaceholder": "Another amount in BRL",
     "description": "Donations are voluntary and help maintain development, offline packages, and continuous improvement for Gentium.",
     "fixedAmount": "R$ {{amount}}",
+    "frequencies": {
+      "recurring": "recurring donation",
+      "single": "one-time donation"
+    },
+    "frequencyDescriptions": {
+      "recurring": "Monthly recurring support. You will be redirected to a secure subscription.",
+      "single": "A one-time contribution."
+    },
+    "frequencyTitle": "Support type",
     "heading": "Voluntary support",
     "paymentMethodDescription": "The secure payment page will open outside the app to complete the donation.",
     "paymentMethodTitle": "Payment method",
@@ -174,7 +183,7 @@
       "pix": "Pix"
     },
     "selectedAmount": "Selected amount: R$ {{amount}}",
-    "shareMessage": "I want to support Gentium with R$ {{amount}} via {{paymentMethod}}. Configure the Asaas checkout to complete this donation.",
+    "shareMessage": "I want to support Gentium with R$ {{amount}} via {{paymentMethod}} as a {{frequency}}. Configure the Asaas checkout to complete this donation.",
     "shareTitle": "Support Gentium",
     "subtitle": "Contribute voluntarily to the continuity of the project.",
     "title": "Donations"

@@ -1,17 +1,25 @@
 import { donationConfig } from '@/config/monetization';
-import { DonationCheckout, DonationPaymentMethod } from '@/modules/donations/types';
+import {
+  DonationCheckout,
+  DonationFrequency,
+  DonationPaymentMethod,
+} from '@/modules/donations/types';
 
 export function createDonationCheckout(
   amount: number,
   paymentMethod: DonationPaymentMethod,
+  frequency: DonationFrequency,
 ): DonationCheckout {
   const normalizedAmount = normalizeDonationAmount(amount);
   const billingType = getAsaasBillingType(paymentMethod);
+  const chargeType = frequency === 'recurring' ? 'RECURRENT' : 'DETACHED';
 
   if (!donationConfig.asaasCheckoutUrl) {
     return {
       amount: normalizedAmount,
       billingType,
+      chargeType,
+      frequency,
       isConfigured: false,
       paymentMethod,
     };
@@ -21,14 +29,19 @@ export function createDonationCheckout(
     const checkoutUrl = new URL(donationConfig.asaasCheckoutUrl);
     checkoutUrl.searchParams.set('amount', normalizedAmount.toFixed(2));
     checkoutUrl.searchParams.set('billingType', billingType);
+    checkoutUrl.searchParams.set('chargeType', chargeType);
+    checkoutUrl.searchParams.set('frequency', frequency);
     checkoutUrl.searchParams.set('gateway', donationConfig.paymentGateway);
     checkoutUrl.searchParams.set('paymentMethod', paymentMethod);
+    checkoutUrl.searchParams.set('subscriptionCycle', 'MONTHLY');
     checkoutUrl.searchParams.set('source', 'gentium-app');
 
     return {
       amount: normalizedAmount,
       billingType,
+      chargeType,
       checkoutUrl: checkoutUrl.toString(),
+      frequency,
       isConfigured: true,
       paymentMethod,
     };
@@ -36,6 +49,8 @@ export function createDonationCheckout(
     return {
       amount: normalizedAmount,
       billingType,
+      chargeType,
+      frequency,
       isConfigured: false,
       paymentMethod,
     };

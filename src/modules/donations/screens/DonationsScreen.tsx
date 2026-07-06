@@ -4,17 +4,19 @@ import { useTranslation } from 'react-i18next';
 
 import { donationConfig, donationFixedAmounts } from '@/config/monetization';
 import { createDonationCheckout } from '@/modules/donations/repositories/donationsRepository';
-import { DonationPaymentMethod } from '@/modules/donations/types';
+import { DonationFrequency, DonationPaymentMethod } from '@/modules/donations/types';
 import { AppText, BaseCard, Button, TextInput } from '@/shared/components';
 import { Screen } from '@/shared/layouts/Screen';
 import { useThemeTokens } from '@/theme/useThemeTokens';
 
 const paymentMethods: DonationPaymentMethod[] = ['pix', 'bankSlip', 'creditCard', 'debitCard'];
+const donationFrequencies: DonationFrequency[] = ['single', 'recurring'];
 
 export function DonationsScreen() {
   const { t } = useTranslation();
   const theme = useThemeTokens();
   const [selectedAmount, setSelectedAmount] = useState<number>(donationConfig.subscriptionAmount || 5);
+  const [selectedFrequency, setSelectedFrequency] = useState<DonationFrequency>('single');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<DonationPaymentMethod>('pix');
   const [customAmount, setCustomAmount] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -31,13 +33,14 @@ export function DonationsScreen() {
 
   async function supportGentium() {
     setError(null);
-    const checkout = createDonationCheckout(amount, selectedPaymentMethod);
+    const checkout = createDonationCheckout(amount, selectedPaymentMethod, selectedFrequency);
 
     if (!checkout.isConfigured || !checkout.checkoutUrl) {
       setError(t('donations.checkoutNotConfigured'));
       await Share.share({
         message: t('donations.shareMessage', {
           amount: checkout.amount.toFixed(2),
+          frequency: t(`donations.frequencies.${checkout.frequency}`),
           paymentMethod: t(`donations.paymentMethods.${checkout.paymentMethod}`),
         }),
         title: t('donations.shareTitle'),
@@ -90,6 +93,23 @@ export function DonationsScreen() {
       </BaseCard>
 
       <BaseCard style={{ gap: theme.spacing.md }}>
+        <AppText variant="heading">{t('donations.frequencyTitle')}</AppText>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+          {donationFrequencies.map((frequency) => (
+            <Button
+              key={frequency}
+              label={t(`donations.frequencies.${frequency}`)}
+              onPress={() => setSelectedFrequency(frequency)}
+              variant={selectedFrequency === frequency ? 'primary' : 'secondary'}
+            />
+          ))}
+        </View>
+        <AppText color="textSecondary" variant="caption">
+          {t(`donations.frequencyDescriptions.${selectedFrequency}`)}
+        </AppText>
+      </BaseCard>
+
+      <BaseCard style={{ gap: theme.spacing.md }}>
         <AppText variant="heading">{t('donations.paymentMethodTitle')}</AppText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
           {paymentMethods.map((paymentMethod) => (
@@ -111,6 +131,7 @@ export function DonationsScreen() {
         <AppText color="textSecondary">
           {t('donations.checkoutSummary', {
             amount: amount.toFixed(2),
+            frequency: t(`donations.frequencies.${selectedFrequency}`),
             paymentMethod: t(`donations.paymentMethods.${selectedPaymentMethod}`),
           })}
         </AppText>
