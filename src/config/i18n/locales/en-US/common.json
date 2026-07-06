@@ -157,7 +157,7 @@
     "action": "Support Gentium",
     "amountTitle": "Choose an amount",
     "checkoutError": "Could not open the donation checkout.",
-    "checkoutNotConfigured": "The Asaas checkout is not configured in the environment yet.",
+    "checkoutNotConfigured": "The public Asaas payment link is not configured for this option yet.",
     "checkoutSummary": "You will be redirected to pay R$ {{amount}} via {{paymentMethod}} as a {{frequency}}.",
     "checkoutTitle": "Complete donation",
     "customAmountLabel": "Custom donation amount",

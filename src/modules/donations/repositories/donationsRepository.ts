@@ -13,8 +13,9 @@ export function createDonationCheckout(
   const normalizedAmount = normalizeDonationAmount(amount);
   const billingType = getAsaasBillingType(paymentMethod);
   const chargeType = frequency === 'recurring' ? 'RECURRENT' : 'DETACHED';
+  const configuredCheckoutUrl = getConfiguredCheckoutUrl(frequency, paymentMethod);
 
-  if (!donationConfig.asaasCheckoutUrl) {
+  if (!configuredCheckoutUrl) {
     return {
       amount: normalizedAmount,
       billingType,
@@ -26,7 +27,7 @@ export function createDonationCheckout(
   }
 
   try {
-    const checkoutUrl = new URL(donationConfig.asaasCheckoutUrl);
+    const checkoutUrl = new URL(configuredCheckoutUrl);
     checkoutUrl.searchParams.set('amount', normalizedAmount.toFixed(2));
     checkoutUrl.searchParams.set('billingType', billingType);
     checkoutUrl.searchParams.set('chargeType', chargeType);
@@ -79,4 +80,14 @@ function getAsaasBillingType(paymentMethod: DonationPaymentMethod) {
   }
 
   return 'PIX';
+}
+
+function getConfiguredCheckoutUrl(
+  frequency: DonationFrequency,
+  paymentMethod: DonationPaymentMethod,
+) {
+  return (
+    donationConfig.asaasPaymentLinks[frequency][paymentMethod] ||
+    donationConfig.asaasCheckoutUrl
+  );
 }

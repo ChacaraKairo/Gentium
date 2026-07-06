@@ -157,7 +157,7 @@
     "action": "Apoiar o Gentium",
     "amountTitle": "Escolha um valor",
     "checkoutError": "Não foi possível abrir o checkout de doação.",
-    "checkoutNotConfigured": "O checkout Asaas ainda não foi configurado no ambiente.",
+    "checkoutNotConfigured": "O link público de pagamento Asaas ainda não foi configurado para esta opção.",
     "checkoutSummary": "Você será direcionado para pagar R$ {{amount}} via {{paymentMethod}} como {{frequency}}.",
     "checkoutTitle": "Concluir doação",
     "customAmountLabel": "Valor livre da doação",
